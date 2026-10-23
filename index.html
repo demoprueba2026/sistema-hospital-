@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7fbfa">
+    <meta name="description" content="Encuentra especialistas y conoce al equipo médico del Hospital Domingo Luciani.">
+    <title>Hospital Domingo Luciani | Cuidamos de ti</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="#" aria-label="Hospital Domingo Luciani, inicio">
+            <span class="brand-mark" aria-hidden="true">+</span>
+            <span class="brand-name">DOMINGO <strong>LUCIANI</strong><small>HOSPITAL Y CENTRO MÉDICO</small></span>
+        </a>
+        <nav class="main-nav" aria-label="Navegación principal">
+            <a href="#inicio">Inicio</a>
+            <a href="#especialidades">Especialidades</a>
+            <a href="#nosotros">Nosotros</a>
+        </nav>
+        <a class="header-cta" href="#especialidades">Encuentra un médico <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+        <section class="hero" id="inicio">
+            <video class="hero-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=2000&q=85" aria-hidden="true">
+                <source src="https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4" type="video/mp4">
+            </video>
+            <div class="hero-shade"></div>
+            <div class="hero-content">
+                <span class="eyebrow"><span class="status-dot"></span> CUIDADO MÉDICO CON CALIDEZ HUMANA</span>
+                <h1>Tu salud,<br>en buenas <em>manos.</em></h1>
+                <p>Atención integral y especialistas comprometidos contigo y con tu familia, en cada etapa de la vida.</p>
+                <a class="primary-button" href="#especialidades">Encuentra tu especialista <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="hero-note"><span class="note-line"></span><span>Atención cercana. Experiencia que inspira confianza.</span></div>
+            <a class="scroll-cue" href="#especialidades" aria-label="Desplazarse a especialidades"><span></span></a>
+        </section>
+
+        <section class="specialties section-wrap" id="especialidades">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow section-eyebrow">EL EQUIPO QUE NECESITAS</span>
+                    <h2>Encuentra tu <em>especialista</em></h2>
+                    <p>Selecciona un área médica para conocer a los profesionales disponibles.</p>
+                </div>
+                <div class="heading-symbol" aria-hidden="true">✳</div>
+            </div>
+
+            <div class="finder-panel">
+                <label for="specialty-select">ESPECIALIDAD MÉDICA</label>
+                <div class="select-wrap">
+                    <select id="specialty-select" aria-describedby="select-hint">
+                        <option value="">Selecciona una especialidad</option>
+                    </select>
+                    <span class="select-chevron" aria-hidden="true">⌄</span>
+                </div>
+                <span id="select-hint" class="select-hint">Directorio y horarios de ejemplo; confirma la disponibilidad con el hospital.</span>
+            </div>
+
+            <div class="doctors-area" aria-live="polite" aria-atomic="true">
+                <div class="empty-state" id="empty-state">
+                    <span class="empty-icon" aria-hidden="true">✚</span>
+                    <div>
+                        <h3>Tu bienestar comienza aquí</h3>
+                        <p>Elige una especialidad para ver los médicos disponibles en esa área.</p>
+                    </div>
+                    <span class="empty-arrow" aria-hidden="true">↗</span>
+                </div>
+                <div class="doctor-results" id="doctor-results" hidden>
+                    <div class="results-heading">
+                        <div>
+                            <span class="eyebrow section-eyebrow">NUESTROS PROFESIONALES</span>
+                            <h3 id="results-title"></h3>
+                        </div>
+                        <span class="doctor-count" id="doctor-count"></span>
+                    </div>
+                    <div class="doctor-grid" id="doctor-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="care-banner" id="nosotros">
+            <div class="care-icon" aria-hidden="true">✳</div>
+            <div>
+                <span class="eyebrow">HOSPITAL DOMINGO LUCIANI</span>
+                <h2>Estamos aquí para cuidar de ti.</h2>
+                <p>Un equipo humano, preparado para acompañarte con atención y confianza.</p>
+            </div>
+            <a href="#especialidades" class="banner-link">Ver especialidades <span aria-hidden="true">→</span></a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <a class="brand footer-brand" href="#inicio">
+            <span class="brand-mark" aria-hidden="true">+</span>
+            <span class="brand-name">DOMINGO <strong>LUCIANI</strong><small>HOSPITAL Y CENTRO MÉDICO</small></span>
+        </a>
+        <span>© 2025 Hospital Domingo Luciani. Cuidamos de ti.</span>
+        <a href="#inicio">Volver arriba ↑</a>
+    </footer>
+</body>
+</html>
