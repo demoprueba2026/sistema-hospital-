@@ -2,14 +2,6 @@
 // AUTENTICACIÓN Y SESIÓN DEL ESPECIALISTA
 // ==========================================
 function checkSession() {
-    const loggedDoctorName = sessionStorage.getItem(DOCTOR_SESSION_KEY);
-    if (loggedDoctorName) {
-        const doc = findDoctorByName(loggedDoctorName);
-        if (doc) {
-            loginDoctor(doc);
-            return;
-        }
-    }
     showLoginForm();
 }
 
@@ -22,7 +14,6 @@ function showLoginForm() {
 
 function loginDoctor(doc) {
     currentDoctorObj = doc;
-    sessionStorage.setItem(DOCTOR_SESSION_KEY, doc.name);
 
     dashAvatar.textContent = initialsFor(doc.name);
     dashDoctorName.textContent = doc.name;
@@ -36,7 +27,6 @@ function loginDoctor(doc) {
 }
 
 function logoutDoctor() {
-    sessionStorage.removeItem(DOCTOR_SESSION_KEY);
     showLoginForm();
 }
 
@@ -65,4 +55,3 @@ doctorLoginForm.addEventListener("submit", (e) => {
 });
 
 btnDoctorLogout.addEventListener("click", logoutDoctor);
-

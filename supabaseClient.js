@@ -1,87 +1,87 @@
-// ========================================================
-// CLIENTE Y ADAPTADOR DE SUPABASE
-// Sistema de Citas Médicas
-// ========================================================
+// Cliente y adaptador de Supabase para el sistema de citas.
 
-/**
- * INSTRUCCIONES DE CONFIGURACIÓN:
- * 1. Crea un proyecto gratuito en https://supabase.com
- * 2. En el panel de tu proyecto ve a: Project Settings -> API
- * 3. Copia tu "Project URL" y pégala en DEFAULT_SUPABASE_URL
- * 4. Copia tu "anon / public key" y pégala en DEFAULT_SUPABASE_ANON_KEY
- * (También puedes configurarlas visualmente haciendo clic en el indicador de Supabase del portal)
- */
 const DEFAULT_SUPABASE_URL = "https://TU_PROYECTO.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY";
 
-const LOCAL_STORAGE_CITAS_KEY = "hdl_citas_hospital";
-const STORAGE_SUPABASE_URL_KEY = "hdl_custom_supabase_url";
-const STORAGE_SUPABASE_KEY_KEY = "hdl_custom_supabase_anon_key";
+let deploymentCredentials = null;
+let runtimeCredentials = null;
+let deploymentConfigError = null;
+let supabaseClientInstance = null;
 
-// Obtener las credenciales activas (desde archivo o desde localStorage)
+const supabaseCredentialsReady = fetch("/api/supabase-config", { cache: "no-store" })
+    .then(async (response) => {
+        const config = await response.json();
+        if (!response.ok) {
+            throw new Error(config.error || `Error HTTP ${response.status}`);
+        }
+        if (!config.url || !config.anonKey) {
+            throw new Error("La configuración de Supabase en Vercel está incompleta.");
+        }
+        deploymentCredentials = { url: config.url, anonKey: config.anonKey };
+    })
+    .catch((error) => {
+        deploymentConfigError = error;
+    });
+
 function getSupabaseCredentials() {
-    const customUrl = localStorage.getItem(STORAGE_SUPABASE_URL_KEY);
-    const customKey = localStorage.getItem(STORAGE_SUPABASE_KEY_KEY);
-
-    const url = (customUrl && customUrl.trim()) || DEFAULT_SUPABASE_URL;
-    const anonKey = (customKey && customKey.trim()) || DEFAULT_SUPABASE_ANON_KEY;
-
+    const credentials = runtimeCredentials || deploymentCredentials || {
+        url: DEFAULT_SUPABASE_URL,
+        anonKey: DEFAULT_SUPABASE_ANON_KEY
+    };
     const isPlaceholder = (
-        !url ||
-        url.includes("TU_PROYECTO") ||
-        !anonKey ||
-        anonKey.includes("TU_SUPABASE_ANON_KEY")
+        !credentials.url ||
+        credentials.url.includes("TU_PROYECTO") ||
+        !credentials.anonKey ||
+        credentials.anonKey.includes("TU_SUPABASE_ANON_KEY")
     );
 
     return {
-        url,
-        anonKey,
-        isConfigured: !isPlaceholder
+        ...credentials,
+        isConfigured: !isPlaceholder,
+        configError: deploymentConfigError
     };
 }
 
-// Inicializar cliente de Supabase
-let supabaseClientInstance = null;
-
 function initSupabaseClient() {
-    const creds = getSupabaseCredentials();
-
+    const credentials = getSupabaseCredentials();
     if (!window.supabase) {
-        console.warn("[Supabase] La librería @supabase/supabase-js no está cargada aún.");
-        return null;
+        throw new Error("La librería de Supabase no se cargó.");
     }
-
-    if (!creds.isConfigured) {
-        return null;
+    if (!credentials.isConfigured) {
+        throw new Error(
+            credentials.configError
+                ? `No se pudo cargar la configuración de Supabase: ${credentials.configError.message}`
+                : "Configura SUPABASE_URL y SUPABASE_ANON_KEY en Vercel."
+        );
     }
-
-    try {
-        supabaseClientInstance = window.supabase.createClient(creds.url, creds.anonKey, {
+    if (!supabaseClientInstance) {
+        supabaseClientInstance = window.supabase.createClient(credentials.url, credentials.anonKey, {
             auth: { persistSession: false }
         });
-        return supabaseClientInstance;
-    } catch (err) {
-        console.error("[Supabase] Error al inicializar cliente:", err);
-        return null;
     }
+    return supabaseClientInstance;
 }
 
-// Mapeos bidireccionales entre camelCase de JavaScript y snake_case de Postgres
-function mapAppointmentToDb(appt) {
+async function getSupabaseClient() {
+    await supabaseCredentialsReady;
+    return initSupabaseClient();
+}
+
+function mapAppointmentToDb(appointment) {
     return {
-        id: appt.id,
-        code: appt.code,
-        doctor_name: appt.doctorName,
-        specialty: appt.specialty,
-        date: appt.date,
-        time: appt.time,
-        patient_name: appt.patientName,
-        patient_email: appt.patientEmail,
-        patient_phone: appt.patientPhone,
-        patient_age: parseInt(appt.patientAge, 10) || 0,
-        notes: appt.notes || "",
-        status: appt.status || "Pendiente",
-        doctor_notes: appt.doctorNotes || ""
+        id: appointment.id,
+        code: appointment.code,
+        doctor_name: appointment.doctorName,
+        specialty: appointment.specialty,
+        date: appointment.date,
+        time: appointment.time,
+        patient_name: appointment.patientName,
+        patient_email: appointment.patientEmail,
+        patient_phone: appointment.patientPhone,
+        patient_age: parseInt(appointment.patientAge, 10) || 0,
+        notes: appointment.notes || "",
+        status: appointment.status || "Pendiente",
+        doctor_notes: appointment.doctorNotes || ""
     };
 }
 
@@ -104,229 +104,85 @@ function mapAppointmentFromDb(row) {
     };
 }
 
-// ==========================================
-// MÉTODOS DE LA API DE CITAS
-// ==========================================
-
-/**
- * Consulta las citas. Si se proporciona doctorName, filtra estrictamente por ese doctor.
- * Intenta primero en Supabase. Si falla o no está configurado, usa localStorage como respaldo.
- */
 async function apiGetAppointments(doctorName = null) {
-    const client = supabaseClientInstance || initSupabaseClient();
+    const client = await getSupabaseClient();
+    let query = client
+        .from("citas")
+        .select("*")
+        .order("date", { ascending: true })
+        .order("time", { ascending: true });
 
-    if (client) {
-        try {
-            let query = client
-                .from("citas")
-                .select("*")
-                .order("date", { ascending: true })
-                .order("time", { ascending: true });
-
-            if (doctorName) {
-                // Filtro estricto por nombre de doctor para privacidad médica
-                query = query.ilike("doctor_name", doctorName.trim());
-            }
-
-            const { data, error } = await query;
-
-            if (!error && Array.isArray(data)) {
-                const mapped = data.map(mapAppointmentFromDb);
-
-                // Sincronizar copia en localStorage como caché de respaldo
-                try {
-                    const localList = getLocalAppointments();
-                    mapped.forEach((appt) => {
-                        const idx = localList.findIndex((item) => item.id === appt.id);
-                        if (idx >= 0) {
-                            localList[idx] = appt;
-                        } else {
-                            localList.unshift(appt);
-                        }
-                    });
-                    localStorage.setItem(LOCAL_STORAGE_CITAS_KEY, JSON.stringify(localList));
-                } catch (_) {}
-
-                return mapped;
-            } else if (error) {
-                console.warn("[Supabase] Error al consultar citas, usando respaldo local:", error.message);
-            }
-        } catch (err) {
-            console.warn("[Supabase] Falló la conexión remota, usando respaldo local:", err);
-        }
-    }
-
-    // Respaldo en localStorage
-    const local = getLocalAppointments();
     if (doctorName) {
-        return local.filter(
-            (a) => a.doctorName.toLowerCase().trim() === doctorName.toLowerCase().trim()
-        );
+        query = query.ilike("doctor_name", doctorName.trim());
     }
-    return local;
+
+    const { data, error } = await query;
+    if (error) {
+        throw new Error(`No se pudieron leer las citas de Supabase: ${error.message}`);
+    }
+    return data.map(mapAppointmentFromDb);
 }
 
-/**
- * Guarda una nueva cita médica en Supabase y en localStorage.
- */
 async function apiSaveAppointment(appointment) {
-    const client = supabaseClientInstance || initSupabaseClient();
-    let savedInSupabase = false;
+    const client = await getSupabaseClient();
+    const { error } = await client
+        .from("citas")
+        .insert([mapAppointmentToDb(appointment)]);
 
-    // 1. Guardar en Supabase si está disponible
-    if (client) {
-        try {
-            const dbPayload = mapAppointmentToDb(appointment);
-            const { data, error } = await client
-                .from("citas")
-                .insert([dbPayload])
-                .select();
-
-            if (!error) {
-                savedInSupabase = true;
-                console.log("[Supabase] Cita guardada con éxito en la base de datos:", appointment.id);
-            } else {
-                console.error("[Supabase] Error al insertar en la tabla citas:", error);
-            }
-        } catch (err) {
-            console.error("[Supabase] Excepción al guardar cita:", err);
-        }
+    if (error) {
+        throw new Error(`No se pudo guardar la cita en Supabase: ${error.message}`);
     }
 
-    // 2. Guardar en localStorage como respaldo local garantizado
-    const local = getLocalAppointments();
-    const existingIndex = local.findIndex((a) => a.id === appointment.id);
-    if (existingIndex >= 0) {
-        local[existingIndex] = appointment;
-    } else {
-        local.unshift(appointment);
-    }
-    try {
-        localStorage.setItem(LOCAL_STORAGE_CITAS_KEY, JSON.stringify(local));
-    } catch (_) {}
-
-    return {
-        success: true,
-        savedInSupabase,
-        appointment
-    };
+    return { success: true, savedInSupabase: true, appointment };
 }
 
-/**
- * Actualiza el estado de una cita (Pendiente, Confirmada, Atendida, Cancelada).
- */
 async function apiUpdateAppointmentStatus(appointmentId, newStatus) {
-    const client = supabaseClientInstance || initSupabaseClient();
+    const client = await getSupabaseClient();
+    const { error } = await client
+        .from("citas")
+        .update({ status: newStatus })
+        .eq("id", appointmentId);
 
-    if (client) {
-        try {
-            const { error } = await client
-                .from("citas")
-                .update({ status: newStatus })
-                .eq("id", appointmentId);
-
-            if (error) {
-                console.error("[Supabase] Error al actualizar estado:", error);
-            } else {
-                console.log(`[Supabase] Estado de cita ${appointmentId} actualizado a ${newStatus}`);
-            }
-        } catch (err) {
-            console.error("[Supabase] Excepción al actualizar estado:", err);
-        }
-    }
-
-    // Actualizar también en localStorage
-    const local = getLocalAppointments();
-    const target = local.find((a) => a.id === appointmentId);
-    if (target) {
-        target.status = newStatus;
-        try {
-            localStorage.setItem(LOCAL_STORAGE_CITAS_KEY, JSON.stringify(local));
-        } catch (_) {}
+    if (error) {
+        throw new Error(`No se pudo actualizar la cita en Supabase: ${error.message}`);
     }
 }
 
-/**
- * Actualiza las notas médicas privadas del doctor en una cita.
- */
 async function apiUpdateDoctorNotes(appointmentId, doctorNotes) {
-    const client = supabaseClientInstance || initSupabaseClient();
+    const client = await getSupabaseClient();
+    const { error } = await client
+        .from("citas")
+        .update({ doctor_notes: doctorNotes })
+        .eq("id", appointmentId);
 
-    if (client) {
-        try {
-            const { error } = await client
-                .from("citas")
-                .update({ doctor_notes: doctorNotes })
-                .eq("id", appointmentId);
-
-            if (error) {
-                console.error("[Supabase] Error actualizando notas del doctor:", error);
-            }
-        } catch (err) {
-            console.error("[Supabase] Excepción:", err);
-        }
-    }
-
-    const local = getLocalAppointments();
-    const target = local.find((a) => a.id === appointmentId);
-    if (target) {
-        target.doctorNotes = doctorNotes;
-        try {
-            localStorage.setItem(LOCAL_STORAGE_CITAS_KEY, JSON.stringify(local));
-        } catch (_) {}
+    if (error) {
+        throw new Error(`No se pudieron guardar las notas en Supabase: ${error.message}`);
     }
 }
 
-/**
- * Suscripción en tiempo real a cambios en la tabla citas.
- */
-function apiSubscribeToAppointments(onChangesCallback) {
-    const client = supabaseClientInstance || initSupabaseClient();
-    if (!client || typeof client.channel !== "function") return null;
-
-    try {
-        const channel = client
-            .channel("citas_realtime_channel")
-            .on(
-                "postgres_changes",
-                { event: "*", schema: "public", table: "citas" },
-                (payload) => {
-                    console.log("[Supabase Realtime] Evento recibido:", payload.eventType);
-                    if (typeof onChangesCallback === "function") {
-                        onChangesCallback(payload);
-                    }
+async function apiSubscribeToAppointments(onChangesCallback) {
+    const client = await getSupabaseClient();
+    return client
+        .channel("citas_realtime_channel")
+        .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "citas" },
+            (payload) => {
+                if (typeof onChangesCallback === "function") {
+                    onChangesCallback(payload);
                 }
-            )
-            .subscribe();
-
-        return channel;
-    } catch (err) {
-        console.warn("[Supabase Realtime] No se pudo conectar a Realtime:", err);
-        return null;
-    }
+            }
+        )
+        .subscribe((status, error) => {
+            if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+                console.error("[Supabase Realtime] No se pudo establecer la suscripción:", error || status);
+            }
+        });
 }
 
-/**
- * Comprueba el estado de la conexión con Supabase.
- */
 async function testSupabaseConnection() {
-    const creds = getSupabaseCredentials();
-    if (!creds.isConfigured) {
-        return {
-            connected: false,
-            message: "Supabase no está configurado aún. Agrega tu SUPABASE_URL y SUPABASE_ANON_KEY."
-        };
-    }
-
-    const client = supabaseClientInstance || initSupabaseClient();
-    if (!client) {
-        return {
-            connected: false,
-            message: "No se pudo inicializar la librería de Supabase."
-        };
-    }
-
     try {
+        const client = await getSupabaseClient();
         const { count, error } = await client
             .from("citas")
             .select("*", { count: "exact", head: true });
@@ -334,54 +190,25 @@ async function testSupabaseConnection() {
         if (error) {
             return {
                 connected: false,
-                message: `Error de conexión: ${error.message}. Verifica que hayas ejecutado el script SQL en Supabase.`
+                message: `Error de Supabase: ${error.message}. Verifica la tabla y sus políticas.`
             };
         }
-
         return {
             connected: true,
-            message: `Conexión exitosa con Supabase. Tabla 'citas' lista (${count || 0} registros encontrados).`
+            message: `Conexión exitosa con Supabase. Tabla 'citas' lista (${count || 0} registros).`
         };
-    } catch (err) {
-        return {
-            connected: false,
-            message: `Error al conectar: ${err.message || err}`
-        };
+    } catch (error) {
+        return { connected: false, message: error.message };
     }
 }
 
-/**
- * Guarda credenciales personalizadas desde la interfaz si el usuario las ingresa.
- */
 function saveCustomSupabaseCredentials(url, anonKey) {
-    if (url) localStorage.setItem(STORAGE_SUPABASE_URL_KEY, url.trim());
-    if (anonKey) localStorage.setItem(STORAGE_SUPABASE_KEY_KEY, anonKey.trim());
+    runtimeCredentials = { url: url.trim(), anonKey: anonKey.trim() };
     supabaseClientInstance = null;
     return initSupabaseClient();
 }
 
 function clearCustomSupabaseCredentials() {
-    localStorage.removeItem(STORAGE_SUPABASE_URL_KEY);
-    localStorage.removeItem(STORAGE_SUPABASE_KEY_KEY);
+    runtimeCredentials = null;
     supabaseClientInstance = null;
 }
-
-// Respaldo local
-function getLocalAppointments() {
-    try {
-        const raw = localStorage.getItem(LOCAL_STORAGE_CITAS_KEY);
-        return raw ? JSON.parse(raw) : [];
-    } catch (_) {
-        return [];
-    }
-}
-
-// Inicializar cliente al cargar el script si la librería está disponible
-if (typeof window !== "undefined") {
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initSupabaseClient);
-    } else {
-        initSupabaseClient();
-    }
-}
-

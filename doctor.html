@@ -54,7 +54,7 @@
                 <h4>⚙ Configuración de Supabase</h4>
                 <button type="button" class="sb-config-close" id="sb-config-close">✕</button>
             </div>
-            <p class="sb-config-hint">Ingresa las credenciales de tu proyecto Supabase (disponibles en <strong>Project Settings → API</strong>). Se guardan en este navegador.</p>
+            <p class="sb-config-hint">En Vercel configura <strong>SUPABASE_URL</strong> y <strong>SUPABASE_ANON_KEY</strong> en Settings → Environment Variables y vuelve a desplegar. La configuración manual solo se mantiene en esta sesión.</p>
             <div class="form-field">
                 <label for="sb-url-input">Project URL</label>
                 <input type="url" id="sb-url-input" class="auth-input" placeholder="https://xxxxx.supabase.co" autocomplete="off">
@@ -64,9 +64,9 @@
                 <input type="text" id="sb-key-input" class="auth-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off">
             </div>
             <div class="sb-config-actions">
-                <button type="button" class="btn-auth-submit" id="sb-save-btn" style="width:auto; min-width:160px;">Guardar y conectar</button>
+                <button type="button" class="btn-auth-submit" id="sb-save-btn" style="width:auto; min-width:160px;">Conectar esta sesión</button>
                 <button type="button" class="modal-btn-cancel" id="sb-test-btn">Probar conexión</button>
-                <button type="button" class="btn-status-action cancel" id="sb-clear-btn">Borrar credenciales</button>
+                <button type="button" class="btn-status-action cancel" id="sb-clear-btn">Usar configuración de Vercel</button>
             </div>
             <div class="form-alert" id="sb-config-alert" role="alert" hidden></div>
         </div>

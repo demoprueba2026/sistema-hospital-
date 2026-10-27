@@ -73,21 +73,10 @@ function updateTheme(isDark) {
     themeToggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
     themeToggle.querySelector(".theme-label").textContent = isDark ? "Tema claro" : "Tema oscuro";
     document.querySelector('meta[name="theme-color"]').content = isDark ? "#102321" : "#f7fbfa";
-    try {
-        localStorage.setItem("hdl-theme", isDark ? "dark" : "light");
-    } catch (_) {}
 }
 
-const savedTheme = (() => {
-    try {
-        return localStorage.getItem("hdl-theme");
-    } catch (_) {
-        return null;
-    }
-})();
-
 const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-updateTheme(savedTheme !== null ? savedTheme === "dark" : prefersDark);
+updateTheme(prefersDark);
 
 themeToggle.addEventListener("click", () => {
     const isDark = document.body.dataset.theme !== "dark";
@@ -202,32 +191,11 @@ specialtySelect.addEventListener("change", () => {
 });
 
 // ==========================================
-// ALMACENAMIENTO DE CITAS MÉDICAS (SUPABASE + LOCALSTORAGE FALLBACK)
+// ALMACENAMIENTO REMOTO DE CITAS MÉDICAS EN SUPABASE
 // ==========================================
 
 function saveAppointment(appointment) {
-    // Llama a supabaseClient.js → guarda en Supabase primero, localStorage como respaldo
     return apiSaveAppointment(appointment);
 }
-
-// Al cargar: migrar datos viejos de localStorage puro a Supabase (solo una vez)
-(async function migrateOldLocalData() {
-    const LEGACY_KEY = "hdl_citas_hospital";
-    try {
-        const raw = localStorage.getItem(LEGACY_KEY);
-        if (!raw) return;
-        const oldItems = JSON.parse(raw);
-        if (!Array.isArray(oldItems) || oldItems.length === 0) return;
-        const creds = getSupabaseCredentials();
-        if (!creds.isConfigured) return;
-        const client = initSupabaseClient();
-        if (!client) return;
-        for (const item of oldItems) {
-            const dbPayload = mapAppointmentToDb(item);
-            await client.from("citas").upsert([dbPayload], { onConflict: "id", ignoreDuplicates: true });
-        }
-        console.log("[Migración] Datos locales previos migrados a Supabase.");
-    } catch (_) {}
-})();
 
 // ==========================================

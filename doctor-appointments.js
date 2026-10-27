@@ -4,8 +4,18 @@
 async function renderDoctorAppointments() {
     if (!currentDoctorObj) return;
 
-    // Consulta DIRECTAMENTE a Supabase (filtrando por el doctor actual para seguridad)
-    const doctorAppointments = await apiGetAppointments(currentDoctorObj.name);
+    let doctorAppointments;
+    try {
+        doctorAppointments = await apiGetAppointments(currentDoctorObj.name);
+    } catch (error) {
+        appointmentsContainer.replaceChildren();
+        portalEmptyState.hidden = false;
+        portalEmptyState.querySelector("h3").textContent = "No se pudieron cargar las citas";
+        portalEmptyState.querySelector("p").textContent = error.message;
+        sbStatusDot.style.background = "#e53e3e";
+        sbStatusText.textContent = error.message;
+        return;
+    }
 
     const todayStr = new Date().toISOString().split("T")[0];
     const totalCount = doctorAppointments.length;
@@ -130,8 +140,13 @@ function createAppointmentCard(appt) {
 }
 
 async function updateAppointmentStatusAsync(apptId, newStatus) {
-    await apiUpdateAppointmentStatus(apptId, newStatus);
-    await renderDoctorAppointments();
+    try {
+        await apiUpdateAppointmentStatus(apptId, newStatus);
+        await renderDoctorAppointments();
+    } catch (error) {
+        sbStatusDot.style.background = "#e53e3e";
+        sbStatusText.textContent = error.message;
+    }
 }
 
 // Filtros y búsqueda
@@ -187,21 +202,27 @@ async function createTestAppointmentForDoctor() {
         createdAt: new Date().toISOString()
     };
 
-    await apiSaveAppointment(newAppt);
-    await renderDoctorAppointments();
+    try {
+        await apiSaveAppointment(newAppt);
+        await renderDoctorAppointments();
+    } catch (error) {
+        sbStatusDot.style.background = "#e53e3e";
+        sbStatusText.textContent = error.message;
+    }
 }
 
 if (btnCreateTestAppt) btnCreateTestAppt.addEventListener("click", createTestAppointmentForDoctor);
 if (btnSeedTest) btnSeedTest.addEventListener("click", createTestAppointmentForDoctor);
 
 // Habilitar Realtime para que se actualice solo al haber cambios
-try {
-    apiSubscribeToAppointments(() => {
+apiSubscribeToAppointments(() => {
         if (currentDoctorObj) {
             renderDoctorAppointments();
         }
+    }).catch((error) => {
+        sbStatusDot.style.background = "#e53e3e";
+        sbStatusText.textContent = error.message;
     });
-} catch (_) {}
 
 // Inicializar estado y sesión
 updateSupabaseStatusUI();

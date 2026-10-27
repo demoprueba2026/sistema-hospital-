@@ -52,34 +52,35 @@ if (appointmentForm) {
             createdAt: new Date().toISOString()
         };
 
-        // Guardar en Supabase (con fallback automático a localStorage)
-        const result = await saveAppointment(appointment);
-        lastCreatedAppointment = appointment;
+        try {
+            const result = await saveAppointment(appointment);
+            if (!result.success || !result.savedInSupabase) {
+                throw new Error("Supabase no confirmó el registro de la cita.");
+            }
+            lastCreatedAppointment = appointment;
 
-        if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = originalHTML;
+            document.querySelector("#rec-doctor").textContent = appointment.doctorName;
+            document.querySelector("#rec-specialty").textContent = appointment.specialty;
+            document.querySelector("#rec-date").textContent = selectedDateLabel.textContent;
+            document.querySelector("#rec-time").textContent = appointment.time;
+            document.querySelector("#rec-patient").textContent = `${appointment.patientName} (${appointment.patientAge} años)`;
+            document.querySelector("#rec-phone").textContent = appointment.patientPhone;
+            document.querySelector("#rec-code").textContent = appointment.code;
+
+            const storageEl = document.querySelector("#rec-storage-note");
+            if (storageEl) storageEl.textContent = "✓ Guardado en Supabase";
+
+            appointmentForm.hidden = true;
+            modalSuccessView.hidden = false;
+        } catch (error) {
+            formAlert.hidden = false;
+            formAlert.textContent = `No se pudo guardar la cita en Supabase. ${error.message}`;
+        } finally {
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalHTML;
+            }
         }
-
-        // Mostrar badge de dónde se guardó
-        const storageNote = (result && result.savedInSupabase)
-            ? "✓ Guardado en Supabase"
-            : "⚠ Guardado localmente (Supabase no configurado)";
-
-        document.querySelector("#rec-doctor").textContent = appointment.doctorName;
-        document.querySelector("#rec-specialty").textContent = appointment.specialty;
-        document.querySelector("#rec-date").textContent = selectedDateLabel.textContent;
-        document.querySelector("#rec-time").textContent = appointment.time;
-        document.querySelector("#rec-patient").textContent = `${appointment.patientName} (${appointment.patientAge} años)`;
-        document.querySelector("#rec-phone").textContent = appointment.patientPhone;
-        document.querySelector("#rec-code").textContent = appointment.code;
-
-        // Mostrar nota de almacenamiento en el recibo
-        const storageEl = document.querySelector("#rec-storage-note");
-        if (storageEl) storageEl.textContent = storageNote;
-
-        appointmentForm.hidden = true;
-        modalSuccessView.hidden = false;
     });
 }
 

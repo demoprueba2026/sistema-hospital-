@@ -53,8 +53,6 @@ const doctorsBySpecialty = {
     ]
 };
 
-const DOCTOR_SESSION_KEY = "hdl_logged_doctor_name";
-
 // Elementos DOM
 const themeToggle = document.querySelector("#theme-toggle");
 const doctorAuthBox = document.querySelector("#doctor-auth-box");
@@ -116,21 +114,10 @@ function updateTheme(isDark) {
     themeToggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
     themeToggle.querySelector(".theme-label").textContent = isDark ? "Tema claro" : "Tema oscuro";
     document.querySelector('meta[name="theme-color"]').content = isDark ? "#102321" : "#f7fbfa";
-    try {
-        localStorage.setItem("hdl-theme", isDark ? "dark" : "light");
-    } catch (_) {}
 }
 
-const savedTheme = (() => {
-    try {
-        return localStorage.getItem("hdl-theme");
-    } catch (_) {
-        return null;
-    }
-})();
-
 const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-updateTheme(savedTheme !== null ? savedTheme === "dark" : prefersDark);
+updateTheme(prefersDark);
 
 themeToggle.addEventListener("click", () => {
     const isDark = document.body.dataset.theme !== "dark";
@@ -177,10 +164,13 @@ function populateDoctorSelect() {
 
 async function updateSupabaseStatusUI() {
     if (!sbStatusDot || !sbStatusText) return;
+    await supabaseCredentialsReady;
     const creds = getSupabaseCredentials();
     if (!creds.isConfigured) {
         sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = "Supabase no configurado (usando modo local)";
+        sbStatusText.textContent = creds.configError
+            ? `No se pudo cargar Supabase: ${creds.configError.message}`
+            : "Supabase no configurado. Revisa las variables de Vercel.";
         return;
     }
     sbStatusText.textContent = "Verificando conexión con Supabase…";
@@ -190,12 +180,13 @@ async function updateSupabaseStatusUI() {
         sbStatusText.textContent = "Conectado a Supabase (Sincronización en vivo activa)";
     } else {
         sbStatusDot.style.background = "#dd6b20";
-        sbStatusText.textContent = "Sin conexión remota (respaldo local activo)";
+        sbStatusText.textContent = `Error de conexión con Supabase: ${res.message}`;
     }
 }
 
 if (sbConfigToggle) {
-    sbConfigToggle.addEventListener("click", () => {
+    sbConfigToggle.addEventListener("click", async () => {
+        await supabaseCredentialsReady;
         sbConfigPanel.hidden = !sbConfigPanel.hidden;
         if (!sbConfigPanel.hidden) {
             const creds = getSupabaseCredentials();
@@ -218,11 +209,15 @@ if (sbSaveBtn) {
             sbConfigAlert.textContent = "Ingresa la URL y la Key de Supabase.";
             return;
         }
-        sbConfigAlert.hidden = true;
-        saveCustomSupabaseCredentials(url, key);
-        await updateSupabaseStatusUI();
-        sbConfigPanel.hidden = true;
-        if (currentDoctorObj) renderDoctorAppointments();
+        try {
+            saveCustomSupabaseCredentials(url, key);
+            await updateSupabaseStatusUI();
+            sbConfigPanel.hidden = true;
+            if (currentDoctorObj) await renderDoctorAppointments();
+        } catch (error) {
+            sbConfigAlert.hidden = false;
+            sbConfigAlert.textContent = error.message;
+        }
     });
 }
 
@@ -242,8 +237,7 @@ if (sbClearBtn) {
         if (sbUrlInput) sbUrlInput.value = "";
         if (sbKeyInput) sbKeyInput.value = "";
         sbConfigAlert.hidden = false;
-        sbConfigAlert.textContent = "Credenciales borradas.";
+        sbConfigAlert.textContent = "Se restableció la configuración de Vercel.";
         await updateSupabaseStatusUI();
     });
 }
-
