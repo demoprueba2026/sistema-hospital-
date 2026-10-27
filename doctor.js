@@ -86,20 +86,6 @@ const filterPills = document.querySelectorAll(".filter-pill");
 const appointmentsContainer = document.querySelector("#appointments-container");
 const portalEmptyState = document.querySelector("#portal-empty-state");
 
-// Elementos de la barra de estado de Supabase
-const supabaseStatusBar = document.querySelector("#supabase-status-bar");
-const sbStatusDot = document.querySelector("#sb-status-dot");
-const sbStatusText = document.querySelector("#sb-status-text");
-const sbConfigToggle = document.querySelector("#sb-config-toggle");
-const sbConfigPanel = document.querySelector("#supabase-config-panel");
-const sbConfigClose = document.querySelector("#sb-config-close");
-const sbUrlInput = document.querySelector("#sb-url-input");
-const sbKeyInput = document.querySelector("#sb-key-input");
-const sbSaveBtn = document.querySelector("#sb-save-btn");
-const sbTestBtn = document.querySelector("#sb-test-btn");
-const sbClearBtn = document.querySelector("#sb-clear-btn");
-const sbConfigAlert = document.querySelector("#sb-config-alert");
-
 let currentDoctorObj = null;
 let activeStatusFilter = "all";
 let activeSearchQuery = "";
@@ -159,85 +145,5 @@ function populateDoctorSelect() {
             optgroup.append(opt);
         });
         doctorSelect.append(optgroup);
-    });
-}
-
-async function updateSupabaseStatusUI() {
-    if (!sbStatusDot || !sbStatusText) return;
-    await supabaseCredentialsReady;
-    const creds = getSupabaseCredentials();
-    if (!creds.isConfigured) {
-        sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = creds.configError
-            ? `No se pudo cargar Supabase: ${creds.configError.message}`
-            : "Supabase no configurado. Revisa las variables de Vercel.";
-        return;
-    }
-    sbStatusText.textContent = "Verificando conexión con Supabase…";
-    const res = await testSupabaseConnection();
-    if (res.connected) {
-        sbStatusDot.style.background = "#319795";
-        sbStatusText.textContent = "Conectado a Supabase (Sincronización en vivo activa)";
-    } else {
-        sbStatusDot.style.background = "#dd6b20";
-        sbStatusText.textContent = `Error de conexión con Supabase: ${res.message}`;
-    }
-}
-
-if (sbConfigToggle) {
-    sbConfigToggle.addEventListener("click", async () => {
-        await supabaseCredentialsReady;
-        sbConfigPanel.hidden = !sbConfigPanel.hidden;
-        if (!sbConfigPanel.hidden) {
-            const creds = getSupabaseCredentials();
-            if (sbUrlInput) sbUrlInput.value = creds.url.includes("TU_PROYECTO") ? "" : creds.url;
-            if (sbKeyInput) sbKeyInput.value = creds.anonKey.includes("TU_SUPABASE_ANON_KEY") ? "" : creds.anonKey;
-        }
-    });
-}
-
-if (sbConfigClose) {
-    sbConfigClose.addEventListener("click", () => { sbConfigPanel.hidden = true; });
-}
-
-if (sbSaveBtn) {
-    sbSaveBtn.addEventListener("click", async () => {
-        const url = sbUrlInput.value.trim();
-        const key = sbKeyInput.value.trim();
-        if (!url || !key) {
-            sbConfigAlert.hidden = false;
-            sbConfigAlert.textContent = "Ingresa la URL y la Key de Supabase.";
-            return;
-        }
-        try {
-            saveCustomSupabaseCredentials(url, key);
-            await updateSupabaseStatusUI();
-            sbConfigPanel.hidden = true;
-            if (currentDoctorObj) await renderDoctorAppointments();
-        } catch (error) {
-            sbConfigAlert.hidden = false;
-            sbConfigAlert.textContent = error.message;
-        }
-    });
-}
-
-if (sbTestBtn) {
-    sbTestBtn.addEventListener("click", async () => {
-        const res = await testSupabaseConnection();
-        sbConfigAlert.hidden = false;
-        sbConfigAlert.textContent = res.message;
-        sbConfigAlert.style.background = res.connected ? "#e6f4ef" : "#fde8e8";
-        sbConfigAlert.style.color = res.connected ? "#10635c" : "#b02a2a";
-    });
-}
-
-if (sbClearBtn) {
-    sbClearBtn.addEventListener("click", async () => {
-        clearCustomSupabaseCredentials();
-        if (sbUrlInput) sbUrlInput.value = "";
-        if (sbKeyInput) sbKeyInput.value = "";
-        sbConfigAlert.hidden = false;
-        sbConfigAlert.textContent = "Se restableció la configuración de Vercel.";
-        await updateSupabaseStatusUI();
     });
 }

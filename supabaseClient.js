@@ -4,7 +4,6 @@ const DEFAULT_SUPABASE_URL = "https://TU_PROYECTO.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY";
 
 let deploymentCredentials = null;
-let runtimeCredentials = null;
 let deploymentConfigError = null;
 let supabaseClientInstance = null;
 
@@ -24,7 +23,7 @@ const supabaseCredentialsReady = fetch("/api/supabase-config", { cache: "no-stor
     });
 
 function getSupabaseCredentials() {
-    const credentials = runtimeCredentials || deploymentCredentials || {
+    const credentials = deploymentCredentials || {
         url: DEFAULT_SUPABASE_URL,
         anonKey: DEFAULT_SUPABASE_ANON_KEY
     };
@@ -37,8 +36,7 @@ function getSupabaseCredentials() {
 
     return {
         ...credentials,
-        isConfigured: !isPlaceholder,
-        configError: deploymentConfigError
+        isConfigured: !isPlaceholder
     };
 }
 
@@ -194,37 +192,4 @@ async function apiSubscribeToAppointments(onChangesCallback) {
                 console.error("[Supabase Realtime] No se pudo establecer la suscripción:", error || status);
             }
         });
-}
-
-async function testSupabaseConnection() {
-    try {
-        const client = await getSupabaseClient();
-        const { count, error } = await client
-            .from("citas")
-            .select("*", { count: "exact", head: true });
-
-        if (error) {
-            return {
-                connected: false,
-                message: `Error de Supabase: ${error.message}. Verifica la tabla y sus políticas.`
-            };
-        }
-        return {
-            connected: true,
-            message: `Conexión exitosa con Supabase. Tabla 'citas' lista (${count || 0} registros).`
-        };
-    } catch (error) {
-        return { connected: false, message: error.message };
-    }
-}
-
-function saveCustomSupabaseCredentials(url, anonKey) {
-    runtimeCredentials = { url: url.trim(), anonKey: anonKey.trim() };
-    supabaseClientInstance = null;
-    return initSupabaseClient();
-}
-
-function clearCustomSupabaseCredentials() {
-    runtimeCredentials = null;
-    supabaseClientInstance = null;
 }

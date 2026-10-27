@@ -41,36 +41,6 @@
     </header>
 
     <main class="portal-wrap">
-        <!-- BANNER DE ESTADO SUPABASE (visible en todo momento) -->
-        <div class="supabase-status-bar" id="supabase-status-bar">
-            <span class="sb-status-dot" id="sb-status-dot"></span>
-            <span id="sb-status-text">Verificando conexión con Supabase…</span>
-            <button type="button" class="sb-config-toggle" id="sb-config-toggle" title="Configurar credenciales de Supabase">⚙ Configurar</button>
-        </div>
-
-        <!-- PANEL DE CONFIGURACIÓN DE SUPABASE (colapsable) -->
-        <div class="supabase-config-panel" id="supabase-config-panel" hidden>
-            <div class="sb-config-header">
-                <h4>⚙ Configuración de Supabase</h4>
-                <button type="button" class="sb-config-close" id="sb-config-close">✕</button>
-            </div>
-            <p class="sb-config-hint">En Vercel configura <strong>SUPABASE_URL</strong> y <strong>SUPABASE_ANON_KEY</strong> en Settings → Environment Variables y vuelve a desplegar. La configuración manual solo se mantiene en esta sesión.</p>
-            <div class="form-field">
-                <label for="sb-url-input">Project URL</label>
-                <input type="url" id="sb-url-input" class="auth-input" placeholder="https://xxxxx.supabase.co" autocomplete="off">
-            </div>
-            <div class="form-field">
-                <label for="sb-key-input">Anon / Public Key</label>
-                <input type="text" id="sb-key-input" class="auth-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off">
-            </div>
-            <div class="sb-config-actions">
-                <button type="button" class="btn-auth-submit" id="sb-save-btn" style="width:auto; min-width:160px;">Conectar esta sesión</button>
-                <button type="button" class="modal-btn-cancel" id="sb-test-btn">Probar conexión</button>
-                <button type="button" class="btn-status-action cancel" id="sb-clear-btn">Usar configuración de Vercel</button>
-            </div>
-            <div class="form-alert" id="sb-config-alert" role="alert" hidden></div>
-        </div>
-
         <!-- VISTA 1: ACCESO RESTRINGIDO PARA EL DOCTOR (LOGIN) -->
         <section class="doctor-auth-box" id="doctor-auth-box">
             <div class="auth-icon-wrap" aria-hidden="true">🔒</div>

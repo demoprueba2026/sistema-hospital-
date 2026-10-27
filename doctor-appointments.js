@@ -12,8 +12,6 @@ async function renderDoctorAppointments() {
         portalEmptyState.hidden = false;
         portalEmptyState.querySelector("h3").textContent = "No se pudieron cargar las citas";
         portalEmptyState.querySelector("p").textContent = error.message;
-        sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = error.message;
         return;
     }
 
@@ -153,11 +151,8 @@ async function deletePatientAppointment(appointmentId, patientName) {
     try {
         await apiDeleteAppointment(appointmentId);
         await renderDoctorAppointments();
-        sbStatusDot.style.background = "#319795";
-        sbStatusText.textContent = `Registro de ${patientName} eliminado de Supabase.`;
     } catch (error) {
-        sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = error.message;
+        window.alert(error.message);
     }
 }
 
@@ -166,8 +161,7 @@ async function updateAppointmentStatusAsync(apptId, newStatus) {
         await apiUpdateAppointmentStatus(apptId, newStatus);
         await renderDoctorAppointments();
     } catch (error) {
-        sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = error.message;
+        window.alert(error.message);
     }
 }
 
@@ -228,8 +222,7 @@ async function createTestAppointmentForDoctor() {
         await apiSaveAppointment(newAppt);
         await renderDoctorAppointments();
     } catch (error) {
-        sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = error.message;
+        window.alert(error.message);
     }
 }
 
@@ -242,10 +235,8 @@ apiSubscribeToAppointments(() => {
             renderDoctorAppointments();
         }
     }).catch((error) => {
-        sbStatusDot.style.background = "#e53e3e";
-        sbStatusText.textContent = error.message;
+        console.error("[Supabase Realtime] No se pudo establecer la suscripción:", error);
     });
 
-// Inicializar estado y sesión
-updateSupabaseStatusUI();
+// Inicializar sesión
 checkSession();
