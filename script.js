@@ -191,7 +191,7 @@ specialtySelect.addEventListener("change", () => {
 });
 
 // ==========================================
-// ALMACENAMIENTO REMOTO DE CITAS MÉDICAS EN SUPABASE
+// ALMAsCENAMIENTO REMOTO DE CITAS MÉDICAS EN SUPABASE
 // ==========================================
 
 function saveAppointment(appointment) {
