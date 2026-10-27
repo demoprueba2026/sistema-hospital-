@@ -55,6 +55,33 @@ const doctorResults = document.querySelector("#doctor-results");
 const resultsTitle = document.querySelector("#results-title");
 const doctorCount = document.querySelector("#doctor-count");
 const doctorGrid = document.querySelector("#doctor-grid");
+const menuToggle = document.querySelector(".menu-toggle");
+const siteNavigation = document.querySelector("#site-navigation");
+
+function closeMenu() {
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Abrir menú");
+    siteNavigation.classList.remove("is-open");
+}
+
+menuToggle.addEventListener("click", () => {
+    const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "Abrir menú" : "Cerrar menú");
+    siteNavigation.classList.toggle("is-open", !isOpen);
+});
+
+siteNavigation.addEventListener("click", (event) => {
+    if (event.target.closest("a")) closeMenu();
+});
+
+document.addEventListener("click", (event) => {
+    if (!event.target.closest(".main-nav, .menu-toggle")) closeMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMenu();
+});
 
 Object.keys(doctorsBySpecialty).forEach((specialty) => {
     const option = document.createElement("option");
