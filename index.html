@@ -22,8 +22,10 @@
             <a href="#inicio">Inicio</a>
             <a href="#especialidades">Especialidades</a>
             <a href="#nosotros">Nosotros</a>
+            <a href="doctor.html" class="nav-portal-link">Portal Médicos 🔒</a>
         </nav>
         <div class="header-actions">
+            <a class="header-doctor-cta" href="doctor.html" title="Acceso exclusivo para médicos especialistas">Soy Médico 🩺</a>
             <a class="header-cta" href="#especialidades">Encuentra un médico <span aria-hidden="true">↗</span></a>
             <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Activar tema oscuro" aria-pressed="false">
                 <span class="theme-icon" aria-hidden="true">☾</span>
@@ -108,7 +110,171 @@
             <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>HOSPITAL Y CENTRO MÉDICO</small></span>
         </a>
         <span>© 2025 Clinica Su Salud. Cuidamos de ti.</span>
-        <a href="#inicio">Volver arriba ↑</a>
+        <div class="footer-links">
+            <a href="doctor.html" class="footer-doctor-link">Portal Especialistas 🔒</a>
+            <a href="#inicio">Volver arriba ↑</a>
+        </div>
     </footer>
+
+    <!-- Modal para agendar cita médica (Estilo Google Calendar) -->
+    <dialog class="calendar-modal" id="appointment-modal" aria-labelledby="modal-doctor-name" aria-modal="true">
+        <div class="calendar-modal-box">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="modal-header-main">
+                    <span class="modal-cal-pill">
+                        <span class="modal-cal-dot"></span> Cita Médica · Google Calendar
+                    </span>
+                    <div class="modal-doctor-card">
+                        <div class="modal-doc-avatar" id="modal-doc-avatar" aria-hidden="true">DR</div>
+                        <div class="modal-doc-info">
+                            <h3 id="modal-doctor-name" class="modal-doc-name">Dr. Especialista</h3>
+                            <p id="modal-doc-specialty" class="modal-doc-specialty">Especialidad</p>
+                            <span id="modal-doc-availability" class="modal-doc-schedule">Horario habitual</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Cerrar ventana de cita">✕</button>
+            </div>
+
+            <!-- Modal Body (Two-column layout like Google Calendar event creator) -->
+            <form id="appointment-form" class="modal-body" novalidate>
+                <!-- Columna Izquierda: Calendario interactivo y selección de hora -->
+                <div class="modal-calendar-pane">
+                    <div class="pane-heading">
+                        <span class="pane-number">1</span>
+                        <h4>Fecha y hora de consulta</h4>
+                    </div>
+
+                    <!-- Mini Calendario Google Calendar -->
+                    <div class="gcal-widget">
+                        <div class="gcal-nav">
+                            <button type="button" class="gcal-nav-btn" id="cal-prev-btn" aria-label="Mes anterior">‹</button>
+                            <span class="gcal-month-title" id="cal-month-title">Noviembre 2026</span>
+                            <button type="button" class="gcal-nav-btn" id="cal-next-btn" aria-label="Mes siguiente">›</button>
+                        </div>
+                        <div class="gcal-weekdays">
+                            <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span>
+                        </div>
+                        <div class="gcal-days-grid" id="cal-days-grid">
+                            <!-- Inyectado por JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Fecha seleccionada resumen -->
+                    <div class="gcal-selection-badge" id="gcal-selection-badge">
+                        <span class="badge-icon">📅</span>
+                        <div>
+                            <span class="badge-caption">Día seleccionado:</span>
+                            <strong id="selected-date-label">Selecciona un día disponible</strong>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Hora -->
+                    <div class="gcal-time-picker">
+                        <label class="time-picker-title">
+                            <span>⏰ Horarios disponibles para este doctor:</span>
+                        </label>
+                        <div class="time-slots-grid" id="time-slots-grid">
+                            <!-- Inyectado por JavaScript -->
+                        </div>
+                        <input type="hidden" id="selected-date-input" name="selectedDate" required>
+                        <input type="hidden" id="selected-time-input" name="selectedTime" required>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Datos del Paciente -->
+                <div class="modal-patient-pane">
+                    <div class="pane-heading">
+                        <span class="pane-number">2</span>
+                        <h4>Datos del paciente</h4>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="patient-name">Nombre y apellido del paciente <span class="required">*</span></label>
+                        <div class="field-wrap">
+                            <span class="field-icon" aria-hidden="true">👤</span>
+                            <input type="text" id="patient-name" name="patientName" placeholder="Ej. Carlos Mendoza" required autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-field">
+                            <label for="patient-email">Correo electrónico <span class="required">*</span></label>
+                            <div class="field-wrap">
+                                <span class="field-icon" aria-hidden="true">✉️</span>
+                                <input type="email" id="patient-email" name="patientEmail" placeholder="paciente@correo.com" required autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="patient-phone">Número de teléfono <span class="required">*</span></label>
+                            <div class="field-wrap">
+                                <span class="field-icon" aria-hidden="true">📞</span>
+                                <input type="tel" id="patient-phone" name="patientPhone" placeholder="0414-1234567" required autocomplete="tel">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="patient-age">Edad del paciente <span class="required">*</span></label>
+                        <div class="field-wrap">
+                            <span class="field-icon" aria-hidden="true">🎂</span>
+                            <input type="number" id="patient-age" name="patientAge" min="0" max="120" placeholder="Ej. 34 años" required>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="appointment-notes">Motivo de la consulta / Nota médica <span class="required">*</span></label>
+                        <div class="field-wrap textarea-wrap">
+                            <textarea id="appointment-notes" name="appointmentNotes" rows="3" placeholder="Describe brevemente tus síntomas, motivo de visita o antecedentes..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-alert" id="form-alert" role="alert" hidden></div>
+
+                    <div class="modal-footer-actions">
+                        <button type="button" class="modal-btn-cancel" id="modal-btn-cancel">Cancelar</button>
+                        <button type="submit" class="modal-btn-save" id="modal-btn-save">
+                            <span>Confirmar Cita</span>
+                            <span aria-hidden="true">✓</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Pantalla de Éxito al Agendar Cita -->
+            <div class="modal-success-view" id="modal-success-view" hidden>
+                <div class="success-icon-badge">✓</div>
+                <h3>¡Cita agendada con éxito!</h3>
+                <p class="success-subtitle">La cita ha sido registrada en el sistema y notificada al especialista.</p>
+
+                <div class="appointment-receipt">
+                    <div class="receipt-row"><span>Especialista:</span><strong id="rec-doctor"></strong></div>
+                    <div class="receipt-row"><span>Especialidad:</span><strong id="rec-specialty"></strong></div>
+                    <div class="receipt-row"><span>Fecha:</span><strong id="rec-date"></strong></div>
+                    <div class="receipt-row"><span>Hora:</span><strong id="rec-time"></strong></div>
+                    <div class="receipt-row"><span>Paciente:</span><strong id="rec-patient"></strong></div>
+                    <div class="receipt-row"><span>Teléfono:</span><strong id="rec-phone"></strong></div>
+                    <div class="receipt-row"><span>Código único:</span><code id="rec-code" class="receipt-code"></code></div>
+                </div>
+
+                <div class="doctor-access-hint">
+                    <span class="hint-icon">🔒</span>
+                    <div>
+                        <strong>Privacidad médica garantizada</strong>
+                        <p>Solo el doctor especialista asignado tiene acceso a este expediente mediante el <strong>Portal de Especialistas</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="success-btn-row">
+                    <button type="button" class="btn-export-ics" id="btn-export-ics">
+                        <span>📅 Guardar en mi Google Calendar</span>
+                    </button>
+                    <button type="button" class="btn-close-modal-done" id="btn-close-modal-done">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </dialog>
 </body>
 </html>
