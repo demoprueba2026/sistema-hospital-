@@ -73,9 +73,21 @@ function updateTheme(isDark) {
     themeToggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
     themeToggle.querySelector(".theme-label").textContent = isDark ? "Tema claro" : "Tema oscuro";
     document.querySelector('meta[name="theme-color"]').content = isDark ? "#102321" : "#f7fbfa";
+    try {
+        localStorage.setItem("hdl-theme", isDark ? "dark" : "light");
+    } catch (_) {}
 }
 
-updateTheme(false);
+const savedTheme = (() => {
+    try {
+        return localStorage.getItem("hdl-theme");
+    } catch (_) {
+        return null;
+    }
+})();
+
+const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+updateTheme(savedTheme !== null ? savedTheme === "dark" : prefersDark);
 
 themeToggle.addEventListener("click", () => {
     const isDark = document.body.dataset.theme !== "dark";

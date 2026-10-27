@@ -1,7 +1,7 @@
 :root {
     color-scheme: light;
     --ink: #183b3b;
-    --muted: #708483;
+    --muted: #4e6b66;
     --teal: #177c75;
     --mint: #e8f4f0;
     --paper: #f7fbfa;
@@ -67,9 +67,9 @@ a {
     flex-direction: column;
     color: #224444;
     font-family: "Manrope", sans-serif;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 700;
-    letter-spacing: .11em;
+    letter-spacing: .12em;
     line-height: 1.35;
 }
 
@@ -79,9 +79,9 @@ a {
 
 .brand-name small {
     margin-top: 3px;
-    color: #81918f;
+    color: #617b77;
     font-family: "DM Sans", sans-serif;
-    font-size: 8px;
+    font-size: 11.5px;
     font-weight: 600;
     letter-spacing: .12em;
 }
@@ -89,8 +89,8 @@ a {
 .main-nav {
     display: flex;
     gap: 39px;
-    color: #617472;
-    font-size: 13px;
+    color: #4b6662;
+    font-size: 15.5px;
     font-weight: 500;
 }
 
@@ -168,18 +168,18 @@ a {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: #d2e5df;
-    font-size: 9px;
+    color: #d8ebe5;
+    font-size: 13.5px;
     font-weight: 700;
     letter-spacing: .17em;
 }
 
 .status-dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: #8ee0be;
-    box-shadow: 0 0 0 4px rgb(142 224 190 / 17%);
+    box-shadow: 0 0 0 4px rgb(142 224 190 / 22%);
 }
 
 h1,
@@ -192,36 +192,37 @@ p {
 h1,
 .section-heading h2,
 .care-banner h2 {
-    font-family: "Manrope", sans-serif;
+    font-family: "Lora", Georgia, serif;
 }
 
 .hero h1 {
+    font-family: "Manrope", sans-serif;
     margin: 25px 0 16px;
-    font-size: clamp(49px, 6.2vw, 78px);
+    font-size: clamp(52px, 6.6vw, 84px);
     font-weight: 600;
     letter-spacing: -.065em;
     line-height: 1.08;
 }
 
-.hero h1 em,
-.section-heading h2 em {
+.hero h1 em {
     color: #8cdbc0;
     font-style: normal;
 }
 
 .hero-content > p {
-    max-width: 410px;
+    max-width: 440px;
     margin-bottom: 28px;
-    color: #e0e9e6;
-    font-size: 14px;
-    line-height: 1.8;
+    color: #e4eeeb;
+    font-size: 19.5px;
+    line-height: 1.75;
 }
 
 .primary-button {
-    min-height: 47px;
-    padding: 0 20px;
+    min-height: 52px;
+    padding: 0 24px;
     background: #fff;
-    color: #1c5550;
+    color: #17524c;
+    font-size: 16px;
 }
 
 .primary-button:hover {
@@ -229,7 +230,7 @@ h1,
 }
 
 .primary-button span {
-    font-size: 17px;
+    font-size: 19px;
 }
 
 .hero-note {
@@ -240,7 +241,7 @@ h1,
     align-items: center;
     gap: 12px;
     color: #e3ece9;
-    font-size: 10px;
+    font-size: 13.5px;
     letter-spacing: .03em;
 }
 
@@ -288,36 +289,49 @@ h1,
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: 36px;
+    margin-bottom: 38px;
 }
 
 .section-eyebrow {
-    color: #54928a;
+    color: #177c75;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: .17em;
 }
 
 .section-heading h2 {
-    margin: 11px 0 8px;
-    font-size: clamp(29px, 4vw, 40px);
-    font-weight: 600;
-    letter-spacing: -.055em;
+    margin: 14px 0 12px;
+    font-family: "Lora", Georgia, serif;
+    font-size: clamp(40px, 5.2vw, 58px);
+    font-weight: 700;
+    letter-spacing: -.035em;
+    line-height: 1.15;
 }
 
 .section-heading h2 em {
     color: var(--teal);
+    font-style: normal;
 }
 
-.section-heading p,
+.section-heading p {
+    margin-bottom: 0;
+    color: #4a6662;
+    font-size: clamp(18.5px, 2.2vw, 22px);
+    line-height: 1.65;
+}
+
 .care-banner p {
     margin-bottom: 0;
     color: var(--muted);
-    font-size: 13px;
-    line-height: 1.7;
+    font-size: 18px;
+    line-height: 1.65;
 }
 
 .heading-symbol {
     padding: 0 7px 7px;
-    color: #acd7cb;
-    font-size: 46px;
+    color: #48a896;
+    font-size: clamp(52px, 6vw, 70px);
+    line-height: 1;
 }
 
 .finder-panel {
@@ -334,10 +348,10 @@ h1,
 }
 
 .finder-panel label {
-    color: #345653;
-    font-size: 9px;
+    color: #244b46;
+    font-size: 14.5px;
     font-weight: 700;
-    letter-spacing: .12em;
+    letter-spacing: .13em;
 }
 
 .select-wrap {
@@ -346,16 +360,16 @@ h1,
 
 .select-wrap select {
     width: 100%;
-    height: 48px;
+    height: 56px;
     appearance: none;
-    padding: 0 42px 0 14px;
+    padding: 0 44px 0 16px;
     border: 1px solid #dce8e4;
-    border-radius: 4px;
+    border-radius: 8px;
     outline: none;
     background: #fbfdfc;
-    color: #345653;
+    color: #244b46;
     font: inherit;
-    font-size: 12px;
+    font-size: 17.5px;
     cursor: pointer;
 }
 
@@ -366,16 +380,17 @@ h1,
 
 .select-chevron {
     position: absolute;
-    top: 10px;
-    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 16px;
     color: var(--teal);
-    font-size: 22px;
+    font-size: 24px;
     pointer-events: none;
 }
 
 .select-hint {
-    color: #849390;
-    font-size: 11px;
+    color: #55716c;
+    font-size: 15px;
     line-height: 1.6;
 }
 
@@ -386,65 +401,65 @@ h1,
 
 .empty-state {
     display: flex;
-    min-height: 108px;
+    min-height: 120px;
     align-items: center;
     gap: 20px;
-    padding: 23px 27px;
-    border-radius: 6px;
+    padding: 24px 28px;
+    border-radius: 12px;
     background: #edf5f2;
 }
 
 .empty-icon {
     display: grid;
-    width: 45px;
-    height: 45px;
-    flex: 0 0 45px;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
     place-items: center;
     border-radius: 50%;
     background: #dcece6;
     color: var(--teal);
-    font-size: 21px;
+    font-size: 24px;
 }
 
 .empty-state h3,
 .results-heading h3 {
-    margin: 0 0 5px;
+    margin: 0 0 6px;
     font-family: "Manrope", sans-serif;
-    font-size: 16px;
+    font-size: 23px;
     font-weight: 700;
 }
 
 .empty-state p {
     margin-bottom: 0;
-    color: #728582;
-    font-size: 12px;
+    color: #556f6b;
+    font-size: 16.5px;
     line-height: 1.6;
 }
 
 .empty-arrow {
     margin-left: auto;
-    color: #609a8e;
-    font-size: 20px;
+    color: #2f8274;
+    font-size: 24px;
 }
 
 .results-heading {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    margin: 8px 0 18px;
+    margin: 8px 0 20px;
 }
 
 .results-heading h3 {
-    margin-top: 7px;
-    font-size: 21px;
+    margin-top: 8px;
+    font-size: 27px;
 }
 
 .doctor-count {
-    padding: 7px 11px;
+    padding: 8px 14px;
     border-radius: 20px;
     background: #e6f1ed;
-    color: #3c756d;
-    font-size: 10px;
+    color: #205c54;
+    font-size: 13.5px;
     font-weight: 600;
 }
 
@@ -455,100 +470,102 @@ h1,
 }
 
 .doctor-card {
-    min-height: 184px;
-    padding: 21px;
+    min-height: 190px;
+    padding: 22px;
     border: 1px solid #e4ece9;
-    border-radius: 6px;
+    border-radius: 12px;
     background: #fff;
 }
 
 .doctor-card-top {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     margin-bottom: 16px;
 }
 
 .doctor-avatar {
     display: grid;
-    width: 43px;
-    height: 43px;
-    flex: 0 0 43px;
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
     place-items: center;
     border-radius: 50%;
     background: #e6f2ee;
-    color: #397a71;
+    color: #286b62;
     font-family: "Manrope", sans-serif;
-    font-size: 13px;
+    font-size: 17px;
     font-weight: 700;
 }
 
 .doctor-name {
-    margin: 0 0 3px;
+    margin: 0 0 4px;
     font-family: "Manrope", sans-serif;
-    font-size: 13px;
+    font-size: 19px;
     font-weight: 700;
 }
 
 .doctor-specialty {
     margin: 0;
-    color: #718481;
-    font-size: 10px;
+    color: #55706c;
+    font-size: 15.5px;
 }
 
 .doctor-availability {
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding-top: 12px;
+    gap: 8px;
+    padding-top: 14px;
     border-top: 1px solid #edf1ef;
-    color: #64807b;
-    font-size: 10px;
+    color: #4e6a65;
+    font-size: 14.5px;
 }
 
 .availability-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: #46b38b;
+    background: #25a87b;
 }
 
 .care-banner {
     display: flex;
     min-height: 212px;
     align-items: center;
-    gap: 24px;
-    padding: 40px 12%;
+    gap: 26px;
+    padding: 42px 12%;
     background: #164f4a;
     color: #fff;
 }
 
 .care-icon {
     display: grid;
-    width: 55px;
-    height: 55px;
-    flex: 0 0 55px;
+    width: 62px;
+    height: 62px;
+    flex: 0 0 62px;
     place-items: center;
     border: 1px solid rgb(255 255 255 / 25%);
     border-radius: 50%;
     color: #a5dec8;
-    font-size: 28px;
+    font-size: 32px;
 }
 
 .care-banner .eyebrow {
     color: #a5d3c6;
+    font-size: 14px;
 }
 
 .care-banner h2 {
-    margin: 9px 0 6px;
-    font-size: 25px;
+    margin: 10px 0 8px;
+    font-size: clamp(28px, 4vw, 36px);
     font-weight: 600;
-    letter-spacing: -.04em;
+    letter-spacing: -.035em;
 }
 
 .care-banner p {
-    color: #c8dbd6;
-    font-size: 11px;
+    color: #d2e4df;
+    font-size: 18.5px;
+    line-height: 1.65;
 }
 
 .banner-link {
@@ -560,38 +577,40 @@ h1,
     padding-bottom: 7px;
     border-bottom: 1px solid #80b9a9;
     color: #e5f3ef;
-    font-size: 11px;
+    font-size: 16px;
 }
 
 .site-footer {
     display: flex;
-    min-height: 96px;
+    min-height: 100px;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 20px 7.1%;
+    padding: 24px 7.1%;
     background: #fff;
-    color: #7b8b88;
-    font-size: 10px;
+    color: #556f6b;
+    font-size: 15px;
 }
 
 .footer-brand .brand-mark {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    font-size: 25px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 30px;
 }
 
 .footer-brand .brand-name {
-    font-size: 9px;
+    font-size: 14px;
 }
 
 .footer-brand .brand-name small {
-    font-size: 7px;
+    font-size: 10.5px;
 }
 
 .site-footer > a:last-child {
-    color: #57736e;
+    color: #177c75;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 [hidden] {
@@ -609,10 +628,10 @@ h1,
     }
 
     .header-cta {
-        min-height: 39px;
+        min-height: 44px;
         gap: 8px;
-        padding: 0 11px;
-        font-size: 10px;
+        padding: 0 14px;
+        font-size: 13.5px;
     }
 
     .hero {
@@ -631,14 +650,14 @@ h1,
     }
 
     .hero h1 {
-        font-size: clamp(49px, 10vw, 69px);
+        font-size: clamp(50px, 10.5vw, 74px);
     }
 
     .hero-note {
         right: 6%;
         bottom: 29px;
         max-width: 70%;
-        font-size: 9px;
+        font-size: 12px;
     }
 
     .scroll-cue {
@@ -681,17 +700,17 @@ h1,
 
 @media (max-width: 560px) {
     .brand-mark {
-        width: 44px;
-        height: 44px;
-        font-size: 26px;
+        width: 48px;
+        height: 48px;
+        font-size: 30px;
     }
 
     .brand-name {
-        font-size: 10px;
+        font-size: 13.5px;
     }
 
     .brand-name small {
-        font-size: 7px;
+        font-size: 9.5px;
     }
 
     .header-cta {
@@ -699,7 +718,7 @@ h1,
     }
 
     .header-cta span {
-        font-size: 17px;
+        font-size: 18px;
     }
 
     .hero {
@@ -711,26 +730,34 @@ h1,
     }
 
     .hero .eyebrow {
-        font-size: 10px;
-        letter-spacing: .12em;
+        font-size: 12px;
+        letter-spacing: .14em;
     }
 
     .hero h1 {
-        font-size: 51px;
+        font-size: clamp(42px, 9.5vw, 54px);
     }
 
     .hero-content > p {
-        max-width: 330px;
-        font-size: 13px;
+        max-width: 380px;
+        font-size: 16.5px;
     }
 
     .section-heading {
         margin-bottom: 25px;
     }
 
+    .section-eyebrow {
+        font-size: 13px;
+    }
+
     .section-heading h2 {
-        max-width: 300px;
-        font-size: 31px;
+        max-width: 100%;
+        font-size: clamp(32px, 8.5vw, 38px);
+    }
+
+    .section-heading p {
+        font-size: 16.5px;
     }
 
     .heading-symbol {
@@ -743,9 +770,10 @@ h1,
     }
 
     .empty-icon {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        font-size: 20px;
     }
 
     .doctor-grid {
@@ -764,7 +792,11 @@ h1,
     }
 
     .care-banner h2 {
-        font-size: 22px;
+        font-size: 26px;
+    }
+
+    .care-banner p {
+        font-size: 16.5px;
     }
 
     .banner-link {
@@ -775,6 +807,7 @@ h1,
         align-items: flex-start;
         flex-wrap: wrap;
         padding: 22px 6%;
+        font-size: 13.5px;
     }
 
     .site-footer > span {
@@ -804,23 +837,23 @@ h1,
 }
 
 .brand-mark {
-    width: 58px;
-    height: 58px;
+    width: 60px;
+    height: 60px;
     border: 3px solid #d6eee5;
     border-radius: 17px;
     background: linear-gradient(145deg, #24978a, #126b65);
     box-shadow: 0 7px 18px rgb(23 124 117 / 24%);
-    font-size: 39px;
+    font-size: 40px;
     font-weight: 600;
 }
 
 .brand-name {
-    font-size: 14px;
+    font-size: 16px;
     letter-spacing: .12em;
 }
 
 .brand-name small {
-    font-size: 9px;
+    font-size: 11.5px;
 }
 
 .main-nav {
@@ -829,12 +862,12 @@ h1,
     border: 1px solid #edf2ef;
     border-radius: 999px;
     background: #f7faf8;
-    color: #536d69;
-    font-size: 14px;
+    color: #4b6662;
+    font-size: 15.5px;
 }
 
 .main-nav a {
-    padding: 11px 16px;
+    padding: 12px 18px;
     border-radius: 999px;
     transition: color .2s ease, background .2s ease, box-shadow .2s ease;
 }
@@ -848,33 +881,33 @@ h1,
 .primary-button {
     border-radius: 999px;
     box-shadow: 0 8px 18px rgb(23 124 117 / 17%);
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .header-cta {
-    min-height: 48px;
-    padding: 0 21px;
+    min-height: 50px;
+    padding: 0 22px;
 }
 
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .theme-toggle {
     display: inline-flex;
-    min-height: 48px;
+    min-height: 50px;
     align-items: center;
     justify-content: center;
     gap: 9px;
-    padding: 0 16px;
+    padding: 0 18px;
     border: 1px solid #dce9e4;
     border-radius: 999px;
     background: #f7faf8;
-    color: #315d56;
+    color: #2b554e;
     font: inherit;
-    font-size: 13px;
+    font-size: 14.5px;
     font-weight: 600;
     cursor: pointer;
     transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
@@ -892,34 +925,48 @@ h1,
 }
 
 .theme-icon {
-    font-size: 19px;
+    font-size: 20px;
     line-height: 1;
 }
 
 .hero .eyebrow,
-.section-eyebrow,
-.finder-panel label,
 .care-banner .eyebrow {
-    font-size: 12px;
+    font-size: 13.5px;
 }
 
-.hero-content > p,
-.section-heading p,
+.section-eyebrow {
+    font-size: 14.5px;
+}
+
+.hero-content > p {
+    font-size: 19.5px;
+}
+
+.section-heading p {
+    font-size: clamp(18.5px, 2.2vw, 22px);
+}
+
 .care-banner p {
-    font-size: 17px;
+    font-size: 18.5px;
 }
 
 .hero-note {
-    font-size: 12px;
+    font-size: 13.5px;
 }
 
 .brand-name small {
-    font-size: 10px;
+    font-size: 11.5px;
 }
 
-.section-heading h2,
+.section-heading h2 {
+    font-family: "Lora", Georgia, serif;
+    font-size: clamp(40px, 5.2vw, 58px);
+    letter-spacing: -.035em;
+}
+
 .care-banner h2 {
     font-family: "Lora", Georgia, serif;
+    font-size: clamp(28px, 4vw, 36px);
     letter-spacing: -.035em;
 }
 
@@ -932,11 +979,11 @@ h1,
 }
 
 .select-wrap select {
-    height: 54px;
+    height: 56px;
     border: 1px solid #d6e5df;
     border-radius: 11px;
     background: #f9fcfb;
-    font-size: 14px;
+    font-size: 17.5px;
     transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
@@ -958,20 +1005,22 @@ h1,
 }
 
 .finder-panel label {
-    font-size: 13px;
-}
-
-.select-wrap select {
-    font-size: 16px;
+    font-size: 14.5px;
 }
 
 .select-hint,
-.empty-state p,
-.doctor-specialty,
-.doctor-availability,
 .banner-link,
 .site-footer {
-    font-size: 14px;
+    font-size: 15px;
+}
+
+.empty-state p,
+.doctor-specialty {
+    font-size: 16px;
+}
+
+.doctor-availability {
+    font-size: 14.5px;
 }
 
 .empty-state {
@@ -981,7 +1030,7 @@ h1,
 }
 
 .empty-state h3 {
-    font-size: 20px;
+    font-size: 23px;
 }
 
 .doctor-results {
@@ -1007,9 +1056,9 @@ h1,
 
 .doctor-photo,
 .doctor-avatar {
-    width: 54px;
-    height: 54px;
-    flex: 0 0 54px;
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
     border: 3px solid #e6f2ee;
     border-radius: 50%;
 }
@@ -1020,15 +1069,15 @@ h1,
 }
 
 .doctor-avatar {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .doctor-name {
-    font-size: 17px;
+    font-size: 19px;
 }
 
 .doctor-count {
-    font-size: 12px;
+    font-size: 13.5px;
 }
 
 .care-banner {
@@ -1036,7 +1085,7 @@ h1,
 }
 
 .banner-link {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .footer-brand .brand-mark {
@@ -1066,22 +1115,22 @@ h1,
     }
 
     .brand-name {
-        font-size: 12px;
+        font-size: 14.5px;
     }
 
     .brand-name small {
-        font-size: 8px;
+        font-size: 10px;
     }
 
     .header-cta {
-        min-height: 43px;
-        font-size: 12px;
+        min-height: 44px;
+        font-size: 14px;
     }
 
     .theme-toggle {
-        min-height: 43px;
-        padding: 0 12px;
-        font-size: 12px;
+        min-height: 44px;
+        padding: 0 14px;
+        font-size: 13.5px;
     }
 
     .finder-panel {
@@ -1120,25 +1169,25 @@ h1,
     }
 
     .brand-name {
-        font-size: 10px;
+        font-size: 13px;
     }
 
     .brand-name small {
-        font-size: 7px;
+        font-size: 9px;
     }
 
     .header-cta {
-        min-height: 40px;
+        min-height: 42px;
         font-size: 0;
     }
 
     .header-cta span {
-        font-size: 17px;
+        font-size: 18px;
     }
 
     .theme-toggle {
-        width: 42px;
-        min-height: 40px;
+        width: 44px;
+        min-height: 42px;
         padding: 0;
     }
 
@@ -1149,124 +1198,256 @@ h1,
 
 body[data-theme="dark"] {
     color-scheme: dark;
-    --ink: #e2ece8;
-    --muted: #a7bbb5;
-    --paper: #0d1d1b;
-    --line: #2a403c;
+    --ink: #f2f8f5;
+    --muted: #b4cbc4;
+    --teal: #36c5b0;
+    --teal-glow: #5eead4;
+    --mint: #162c28;
+    --paper: #0c1a18;
+    --card-bg: #132723;
+    --line: #243d37;
     background: var(--paper);
 }
 
 body[data-theme="dark"] .site-header,
 body[data-theme="dark"] .site-footer {
-    background: #102321;
-    color: #c1d0cb;
+    background: #102320;
+    color: #c8d9d4;
 }
 
 body[data-theme="dark"] .site-header {
-    box-shadow: 0 5px 24px rgb(0 0 0 / 22%);
+    box-shadow: 0 5px 24px rgb(0 0 0 / 28%);
+}
+
+body[data-theme="dark"] .brand-mark {
+    border-color: #366055;
+    box-shadow: 0 7px 18px rgb(0 0 0 / 35%);
 }
 
 body[data-theme="dark"] .brand-name {
-    color: #e0ece7;
+    color: #f2f8f5;
 }
 
 body[data-theme="dark"] .brand-name small {
-    color: #a0b5ae;
+    color: #a8bfb8;
 }
 
 body[data-theme="dark"] .main-nav {
-    border-color: #2c423e;
-    background: #172a27;
-    color: #ccdad5;
+    border-color: #2b453e;
+    background: #162c28;
+    color: #d1deda;
 }
 
 body[data-theme="dark"] .main-nav a:hover {
-    background: #243a36;
-    box-shadow: 0 3px 12px rgb(0 0 0 / 20%);
+    background: #203c36;
+    color: #5eead4;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 25%);
+}
+
+body[data-theme="dark"] .header-cta {
+    background: #1b8577;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgb(0 0 0 / 30%);
+}
+
+body[data-theme="dark"] .header-cta:hover {
+    background: #239e8e;
 }
 
 body[data-theme="dark"] .theme-toggle {
-    border-color: #3a554e;
-    background: #1c312e;
-    color: #e0c782;
+    border-color: #3a5b52;
+    background: #19322d;
+    color: #fde047;
 }
 
 body[data-theme="dark"] .theme-toggle:hover {
-    border-color: #54736b;
-    background: #263d39;
+    border-color: #517c70;
+    background: #23423b;
 }
 
-body[data-theme="dark"] .finder-panel,
-body[data-theme="dark"] .doctor-card {
-    border-color: #2b423d;
-    background: #152825;
-    box-shadow: 0 10px 28px rgb(0 0 0 / 15%);
+/* SECTION HEADING EN TEMA OSCURO - MÁXIMA NITIDEZ Y BRILLO */
+body[data-theme="dark"] .section-eyebrow {
+    color: #5eead4;
+    font-weight: 700;
+    letter-spacing: .17em;
+    text-shadow: 0 0 16px rgb(94 234 212 / 24%);
 }
 
-body[data-theme="dark"] .finder-panel label,
-body[data-theme="dark"] .doctor-name,
-body[data-theme="dark"] .empty-state h3,
-body[data-theme="dark"] .results-heading h3 {
-    color: #e0ebe6;
+body[data-theme="dark"] .section-heading h2 {
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .section-heading h2 em {
+    color: #5eead4;
+    text-shadow: 0 0 24px rgb(94 234 212 / 32%);
+}
+
+body[data-theme="dark"] .section-heading p {
+    color: #cce0d9;
+}
+
+body[data-theme="dark"] .heading-symbol {
+    color: #5eead4;
+    text-shadow: 0 0 22px rgb(94 234 212 / 36%);
+}
+
+/* FINDER PANEL EN TEMA OSCURO */
+body[data-theme="dark"] .finder-panel {
+    border-color: #28443e;
+    background: #132723;
+    box-shadow: 0 12px 35px rgb(0 0 0 / 28%);
+}
+
+body[data-theme="dark"] .finder-panel label {
+    color: #5eead4;
+    font-weight: 700;
+    letter-spacing: .14em;
 }
 
 body[data-theme="dark"] .select-wrap select {
-    border-color: #39534c;
-    background: #1b302c;
-    color: #e3ece8;
+    border-color: #37574f;
+    background: #1a332d;
+    color: #f2f8f5;
 }
 
 body[data-theme="dark"] .select-wrap select:hover,
 body[data-theme="dark"] .select-wrap select:focus {
-    border-color: #69b8a4;
-    background: #203732;
+    border-color: #5eead4;
+    background: #203c35;
+    box-shadow: 0 0 0 4px rgb(94 234 212 / 18%);
 }
 
 body[data-theme="dark"] .select-chevron {
-    color: #75c4ae;
+    color: #5eead4;
 }
 
-body[data-theme="dark"] .select-hint,
-body[data-theme="dark"] .empty-state p,
-body[data-theme="dark"] .doctor-specialty,
-body[data-theme="dark"] .doctor-availability {
-    color: #a7bbb5;
+body[data-theme="dark"] .select-hint {
+    color: #b2c8c1;
 }
 
+/* EMPTY STATE Y RESULTADOS EN TEMA OSCURO */
 body[data-theme="dark"] .empty-state {
-    border-color: #2d4740;
-    background: #172c28;
+    border: 1px solid #28443e;
+    background: #132723;
 }
 
-body[data-theme="dark"] .empty-icon,
-body[data-theme="dark"] .doctor-photo,
-body[data-theme="dark"] .doctor-avatar {
-    border-color: #36534a;
-    background: #213a34;
+body[data-theme="dark"] .empty-icon {
+    border: 1px solid #3b5f56;
+    background: #1c3832;
+    color: #5eead4;
 }
 
-body[data-theme="dark"] .doctor-avatar {
-    color: #a7e0c9;
+body[data-theme="dark"] .empty-state h3 {
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .empty-state p {
+    color: #b8cec7;
+}
+
+body[data-theme="dark"] .empty-arrow {
+    color: #5eead4;
+}
+
+body[data-theme="dark"] .results-heading .section-eyebrow {
+    color: #5eead4;
+}
+
+body[data-theme="dark"] .results-heading h3 {
+    color: #f2f8f5;
 }
 
 body[data-theme="dark"] .doctor-count {
-    background: #203b34;
-    color: #a7e0c9;
+    background: #1d3a33;
+    color: #5eead4;
+    border: 1px solid #315b50;
+}
+
+body[data-theme="dark"] .doctor-card {
+    border-color: #26433c;
+    background: #132723;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 22%);
 }
 
 body[data-theme="dark"] .doctor-card:hover {
-    border-color: #4a7567;
+    border-color: #437d6e;
+    box-shadow: 0 14px 28px rgb(0 0 0 / 35%);
+}
+
+body[data-theme="dark"] .doctor-avatar {
+    border-color: #3b5f56;
+    background: #1d3832;
+    color: #5eead4;
+}
+
+body[data-theme="dark"] .doctor-photo {
+    border-color: #3b5f56;
+}
+
+body[data-theme="dark"] .doctor-name {
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .doctor-specialty {
+    color: #b2c8c2;
 }
 
 body[data-theme="dark"] .doctor-availability {
-    border-color: #2b403b;
+    border-top-color: #243e38;
+    color: #b8cec8;
+}
+
+body[data-theme="dark"] .availability-dot {
+    background: #5eead4;
+    box-shadow: 0 0 8px rgb(94 234 212 / 60%);
+}
+
+/* CARE BANNER EN TEMA OSCURO */
+body[data-theme="dark"] .care-banner {
+    background: linear-gradient(115deg, #0e3430, #144640);
+    border-top: 1px solid #23433d;
+    border-bottom: 1px solid #23433d;
+}
+
+body[data-theme="dark"] .care-banner .eyebrow {
+    color: #5eead4;
+}
+
+body[data-theme="dark"] .care-banner h2 {
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .care-banner p {
+    color: #cce0d9;
+}
+
+body[data-theme="dark"] .care-icon {
+    border-color: rgb(94 234 212 / 30%);
+    color: #5eead4;
+}
+
+body[data-theme="dark"] .banner-link {
+    color: #5eead4;
+    border-bottom-color: #5eead4;
+}
+
+body[data-theme="dark"] .banner-link:hover {
+    color: #99f6e4;
+    border-bottom-color: #99f6e4;
+}
+
+/* FOOTER EN TEMA OSCURO */
+body[data-theme="dark"] .site-footer {
+    background: #0d1e1c;
+    border-top: 1px solid #1c332e;
+    color: #a7bdb6;
 }
 
 body[data-theme="dark"] .site-footer > a:last-child {
-    color: #a8c8bc;
+    color: #5eead4;
 }
 
 body[data-theme="dark"] .site-footer > a:last-child:hover,
 body[data-theme="dark"] .main-nav a:hover {
-    color: #8ed4bb;
+    color: #99f6e4;
 }
