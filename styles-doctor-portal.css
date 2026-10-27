@@ -504,6 +504,17 @@
     color: #991b1b;
 }
 
+.btn-status-action.delete {
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.btn-status-action.delete:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #991b1b;
+}
+
 .portal-empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -709,6 +720,18 @@ body[data-theme="dark"] .btn-status-action {
 
 body[data-theme="dark"] .btn-status-action:hover {
     background: #24463e;
+}
+
+body[data-theme="dark"] .btn-status-action.delete {
+    background: #3a2020;
+    border-color: #713333;
+    color: #fca5a5;
+}
+
+body[data-theme="dark"] .btn-status-action.delete:hover {
+    background: #522626;
+    border-color: #ef4444;
+    color: #fecaca;
 }
 
 body[data-theme="dark"] .btn-seed-test {

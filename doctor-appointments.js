@@ -125,6 +125,7 @@ function createAppointmentCard(appt) {
                 <button type="button" class="btn-status-action confirm" data-action="Confirmada" title="Confirmar esta cita">✓ Confirmar</button>
                 <button type="button" class="btn-status-action attend" data-action="Atendida" title="Marcar como atendida en consulta">🩺 Atendida</button>
                 <button type="button" class="btn-status-action cancel" data-action="Cancelada" title="Cancelar esta cita">✕ Cancelar</button>
+                <button type="button" class="btn-status-action delete" data-action="delete" title="Eliminar permanentemente el registro de este paciente">🗑 Eliminar paciente</button>
             </div>
         </div>
     `;
@@ -136,7 +137,28 @@ function createAppointmentCard(appt) {
         });
     });
 
+    card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
+        await deletePatientAppointment(appt.id, appt.patientName);
+    });
+
     return card;
+}
+
+async function deletePatientAppointment(appointmentId, patientName) {
+    const confirmed = window.confirm(
+        `¿Eliminar permanentemente el registro de ${patientName} de Supabase? Esta acción no se puede deshacer.`
+    );
+    if (!confirmed) return;
+
+    try {
+        await apiDeleteAppointment(appointmentId);
+        await renderDoctorAppointments();
+        sbStatusDot.style.background = "#319795";
+        sbStatusText.textContent = `Registro de ${patientName} eliminado de Supabase.`;
+    } catch (error) {
+        sbStatusDot.style.background = "#e53e3e";
+        sbStatusText.textContent = error.message;
+    }
 }
 
 async function updateAppointmentStatusAsync(apptId, newStatus) {

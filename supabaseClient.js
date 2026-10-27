@@ -148,6 +148,22 @@ async function apiUpdateAppointmentStatus(appointmentId, newStatus) {
     }
 }
 
+async function apiDeleteAppointment(appointmentId) {
+    const client = await getSupabaseClient();
+    const { data, error } = await client
+        .from("citas")
+        .delete()
+        .eq("id", appointmentId)
+        .select("id");
+
+    if (error) {
+        throw new Error(`No se pudo eliminar el paciente de Supabase: ${error.message}`);
+    }
+    if (!data || data.length === 0) {
+        throw new Error("Supabase no eliminó el registro. Verifica los permisos de la tabla.");
+    }
+}
+
 async function apiUpdateDoctorNotes(appointmentId, doctorNotes) {
     const client = await getSupabaseClient();
     const { error } = await client
