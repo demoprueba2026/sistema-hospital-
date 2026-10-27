@@ -1,0 +1,169 @@
+/* ========================================================
+   MODAL DE CITAS ESTILO GOOGLE CALENDAR
+   ======================================================== */
+.calendar-modal {
+    border: none;
+    padding: 0;
+    background: transparent;
+    max-width: 960px;
+    width: min(94vw, 950px);
+    max-height: 92vh;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgb(0 0 0 / 28%);
+}
+
+.calendar-modal::backdrop {
+    background: rgb(11 26 24 / 70%);
+    backdrop-filter: blur(8px);
+    animation: modal-fade-in .25s ease forwards;
+}
+
+.calendar-modal-box {
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 20px;
+    overflow-y: auto;
+    border: 1px solid #dce8e3;
+    animation: modal-pop-in .28s cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+@keyframes modal-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modal-pop-in {
+    from { opacity: 0; transform: scale(.95) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 28px;
+    background: linear-gradient(135deg, #f7faf9 0%, #edf5f2 100%);
+    border-bottom: 1px solid #e1ece7;
+}
+
+.modal-cal-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #e2f1ec;
+    color: #176f68;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.modal-cal-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #177c75;
+}
+
+.modal-doctor-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.modal-doc-avatar {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #24978a, #126b65);
+    color: #fff;
+    font-family: "Manrope", sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgb(23 124 117 / 22%);
+}
+
+.modal-doc-name {
+    margin: 0 0 3px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #163632;
+}
+
+.modal-doc-specialty {
+    margin: 0 0 4px;
+    color: #177c75;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.modal-doc-schedule {
+    display: inline-block;
+    color: #5d7570;
+    font-size: 13.5px;
+}
+
+.modal-close-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: #e6eee9;
+    color: #4b6660;
+    font-size: 18px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background .2s, color .2s, transform .2s;
+}
+
+.modal-close-btn:hover {
+    background: #d4e2dc;
+    color: #1a3632;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 28px;
+    padding: 26px 28px;
+}
+
+.pane-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.pane-number {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #177c75;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.pane-heading h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #173834;
+}
+

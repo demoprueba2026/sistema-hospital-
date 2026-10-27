@@ -1,0 +1,89 @@
+/* ========================================================
+   INTERACCIÓN DE TARJETAS DE DOCTORES (CLICK PARA AGENDAR)
+   ======================================================== */
+.doctor-card--clickable {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.doctor-card--clickable:hover {
+    transform: translateY(-5px);
+    border-color: #38a594;
+    box-shadow: 0 14px 28px rgb(24 59 59 / 12%);
+}
+
+.doctor-card--clickable:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+}
+
+.doctor-card-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed #dbe8e3;
+}
+
+.book-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--teal);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.book-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #e8f5f1;
+    color: #177c75;
+    font-size: 13px;
+    font-weight: 700;
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+
+.doctor-card--clickable:hover .book-pill {
+    background: var(--teal);
+    color: #fff;
+    transform: translateX(3px);
+}
+
+.header-doctor-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    min-height: 48px;
+    border: 1px solid #d4e7e1;
+    border-radius: 999px;
+    background: #f0f8f5;
+    color: #176f68;
+    font-size: 14.5px;
+    font-weight: 700;
+    transition: all .2s ease;
+}
+
+.header-doctor-cta:hover {
+    background: #e1f2ec;
+    border-color: #aed6ca;
+    transform: translateY(-1px);
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-doctor-link {
+    color: #177c75;
+    font-weight: 600;
+}
+
