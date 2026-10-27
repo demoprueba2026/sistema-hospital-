@@ -55,6 +55,7 @@ const doctorResults = document.querySelector("#doctor-results");
 const resultsTitle = document.querySelector("#results-title");
 const doctorCount = document.querySelector("#doctor-count");
 const doctorGrid = document.querySelector("#doctor-grid");
+const themeToggle = document.querySelector("#theme-toggle");
 const allDoctors = Object.values(doctorsBySpecialty).flat();
 const doctorPhotos = [
     "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=160&h=160&q=80",
@@ -64,6 +65,22 @@ const doctorPhotos = [
     "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=160&h=160&q=80",
     "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=160&h=160&q=80"
 ];
+
+function updateTheme(isDark) {
+    document.body.dataset.theme = isDark ? "dark" : "light";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute("aria-label", isDark ? "Activar tema claro" : "Activar tema oscuro");
+    themeToggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
+    themeToggle.querySelector(".theme-label").textContent = isDark ? "Tema claro" : "Tema oscuro";
+    document.querySelector('meta[name="theme-color"]').content = isDark ? "#102321" : "#f7fbfa";
+}
+
+updateTheme(false);
+
+themeToggle.addEventListener("click", () => {
+    const isDark = document.body.dataset.theme !== "dark";
+    updateTheme(isDark);
+});
 
 Object.keys(doctorsBySpecialty).forEach((specialty) => {
     const option = document.createElement("option");

@@ -679,7 +679,7 @@ h1,
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 560px) {
     .brand-mark {
         width: 44px;
         height: 44px;
@@ -711,7 +711,7 @@ h1,
     }
 
     .hero .eyebrow {
-        font-size: 8px;
+        font-size: 10px;
         letter-spacing: .12em;
     }
 
@@ -856,17 +856,65 @@ h1,
     padding: 0 21px;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 16px;
+    border: 1px solid #dce9e4;
+    border-radius: 999px;
+    background: #f7faf8;
+    color: #315d56;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: #b7d4ca;
+    background: #edf5f1;
+}
+
+.theme-toggle:focus-visible {
+    outline: 3px solid rgb(23 124 117 / 28%);
+    outline-offset: 3px;
+}
+
+.theme-icon {
+    font-size: 19px;
+    line-height: 1;
+}
+
 .hero .eyebrow,
 .section-eyebrow,
 .finder-panel label,
 .care-banner .eyebrow {
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .hero-content > p,
 .section-heading p,
 .care-banner p {
-    font-size: 15px;
+    font-size: 17px;
+}
+
+.hero-note {
+    font-size: 12px;
+}
+
+.brand-name small {
+    font-size: 10px;
 }
 
 .section-heading h2,
@@ -900,11 +948,21 @@ h1,
 }
 
 .select-chevron {
+    top: 50%;
+    transform: translateY(-50%);
     transition: transform .2s ease;
 }
 
 .select-wrap:focus-within .select-chevron {
-    transform: rotate(180deg);
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.finder-panel label {
+    font-size: 13px;
+}
+
+.select-wrap select {
+    font-size: 16px;
 }
 
 .select-hint,
@@ -913,7 +971,7 @@ h1,
 .doctor-availability,
 .banner-link,
 .site-footer {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .empty-state {
@@ -923,7 +981,7 @@ h1,
 }
 
 .empty-state h3 {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .doctor-results {
@@ -962,11 +1020,15 @@ h1,
 }
 
 .doctor-avatar {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .doctor-name {
-    font-size: 15px;
+    font-size: 17px;
+}
+
+.doctor-count {
+    font-size: 12px;
 }
 
 .care-banner {
@@ -974,7 +1036,7 @@ h1,
 }
 
 .banner-link {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .footer-brand .brand-mark {
@@ -1016,6 +1078,12 @@ h1,
         font-size: 12px;
     }
 
+    .theme-toggle {
+        min-height: 43px;
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
     .finder-panel {
         grid-template-columns: 1fr;
     }
@@ -1037,6 +1105,10 @@ h1,
     .header-cta {
         gap: 10px;
         padding: 0 15px;
+    }
+
+    .header-actions {
+        gap: 7px;
     }
 }
 
@@ -1063,4 +1135,138 @@ h1,
     .header-cta span {
         font-size: 17px;
     }
+
+    .theme-toggle {
+        width: 42px;
+        min-height: 40px;
+        padding: 0;
+    }
+
+    .theme-label {
+        display: none;
+    }
+}
+
+body[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #e2ece8;
+    --muted: #a7bbb5;
+    --paper: #0d1d1b;
+    --line: #2a403c;
+    background: var(--paper);
+}
+
+body[data-theme="dark"] .site-header,
+body[data-theme="dark"] .site-footer {
+    background: #102321;
+    color: #c1d0cb;
+}
+
+body[data-theme="dark"] .site-header {
+    box-shadow: 0 5px 24px rgb(0 0 0 / 22%);
+}
+
+body[data-theme="dark"] .brand-name {
+    color: #e0ece7;
+}
+
+body[data-theme="dark"] .brand-name small {
+    color: #a0b5ae;
+}
+
+body[data-theme="dark"] .main-nav {
+    border-color: #2c423e;
+    background: #172a27;
+    color: #ccdad5;
+}
+
+body[data-theme="dark"] .main-nav a:hover {
+    background: #243a36;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 20%);
+}
+
+body[data-theme="dark"] .theme-toggle {
+    border-color: #3a554e;
+    background: #1c312e;
+    color: #e0c782;
+}
+
+body[data-theme="dark"] .theme-toggle:hover {
+    border-color: #54736b;
+    background: #263d39;
+}
+
+body[data-theme="dark"] .finder-panel,
+body[data-theme="dark"] .doctor-card {
+    border-color: #2b423d;
+    background: #152825;
+    box-shadow: 0 10px 28px rgb(0 0 0 / 15%);
+}
+
+body[data-theme="dark"] .finder-panel label,
+body[data-theme="dark"] .doctor-name,
+body[data-theme="dark"] .empty-state h3,
+body[data-theme="dark"] .results-heading h3 {
+    color: #e0ebe6;
+}
+
+body[data-theme="dark"] .select-wrap select {
+    border-color: #39534c;
+    background: #1b302c;
+    color: #e3ece8;
+}
+
+body[data-theme="dark"] .select-wrap select:hover,
+body[data-theme="dark"] .select-wrap select:focus {
+    border-color: #69b8a4;
+    background: #203732;
+}
+
+body[data-theme="dark"] .select-chevron {
+    color: #75c4ae;
+}
+
+body[data-theme="dark"] .select-hint,
+body[data-theme="dark"] .empty-state p,
+body[data-theme="dark"] .doctor-specialty,
+body[data-theme="dark"] .doctor-availability {
+    color: #a7bbb5;
+}
+
+body[data-theme="dark"] .empty-state {
+    border-color: #2d4740;
+    background: #172c28;
+}
+
+body[data-theme="dark"] .empty-icon,
+body[data-theme="dark"] .doctor-photo,
+body[data-theme="dark"] .doctor-avatar {
+    border-color: #36534a;
+    background: #213a34;
+}
+
+body[data-theme="dark"] .doctor-avatar {
+    color: #a7e0c9;
+}
+
+body[data-theme="dark"] .doctor-count {
+    background: #203b34;
+    color: #a7e0c9;
+}
+
+body[data-theme="dark"] .doctor-card:hover {
+    border-color: #4a7567;
+}
+
+body[data-theme="dark"] .doctor-availability {
+    border-color: #2b403b;
+}
+
+body[data-theme="dark"] .site-footer > a:last-child {
+    color: #a8c8bc;
+}
+
+body[data-theme="dark"] .site-footer > a:last-child:hover,
+body[data-theme="dark"] .main-nav a:hover {
+    color: #8ed4bb;
 }
