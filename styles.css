@@ -793,3 +793,274 @@ h1,
         transition-duration: .01ms !important;
     }
 }
+
+.site-header {
+    height: 94px;
+    box-shadow: 0 5px 24px rgb(24 59 59 / 6%);
+}
+
+.brand {
+    gap: 13px;
+}
+
+.brand-mark {
+    width: 58px;
+    height: 58px;
+    border: 3px solid #d6eee5;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #24978a, #126b65);
+    box-shadow: 0 7px 18px rgb(23 124 117 / 24%);
+    font-size: 39px;
+    font-weight: 600;
+}
+
+.brand-name {
+    font-size: 14px;
+    letter-spacing: .12em;
+}
+
+.brand-name small {
+    font-size: 9px;
+}
+
+.main-nav {
+    gap: 8px;
+    padding: 6px;
+    border: 1px solid #edf2ef;
+    border-radius: 999px;
+    background: #f7faf8;
+    color: #536d69;
+    font-size: 14px;
+}
+
+.main-nav a {
+    padding: 11px 16px;
+    border-radius: 999px;
+    transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.main-nav a:hover {
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(24 59 59 / 8%);
+}
+
+.header-cta,
+.primary-button {
+    border-radius: 999px;
+    box-shadow: 0 8px 18px rgb(23 124 117 / 17%);
+    font-size: 14px;
+}
+
+.header-cta {
+    min-height: 48px;
+    padding: 0 21px;
+}
+
+.hero .eyebrow,
+.section-eyebrow,
+.finder-panel label,
+.care-banner .eyebrow {
+    font-size: 11px;
+}
+
+.hero-content > p,
+.section-heading p,
+.care-banner p {
+    font-size: 15px;
+}
+
+.section-heading h2,
+.care-banner h2 {
+    font-family: "Lora", Georgia, serif;
+    letter-spacing: -.035em;
+}
+
+.finder-panel {
+    grid-template-columns: 190px minmax(220px, 1fr) 1fr;
+    min-height: 112px;
+    border-color: #e2eeea;
+    border-radius: 16px;
+    box-shadow: 0 12px 35px rgb(28 67 60 / 7%);
+}
+
+.select-wrap select {
+    height: 54px;
+    border: 1px solid #d6e5df;
+    border-radius: 11px;
+    background: #f9fcfb;
+    font-size: 14px;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.select-wrap select:hover,
+.select-wrap select:focus {
+    background: #fff;
+    border-color: #54a99a;
+    box-shadow: 0 0 0 4px rgb(23 124 117 / 11%);
+}
+
+.select-chevron {
+    transition: transform .2s ease;
+}
+
+.select-wrap:focus-within .select-chevron {
+    transform: rotate(180deg);
+}
+
+.select-hint,
+.empty-state p,
+.doctor-specialty,
+.doctor-availability,
+.banner-link,
+.site-footer {
+    font-size: 12px;
+}
+
+.empty-state {
+    min-height: 120px;
+    border: 1px solid #e0eee8;
+    border-radius: 14px;
+}
+
+.empty-state h3 {
+    font-size: 18px;
+}
+
+.doctor-results {
+    animation: results-enter .45s cubic-bezier(.2, .75, .3, 1) both;
+}
+
+.doctor-card {
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgb(24 59 59 / 4%);
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    animation: card-enter .4s ease both;
+}
+
+.doctor-card:nth-child(2) {
+    animation-delay: .08s;
+}
+
+.doctor-card:hover {
+    transform: translateY(-4px);
+    border-color: #c9e2d9;
+    box-shadow: 0 12px 25px rgb(24 59 59 / 9%);
+}
+
+.doctor-photo,
+.doctor-avatar {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
+    border: 3px solid #e6f2ee;
+    border-radius: 50%;
+}
+
+.doctor-photo {
+    object-fit: cover;
+    background: #e6f2ee;
+}
+
+.doctor-avatar {
+    font-size: 15px;
+}
+
+.doctor-name {
+    font-size: 15px;
+}
+
+.care-banner {
+    background: linear-gradient(115deg, #164f4a, #1d6259);
+}
+
+.banner-link {
+    font-size: 13px;
+}
+
+.footer-brand .brand-mark {
+    width: 48px;
+    height: 48px;
+    font-size: 30px;
+}
+
+@keyframes results-enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 760px) {
+    .site-header {
+        height: 82px;
+    }
+
+    .brand-mark {
+        width: 54px;
+        height: 54px;
+    }
+
+    .brand-name {
+        font-size: 12px;
+    }
+
+    .brand-name small {
+        font-size: 8px;
+    }
+
+    .header-cta {
+        min-height: 43px;
+        font-size: 12px;
+    }
+
+    .finder-panel {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .site-header {
+        padding: 0 4%;
+    }
+
+    .main-nav {
+        gap: 0;
+    }
+
+    .main-nav a {
+        padding: 10px 12px;
+    }
+
+    .header-cta {
+        gap: 10px;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 500px) {
+    .brand-mark {
+        width: 48px;
+        height: 48px;
+        font-size: 33px;
+    }
+
+    .brand-name {
+        font-size: 10px;
+    }
+
+    .brand-name small {
+        font-size: 7px;
+    }
+
+    .header-cta {
+        min-height: 40px;
+        font-size: 0;
+    }
+
+    .header-cta span {
+        font-size: 17px;
+    }
+}

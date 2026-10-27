@@ -55,6 +55,15 @@ const doctorResults = document.querySelector("#doctor-results");
 const resultsTitle = document.querySelector("#results-title");
 const doctorCount = document.querySelector("#doctor-count");
 const doctorGrid = document.querySelector("#doctor-grid");
+const allDoctors = Object.values(doctorsBySpecialty).flat();
+const doctorPhotos = [
+    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=160&h=160&q=80",
+    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=160&h=160&q=80",
+    "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=160&h=160&q=80",
+    "https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=160&h=160&q=80",
+    "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=160&h=160&q=80",
+    "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=160&h=160&q=80"
+];
 
 Object.keys(doctorsBySpecialty).forEach((specialty) => {
     const option = document.createElement("option");
@@ -85,6 +94,18 @@ function createDoctorCard(doctor, specialty) {
     avatar.setAttribute("aria-hidden", "true");
     avatar.textContent = initialsFor(doctor.name);
 
+    const photo = document.createElement("img");
+    photo.className = "doctor-photo";
+    photo.src = doctorPhotos[allDoctors.indexOf(doctor) % doctorPhotos.length];
+    photo.alt = "";
+    photo.loading = "lazy";
+    photo.decoding = "async";
+    photo.addEventListener("error", () => {
+        photo.hidden = true;
+        avatar.hidden = false;
+    }, { once: true });
+    avatar.hidden = true;
+
     const identity = document.createElement("div");
     const name = document.createElement("h4");
     name.className = "doctor-name";
@@ -95,7 +116,7 @@ function createDoctorCard(doctor, specialty) {
     specialtyLabel.textContent = specialty;
 
     identity.append(name, specialtyLabel);
-    top.append(avatar, identity);
+    top.append(photo, avatar, identity);
 
     const availability = document.createElement("div");
     availability.className = "doctor-availability";
