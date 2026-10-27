@@ -1,5 +1,5 @@
 // ==========================================
-// PORTAL DE MÉDICOS ESPECIALISTAS - JAVASCRIPT
+// PORTAL DE MÉDICOS ESPECIALISTAS - JAVASCRIPT (CON SUPABASE)
 // ==========================================
 
 const doctorsBySpecialty = {
@@ -53,7 +53,6 @@ const doctorsBySpecialty = {
     ]
 };
 
-const APPOINTMENTS_STORAGE_KEY = "hdl_citas_hospital";
 const DOCTOR_SESSION_KEY = "hdl_logged_doctor_name";
 
 // Elementos DOM
@@ -88,6 +87,20 @@ const filterSearch = document.querySelector("#filter-search");
 const filterPills = document.querySelectorAll(".filter-pill");
 const appointmentsContainer = document.querySelector("#appointments-container");
 const portalEmptyState = document.querySelector("#portal-empty-state");
+
+// Elementos de la barra de estado de Supabase
+const supabaseStatusBar = document.querySelector("#supabase-status-bar");
+const sbStatusDot = document.querySelector("#sb-status-dot");
+const sbStatusText = document.querySelector("#sb-status-text");
+const sbConfigToggle = document.querySelector("#sb-config-toggle");
+const sbConfigPanel = document.querySelector("#supabase-config-panel");
+const sbConfigClose = document.querySelector("#sb-config-close");
+const sbUrlInput = document.querySelector("#sb-url-input");
+const sbKeyInput = document.querySelector("#sb-key-input");
+const sbSaveBtn = document.querySelector("#sb-save-btn");
+const sbTestBtn = document.querySelector("#sb-test-btn");
+const sbClearBtn = document.querySelector("#sb-clear-btn");
+const sbConfigAlert = document.querySelector("#sb-config-alert");
 
 let currentDoctorObj = null;
 let activeStatusFilter = "all";
@@ -125,7 +138,7 @@ themeToggle.addEventListener("click", () => {
 });
 
 // ==========================================
-// UTILIDADES
+// UTILIDADES Y SUPABASE STATUS BAR
 // ==========================================
 function initialsFor(name) {
     return name
@@ -147,39 +160,90 @@ function findDoctorByName(name) {
     return null;
 }
 
-function getStoredAppointments() {
-    try {
-        const raw = localStorage.getItem(APPOINTMENTS_STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
-    } catch (_) {
-        return [];
-    }
-}
-
-function saveStoredAppointments(list) {
-    try {
-        localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(list));
-    } catch (e) {
-        console.error("Error guardando citas:", e);
-    }
-}
-
-// Poblar desplegable de doctores
 function populateDoctorSelect() {
     doctorSelect.innerHTML = '<option value="">-- Elige tu nombre y especialidad --</option>';
-
     Object.entries(doctorsBySpecialty).forEach(([specialty, docs]) => {
         const optgroup = document.createElement("optgroup");
         optgroup.label = specialty;
-
         docs.forEach((doc) => {
             const opt = document.createElement("option");
             opt.value = doc.name;
             opt.textContent = `${doc.name} (${specialty})`;
             optgroup.append(opt);
         });
-
         doctorSelect.append(optgroup);
+    });
+}
+
+async function updateSupabaseStatusUI() {
+    if (!sbStatusDot || !sbStatusText) return;
+    const creds = getSupabaseCredentials();
+    if (!creds.isConfigured) {
+        sbStatusDot.style.background = "#e53e3e";
+        sbStatusText.textContent = "Supabase no configurado (usando modo local)";
+        return;
+    }
+    sbStatusText.textContent = "Verificando conexión con Supabase…";
+    const res = await testSupabaseConnection();
+    if (res.connected) {
+        sbStatusDot.style.background = "#319795";
+        sbStatusText.textContent = "Conectado a Supabase (Sincronización en vivo activa)";
+    } else {
+        sbStatusDot.style.background = "#dd6b20";
+        sbStatusText.textContent = "Sin conexión remota (respaldo local activo)";
+    }
+}
+
+if (sbConfigToggle) {
+    sbConfigToggle.addEventListener("click", () => {
+        sbConfigPanel.hidden = !sbConfigPanel.hidden;
+        if (!sbConfigPanel.hidden) {
+            const creds = getSupabaseCredentials();
+            if (sbUrlInput) sbUrlInput.value = creds.url.includes("TU_PROYECTO") ? "" : creds.url;
+            if (sbKeyInput) sbKeyInput.value = creds.anonKey.includes("TU_SUPABASE_ANON_KEY") ? "" : creds.anonKey;
+        }
+    });
+}
+
+if (sbConfigClose) {
+    sbConfigClose.addEventListener("click", () => { sbConfigPanel.hidden = true; });
+}
+
+if (sbSaveBtn) {
+    sbSaveBtn.addEventListener("click", async () => {
+        const url = sbUrlInput.value.trim();
+        const key = sbKeyInput.value.trim();
+        if (!url || !key) {
+            sbConfigAlert.hidden = false;
+            sbConfigAlert.textContent = "Ingresa la URL y la Key de Supabase.";
+            return;
+        }
+        sbConfigAlert.hidden = true;
+        saveCustomSupabaseCredentials(url, key);
+        await updateSupabaseStatusUI();
+        sbConfigPanel.hidden = true;
+        if (currentDoctorObj) renderDoctorAppointments();
+    });
+}
+
+if (sbTestBtn) {
+    sbTestBtn.addEventListener("click", async () => {
+        const res = await testSupabaseConnection();
+        sbConfigAlert.hidden = false;
+        sbConfigAlert.textContent = res.message;
+        sbConfigAlert.style.background = res.connected ? "#e6f4ef" : "#fde8e8";
+        sbConfigAlert.style.color = res.connected ? "#10635c" : "#b02a2a";
+    });
+}
+
+if (sbClearBtn) {
+    sbClearBtn.addEventListener("click", async () => {
+        clearCustomSupabaseCredentials();
+        if (sbUrlInput) sbUrlInput.value = "";
+        if (sbKeyInput) sbKeyInput.value = "";
+        sbConfigAlert.hidden = false;
+        sbConfigAlert.textContent = "Credenciales borradas.";
+        await updateSupabaseStatusUI();
     });
 }
 
@@ -252,20 +316,14 @@ doctorLoginForm.addEventListener("submit", (e) => {
 btnDoctorLogout.addEventListener("click", logoutDoctor);
 
 // ==========================================
-// RENDERIZADO DE CITAS EXCLUSIVAS DEL DOCTOR
+// RENDERIZADO DE CITAS DESDE SUPABASE
 // ==========================================
-function renderDoctorAppointments() {
+async function renderDoctorAppointments() {
     if (!currentDoctorObj) return;
 
-    const allAppointments = getStoredAppointments();
+    // Consulta DIRECTAMENTE a Supabase (filtrando por el doctor actual para seguridad)
+    const doctorAppointments = await apiGetAppointments(currentDoctorObj.name);
 
-    // FILTRO DE PRIVACIDAD ESTRICTO:
-    // "solo los puede ver el doctor en otro html que vas a crear donde solo tendra acceso el doctor especialista"
-    const doctorAppointments = allAppointments.filter(
-        (appt) => appt.doctorName.toLowerCase().trim() === currentDoctorObj.name.toLowerCase().trim()
-    );
-
-    // Métricas
     const todayStr = new Date().toISOString().split("T")[0];
     const totalCount = doctorAppointments.length;
     const todayCount = doctorAppointments.filter((a) => a.date === todayStr).length;
@@ -285,7 +343,6 @@ function renderDoctorAppointments() {
     countAttended.textContent = attendedCount;
     countCancelled.textContent = cancelledCount;
 
-    // Aplicar filtros de estado y búsqueda
     let filtered = doctorAppointments;
 
     if (activeStatusFilter !== "all") {
@@ -322,7 +379,6 @@ function createAppointmentCard(appt) {
     const card = document.createElement("article");
     card.className = "portal-card";
 
-    // Formato de fecha legible
     const parts = (appt.date || "").split("-");
     let formattedDate = appt.date;
     if (parts.length === 3) {
@@ -336,7 +392,6 @@ function createAppointmentCard(appt) {
         formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
     }
 
-    // Teléfono para WhatsApp y llamada directa
     const cleanPhone = (appt.patientPhone || "").replace(/[^0-9+]/g, "");
 
     card.innerHTML = `
@@ -381,30 +436,22 @@ function createAppointmentCard(appt) {
         </div>
     `;
 
-    // Eventos para cambiar estado de la cita
     card.querySelectorAll(".btn-status-action").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const nextStatus = btn.getAttribute("data-action");
-            updateAppointmentStatus(appt.id, nextStatus);
+            await updateAppointmentStatusAsync(appt.id, nextStatus);
         });
     });
 
     return card;
 }
 
-function updateAppointmentStatus(apptId, newStatus) {
-    const list = getStoredAppointments();
-    const target = list.find((a) => a.id === apptId);
-    if (target) {
-        target.status = newStatus;
-        saveStoredAppointments(list);
-        renderDoctorAppointments();
-    }
+async function updateAppointmentStatusAsync(apptId, newStatus) {
+    await apiUpdateAppointmentStatus(apptId, newStatus);
+    await renderDoctorAppointments();
 }
 
-// ==========================================
-// FILTROS Y BÚSQUEDA EN TIEMPO REAL
-// ==========================================
+// Filtros y búsqueda
 filterPills.forEach((pill) => {
     pill.addEventListener("click", () => {
         filterPills.forEach((p) => p.classList.remove("active"));
@@ -419,8 +466,8 @@ filterSearch.addEventListener("input", (e) => {
     renderDoctorAppointments();
 });
 
-// Crear cita de prueba rápida para el doctor en sesión
-function createTestAppointmentForDoctor() {
+// Crear cita de prueba rápida sincronizada en Supabase
+async function createTestAppointmentForDoctor() {
     if (!currentDoctorObj) return;
 
     const names = ["Gabriel Benítez", "Ana María Colmenares", "José Gregorio Rivas", "Daniela Uzcátegui"];
@@ -457,20 +504,22 @@ function createTestAppointmentForDoctor() {
         createdAt: new Date().toISOString()
     };
 
-    const list = getStoredAppointments();
-    list.unshift(newAppt);
-    saveStoredAppointments(list);
-    renderDoctorAppointments();
+    await apiSaveAppointment(newAppt);
+    await renderDoctorAppointments();
 }
 
-if (btnCreateTestAppt) {
-    btnCreateTestAppt.addEventListener("click", createTestAppointmentForDoctor);
-}
+if (btnCreateTestAppt) btnCreateTestAppt.addEventListener("click", createTestAppointmentForDoctor);
+if (btnSeedTest) btnSeedTest.addEventListener("click", createTestAppointmentForDoctor);
 
-if (btnSeedTest) {
-    btnSeedTest.addEventListener("click", createTestAppointmentForDoctor);
-}
+// Habilitar Realtime para que se actualice solo al haber cambios
+try {
+    apiSubscribeToAppointments(() => {
+        if (currentDoctorObj) {
+            renderDoctorAppointments();
+        }
+    });
+} catch (_) {}
 
-// Iniciar aplicación
+// Inicializar estado y sesión
+updateSupabaseStatusUI();
 checkSession();
-
