@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <!-- Supabase CDN (debe ir antes de script.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js" defer></script>
     <script src="script.js" defer></script>
 </head>
 <body>
@@ -255,6 +258,7 @@
                     <div class="receipt-row"><span>Paciente:</span><strong id="rec-patient"></strong></div>
                     <div class="receipt-row"><span>Teléfono:</span><strong id="rec-phone"></strong></div>
                     <div class="receipt-row"><span>Código único:</span><code id="rec-code" class="receipt-code"></code></div>
+                    <div class="receipt-row"><span>Base de datos:</span><em id="rec-storage-note" style="font-size:13px; color:#177c75;"></em></div>
                 </div>
 
                 <div class="doctor-access-hint">

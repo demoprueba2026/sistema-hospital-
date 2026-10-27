@@ -202,70 +202,33 @@ specialtySelect.addEventListener("change", () => {
 });
 
 // ==========================================
-// ALMACENAMIENTO DE CITAS MÉDICAS (LOCALSTORAGE)
+// ALMACENAMIENTO DE CITAS MÉDICAS (SUPABASE + LOCALSTORAGE FALLBACK)
 // ==========================================
-const APPOINTMENTS_STORAGE_KEY = "hdl_citas_hospital";
-
-function getStoredAppointments() {
-    try {
-        const raw = localStorage.getItem(APPOINTMENTS_STORAGE_KEY);
-        if (!raw) {
-            // Citas iniciales de demostración
-            const seed = [
-                {
-                    id: "cita_seed_1",
-                    code: "HDL-4821",
-                    doctorName: "Dra. Desiree Rojas",
-                    specialty: "Cardiología",
-                    date: "2026-10-29",
-                    time: "09:00 a. m.",
-                    patientName: "Mariana Albornoz",
-                    patientEmail: "mariana.albornoz@gmail.com",
-                    patientPhone: "0412-9876543",
-                    patientAge: 38,
-                    notes: "Chequeo por palpitaciones esporádicas y antecedentes de hipertensión familiar.",
-                    status: "Pendiente",
-                    doctorNotes: "",
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: "cita_seed_2",
-                    code: "HDL-3190",
-                    doctorName: "Dr. Miguel Herrera",
-                    specialty: "Cirugía general",
-                    date: "2026-10-30",
-                    time: "10:30 a. m.",
-                    patientName: "Roberto Gómez",
-                    patientEmail: "roberto.gomez@outlook.com",
-                    patientPhone: "0414-3456789",
-                    patientAge: 45,
-                    notes: "Evaluación postoperatoria y revisión de cicatrización en pared abdominal.",
-                    status: "Confirmada",
-                    doctorNotes: "Paciente reporta buena evolución inicial.",
-                    createdAt: new Date().toISOString()
-                }
-            ];
-            localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(seed));
-            return seed;
-        }
-        return JSON.parse(raw);
-    } catch (_) {
-        return [];
-    }
-}
 
 function saveAppointment(appointment) {
-    const list = getStoredAppointments();
-    list.unshift(appointment);
-    try {
-        localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(list));
-    } catch (e) {
-        console.error("Error al guardar cita en localStorage:", e);
-    }
+    // Llama a supabaseClient.js → guarda en Supabase primero, localStorage como respaldo
+    return apiSaveAppointment(appointment);
 }
 
-// Inicializar almacenamiento
-getStoredAppointments();
+// Al cargar: migrar datos viejos de localStorage puro a Supabase (solo una vez)
+(async function migrateOldLocalData() {
+    const LEGACY_KEY = "hdl_citas_hospital";
+    try {
+        const raw = localStorage.getItem(LEGACY_KEY);
+        if (!raw) return;
+        const oldItems = JSON.parse(raw);
+        if (!Array.isArray(oldItems) || oldItems.length === 0) return;
+        const creds = getSupabaseCredentials();
+        if (!creds.isConfigured) return;
+        const client = initSupabaseClient();
+        if (!client) return;
+        for (const item of oldItems) {
+            const dbPayload = mapAppointmentToDb(item);
+            await client.from("citas").upsert([dbPayload], { onConflict: "id", ignoreDuplicates: true });
+        }
+        console.log("[Migración] Datos locales previos migrados a Supabase.");
+    } catch (_) {}
+})();
 
 // ==========================================
 // MODAL GOOGLE CALENDAR CONTROLLER
@@ -547,9 +510,9 @@ if (appointmentModal) {
     });
 }
 
-// Envío del formulario
+// Envío del formulario (async para Supabase)
 if (appointmentForm) {
-    appointmentForm.addEventListener("submit", (e) => {
+    appointmentForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const name = document.querySelector("#patient-name").value.trim();
@@ -574,6 +537,14 @@ if (appointmentForm) {
 
         formAlert.hidden = true;
 
+        // Deshabilitar botón mientras guarda
+        const saveBtn = document.querySelector("#modal-btn-save");
+        const originalHTML = saveBtn ? saveBtn.innerHTML : "";
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = "<span>Guardando…</span>";
+        }
+
         const code = `HDL-${Math.floor(1000 + Math.random() * 9000)}`;
 
         const appointment = {
@@ -593,8 +564,19 @@ if (appointmentForm) {
             createdAt: new Date().toISOString()
         };
 
-        saveAppointment(appointment);
+        // Guardar en Supabase (con fallback automático a localStorage)
+        const result = await saveAppointment(appointment);
         lastCreatedAppointment = appointment;
+
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalHTML;
+        }
+
+        // Mostrar badge de dónde se guardó
+        const storageNote = (result && result.savedInSupabase)
+            ? "✓ Guardado en Supabase"
+            : "⚠ Guardado localmente (Supabase no configurado)";
 
         document.querySelector("#rec-doctor").textContent = appointment.doctorName;
         document.querySelector("#rec-specialty").textContent = appointment.specialty;
@@ -603,6 +585,10 @@ if (appointmentForm) {
         document.querySelector("#rec-patient").textContent = `${appointment.patientName} (${appointment.patientAge} años)`;
         document.querySelector("#rec-phone").textContent = appointment.patientPhone;
         document.querySelector("#rec-code").textContent = appointment.code;
+
+        // Mostrar nota de almacenamiento en el recibo
+        const storageEl = document.querySelector("#rec-storage-note");
+        if (storageEl) storageEl.textContent = storageNote;
 
         appointmentForm.hidden = true;
         modalSuccessView.hidden = false;
