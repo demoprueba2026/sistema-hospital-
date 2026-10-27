@@ -23,8 +23,12 @@ CREATE TABLE IF NOT EXISTS public.citas (
     notes TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'Pendiente' CHECK (status IN ('Pendiente', 'Confirmada', 'Atendida', 'Cancelada')),
     doctor_notes TEXT DEFAULT '',
+    confirmation_email_sent_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+ALTER TABLE public.citas
+ADD COLUMN IF NOT EXISTS confirmation_email_sent_at TIMESTAMPTZ;
 
 -- Comentarios explicativos en las columnas
 COMMENT ON TABLE public.citas IS 'Registro de citas médicas de pacientes con doctores especialistas.';
@@ -126,4 +130,3 @@ VALUES
     'Paciente reporta buena evolución inicial sin dolor agudo.'
 )
 ON CONFLICT (id) DO NOTHING;
-

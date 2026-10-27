@@ -136,9 +136,13 @@ async function apiSaveAppointment(appointment) {
 
 async function apiUpdateAppointmentStatus(appointmentId, newStatus) {
     const client = await getSupabaseClient();
+    const update = { status: newStatus };
+    if (newStatus !== "Confirmada") {
+        update.confirmation_email_sent_at = null;
+    }
     const { error } = await client
         .from("citas")
-        .update({ status: newStatus })
+        .update(update)
         .eq("id", appointmentId);
 
     if (error) {
