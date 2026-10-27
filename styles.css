@@ -576,8 +576,8 @@ h1,
 }
 
 .footer-brand .brand-mark {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     border-radius: 10px;
     font-size: 25px;
 }
@@ -681,8 +681,8 @@ h1,
 
 @media (max-width: 500px) {
     .brand-mark {
-        width: 34px;
-        height: 34px;
+        width: 44px;
+        height: 44px;
         font-size: 26px;
     }
 
