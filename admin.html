@@ -17,6 +17,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js" defer></script>
     <script src="admin.js" defer></script>
+    <!-- Inline script to set initial theme and avoid flash -->
+    <script>
+      const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+    <script src="admin-theme.js" defer></script>
 </head>
 <body class="admin-portal-body">
     <header class="site-header">
