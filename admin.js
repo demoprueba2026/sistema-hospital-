@@ -167,7 +167,7 @@ async function loadAppointmentsFromSupabase() {
         isSupabaseOnline = true;
 
         if (connectionBadge) {
-            connectionBadge.innerHTML = '<span class="live-pulse-dot"></span><span>Supabase Conectado en Tiempo Real</span>';
+            connectionBadge.innerHTML = '<span class="live-pulse-dot"></span><span>Conectado en Tiempo Real</span>';
             connectionBadge.style.color = "";
         }
     } catch (error) {
