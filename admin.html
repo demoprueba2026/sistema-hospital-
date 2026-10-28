@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7fbfa">
+    <meta name="description" content="Módulo administrativo y de recepción para la Clínica Su Salud.">
+    <title>Administración | Clínica Su Salud</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-theme.css">
+    <link rel="stylesheet" href="styles-cards.css">
+    <link rel="stylesheet" href="styles-admin.css">
+    <!-- Supabase CDN (if needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js" defer></script>
+    <script src="admin.js" defer></script>
+</head>
+<body class="admin-portal-body">
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="Clinica Su Salud, volver al inicio">
+            <span class="brand-mark" aria-hidden="true">+</span>
+            <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>PORTAL DE ADMINISTRACIÓN</small></span>
+        </a>
+        <div class="header-actions">
+            <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Activar tema oscuro" aria-pressed="false">
+                <span class="theme-icon" aria-hidden="true">☾</span>
+                <span class="theme-label">Tema oscuro</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="portal-wrap">
+        <!-- Precios de consultas -->
+        <section class="admin-section" id="prices-section">
+            <h2>Precios de Consultas</h2>
+            <table class="admin-table" id="prices-table">
+                <thead>
+                    <tr><th>Tipo de Consulta</th><th>Precio (USD)</th></tr>
+                </thead>
+                <tbody>
+                    <!-- Filled by admin.js -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Pacientes registrados -->
+        <section class="admin-section" id="patients-section">
+            <h2>Pacientes Registrados</h2>
+            <div class="filter-toolbar">
+                <input type="text" id="patient-search" placeholder="Buscar por nombre o teléfono..." class="search-input">
+                <select id="payment-filter" class="filter-select">
+                    <option value="all">Todos</option>
+                    <option value="paid">Pagados</option>
+                    <option value="unpaid">No pagados</option>
+                </select>
+            </div>
+            <table class="admin-table" id="patients-table">
+                <thead>
+                    <tr><th>Nombre</th><th>Teléfono</th><th>Consulta</th><th>Estado de Pago</th></tr>
+                </thead>
+                <tbody>
+                    <!-- Filled by admin.js -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <a class="brand footer-brand" href="index.html">
+            <span class="brand-mark" aria-hidden="true">+</span>
+            <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>PORTAL DE ADMINISTRACIÓN</small></span>
+        </a>
+        <span>© 2026 Clinica Su Salud. Uso exclusivo del personal administrativo.</span>
+    </footer>
+</body>
+</html>

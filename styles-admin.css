@@ -1,0 +1,45 @@
+/* admin.css – Styles specific to the administrative portal */
+/* Reuse general styles from styles.css and theme */
+
+.admin-section {
+  margin: 2rem 0;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-muted, #ddd);
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: var(--color-primary, #f0f0f0);
+  font-weight: 600;
+}
+
+.filter-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--color-muted, #ccc);
+  border-radius: 4px;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border: 1px solid var(--color-muted, #ccc);
+  border-radius: 4px;
+}
+
