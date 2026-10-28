@@ -3,34 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f7fbfa">
-    <meta name="description" content="Módulo administrativo y de recepción para la Clínica Su Salud.">
-    <title>Administración | Clínica Su Salud</title>
+    <meta name="theme-color" content="#f3f8f7">
+    <meta name="description" content="Módulo administrativo, caja y control de recepción de la Clínica Su Salud.">
+    <title>Administración y Recepción | Clínica Su Salud</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="styles-theme.css">
     <link rel="stylesheet" href="styles-cards.css">
     <link rel="stylesheet" href="styles-admin.css">
-    <!-- Supabase CDN (if needed) -->
+
+    <!-- Prevención de parpadeo de tema (FOUC) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            document.addEventListener("DOMContentLoaded", function() {
+                document.body.dataset.theme = savedTheme;
+            });
+        })();
+    </script>
+
+    <!-- Supabase CDN y clientes -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js" defer></script>
     <script src="admin.js" defer></script>
-    <!-- Inline script to set initial theme and avoid flash -->
-    <script>
-      const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    </script>
-    <script src="admin-theme.js" defer></script>
 </head>
-<body class="admin-portal-body">
+<body class="admin-body">
+    <div class="admin-bg-mesh" aria-hidden="true"></div>
+
+    <!-- Header Oficial con Identidad de la Clínica -->
     <header class="site-header">
-        <a class="brand" href="index.html" aria-label="Clinica Su Salud, volver al inicio">
+        <a class="brand" href="index.html" aria-label="Clínica Su Salud, volver al inicio">
             <span class="brand-mark" aria-hidden="true">+</span>
-            <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>PORTAL DE ADMINISTRACIÓN</small></span>
+            <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>CONTROL ADMINISTRATIVO & RECEPCIÓN</small></span>
         </a>
+
         <div class="header-actions">
+            <!-- Indicador de conexión Supabase en tiempo real -->
+            <div class="header-badge-live" id="connection-badge" title="Estado de la base de datos">
+                <span class="live-pulse-dot"></span>
+                <span>Conectando con Supabase...</span>
+            </div>
+
+            <!-- Reloj en vivo de recepción -->
+            <div class="clock-display" id="clock-display" aria-label="Hora del sistema">--:--:--</div>
+
+            <!-- Botón de Tema Oscuro / Claro que altera toda la página -->
             <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Activar tema oscuro" aria-pressed="false">
                 <span class="theme-icon" aria-hidden="true">☾</span>
                 <span class="theme-label">Tema oscuro</span>
@@ -38,48 +58,259 @@
         </div>
     </header>
 
-    <main class="portal-wrap">
-        <!-- Precios de consultas -->
-        <section class="admin-section" id="prices-section">
-            <h2>Precios de Consultas</h2>
-            <table class="admin-table" id="prices-table">
-                <thead>
-                    <tr><th>Tipo de Consulta</th><th>Precio (USD)</th></tr>
-                </thead>
-                <tbody>
-                    <!-- Filled by admin.js -->
-                </tbody>
-            </table>
+    <main class="admin-wrap">
+        <!-- Banner Principal Futurista -->
+        <section class="admin-hero-banner">
+            <div class="banner-left">
+                <span class="banner-tag">
+                    <span>⚡</span> SISTEMA DE CONTROL DE ADMISIÓN & COBRANZAS
+                </span>
+                <h1>Panel de Recepción y Pacientes</h1>
+                <p class="banner-desc">
+                    Control en tiempo real de pacientes registrados desde la web, seguimiento de estados de cita médica y recaudación de consultas.
+                </p>
+            </div>
+
+            <!-- Showcase Oficial del Precio de la Consulta: $50 USD -->
+            <div class="price-showcase-box">
+                <div class="price-icon-bubble" aria-hidden="true">💳</div>
+                <div class="price-details-tag">
+                    <span class="price-label">Tarifa Oficial de Consulta</span>
+                    <span class="price-value-amount">$50.00 <small style="font-size:15px; font-weight:600;">USD</small></span>
+                    <span class="price-note">Precio único por consulta especializada</span>
+                </div>
+            </div>
         </section>
 
-        <!-- Pacientes registrados -->
-        <section class="admin-section" id="patients-section">
-            <h2>Pacientes Registrados</h2>
-            <div class="filter-toolbar">
-                <input type="text" id="patient-search" placeholder="Buscar por nombre o teléfono..." class="search-input">
-                <select id="payment-filter" class="filter-select">
-                    <option value="all">Todos</option>
-                    <option value="paid">Pagados</option>
-                    <option value="unpaid">No pagados</option>
-                </select>
+        <!-- KPI Grid de Métricas en Tiempo Real -->
+        <section class="kpi-grid" aria-label="Estadísticas de recepción">
+            <div class="kpi-card">
+                <div class="kpi-icon-wrap kpi-icon-total">👥</div>
+                <div class="kpi-info">
+                    <span class="kpi-title">Pacientes Registrados</span>
+                    <span class="kpi-num" id="kpi-total-patients">0</span>
+                    <span class="kpi-sub">Total en sistema</span>
+                </div>
             </div>
-            <table class="admin-table" id="patients-table">
-                <thead>
-                    <tr><th>Nombre</th><th>Teléfono</th><th>Consulta</th><th>Estado de Pago</th></tr>
-                </thead>
-                <tbody>
-                    <!-- Filled by admin.js -->
-                </tbody>
-            </table>
+
+            <div class="kpi-card">
+                <div class="kpi-icon-wrap kpi-icon-paid">💵</div>
+                <div class="kpi-info">
+                    <span class="kpi-title">Ingresos Recaudados</span>
+                    <span class="kpi-num" id="kpi-total-paid" style="color:var(--adm-success);">$0 USD</span>
+                    <span class="kpi-sub">Citas con pago confirmado ($50 c/u)</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-info">
+                    <div class="kpi-icon-wrap kpi-icon-pending">⏳</div>
+                </div>
+                <div class="kpi-info">
+                    <span class="kpi-title">Por Cobrar en Recepción</span>
+                    <span class="kpi-num" id="kpi-total-pending" style="color:var(--adm-warning);">$0 USD</span>
+                    <span class="kpi-sub">Pacientes pendientes de pago ($50 c/u)</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon-wrap kpi-icon-today">📅</div>
+                <div class="kpi-info">
+                    <span class="kpi-title">Citas de Hoy</span>
+                    <span class="kpi-num" id="kpi-today-appts">0</span>
+                    <span class="kpi-sub">Atención del día en curso</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tarifario Oficial de Especialidades & Métodos de Pago -->
+        <section class="pricing-overview-panel">
+            <div class="panel-header-row">
+                <h2 class="panel-title">
+                    <span>🩺</span> Tarifario Fijo de Consultas Médicas ($50.00 USD)
+                </h2>
+                <span style="font-size:13px; color:var(--adm-text-muted);">
+                    Formas de pago recibidas en recepción: <strong>Efectivo (USD / Bs), Punto de Venta, Pago Móvil, Zelle</strong>
+                </span>
+            </div>
+
+            <div class="tariff-chips-grid">
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Cardiología</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Cirugía General</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Dermatología</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Ginecología y Obst.</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Medicina Interna</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Nefrología</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Neurología</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Pediatría</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Traumatología</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+                <div class="tariff-chip">
+                    <span class="tariff-chip-name">Urología</span>
+                    <span class="tariff-chip-cost">$50 USD</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Barra de Control, Búsqueda y Filtros de Pagos -->
+        <section class="admin-control-bar">
+            <div class="control-bar-main">
+                <div class="search-box-futuristic">
+                    <span class="search-icon-futuristic" aria-hidden="true">🔍</span>
+                    <input type="text" id="patient-search" class="search-input-futuristic" placeholder="Buscar por nombre de paciente, teléfono, código HDL, doctor o especialidad..." autocomplete="off">
+                </div>
+
+                <button type="button" class="btn-futuristic" id="btn-refresh-data" title="Actualizar datos desde la base de datos de Supabase">
+                    <span>🔄 Sincronizar Supabase</span>
+                </button>
+            </div>
+
+            <!-- Filtros pills: Estado de Pago y Estado de Cita -->
+            <div class="filters-pills-row">
+                <div class="pill-group-container">
+                    <span class="pill-group-label">Estado de Pago:</span>
+                    <button type="button" class="filter-chip active" data-pay-filter="all">Todos los pagos</button>
+                    <button type="button" class="filter-chip chip-paid" data-pay-filter="paid">✓ Solo Pagados ($50)</button>
+                    <button type="button" class="filter-chip chip-unpaid" data-pay-filter="unpaid">⏳ Solo Pendientes ($50)</button>
+                </div>
+
+                <div class="pill-group-container">
+                    <span class="pill-group-label">Estado de Cita:</span>
+                    <button type="button" class="filter-chip active" data-status-filter="all">Todas</button>
+                    <button type="button" class="filter-chip" data-status-filter="today">Citas de Hoy</button>
+                    <button type="button" class="filter-chip" data-status-filter="Pendiente">Pendientes</button>
+                    <button type="button" class="filter-chip" data-status-filter="Confirmada">Confirmadas</button>
+                    <button type="button" class="filter-chip" data-status-filter="Atendida">Atendidas</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabla Futurista de Pacientes Registrados -->
+        <section class="patients-table-container">
+            <div class="table-header-bar">
+                <h3 class="table-header-title">
+                    <span>📋</span> Listado de Pacientes y Control de Cobro
+                </h3>
+                <span class="table-count-badge" id="table-count-badge">0 pacientes</span>
+            </div>
+
+            <div class="patients-responsive-wrapper">
+                <table class="futuristic-table">
+                    <thead>
+                        <tr>
+                            <th>Paciente / Expediente</th>
+                            <th>Contacto Directo</th>
+                            <th>Especialista Asignado</th>
+                            <th>Fecha & Hora</th>
+                            <th>Estado de Cita</th>
+                            <th>Cobranza ($50 USD)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patients-table-body">
+                        <!-- Filas renderizadas dinámicamente con admin.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estado Vacío cuando no hay registros -->
+            <div class="empty-table-state" id="empty-state-container" hidden>
+                <div class="empty-icon-art">🩺</div>
+                <h3>No se encontraron pacientes registrados</h3>
+                <p>Las citas agendadas por los pacientes desde la web aparecerán aquí en tiempo real conectadas a Supabase.</p>
+                <button type="button" class="btn-futuristic btn-primary-action" id="btn-seed-demo">
+                    <span>+ Crear citas de prueba en Supabase</span>
+                </button>
+            </div>
         </section>
     </main>
 
+    <!-- Modal de Recibo de Caja ($50 USD) Imprimible -->
+    <div class="receipt-modal" id="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+        <div class="receipt-box-card">
+            <div class="receipt-top-brand">
+                <div style="font-size:32px;">🏥</div>
+                <h2 id="receipt-title">CLÍNICA SU SALUD</h2>
+                <small style="color:var(--adm-text-muted); font-weight:600;">COMPROBANTE OFICIAL DE RECEPCIÓN & CAJA</small>
+            </div>
+
+            <div class="receipt-grid-rows">
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Código de Cita:</span>
+                    <strong id="rec-modal-code" style="font-family:monospace;">HDL-0000</strong>
+                </div>
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Paciente:</span>
+                    <strong id="rec-modal-patient">Nombre</strong>
+                </div>
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Teléfono:</span>
+                    <span id="rec-modal-phone">0000-0000000</span>
+                </div>
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Especialista:</span>
+                    <strong id="rec-modal-doctor">Dr. Médico</strong>
+                </div>
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Especialidad:</span>
+                    <span id="rec-modal-specialty">Consulta</span>
+                </div>
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Fecha y Hora:</span>
+                    <span id="rec-modal-datetime">Fecha</span>
+                </div>
+                <div class="receipt-data-line">
+                    <span style="color:var(--adm-text-muted);">Estado del Pago:</span>
+                    <strong id="rec-modal-status">PAGADO</strong>
+                </div>
+            </div>
+
+            <div class="receipt-total-highlight">
+                <span>Total de Consulta:</span>
+                <strong id="rec-modal-price">$50.00 USD</strong>
+            </div>
+
+            <div class="receipt-modal-actions">
+                <button type="button" class="btn-futuristic" style="flex:1;" id="btn-close-receipt">Cerrar</button>
+                <button type="button" class="btn-futuristic btn-primary-action" style="flex:1;" id="btn-print-receipt">🖨️ Imprimir Recibo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Oficial -->
     <footer class="site-footer">
         <a class="brand footer-brand" href="index.html">
             <span class="brand-mark" aria-hidden="true">+</span>
-            <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>PORTAL DE ADMINISTRACIÓN</small></span>
+            <span class="brand-name">CLINICA <strong>SU SALUD</strong><small>MÓDULO DE CONTROL INTERNO</small></span>
         </a>
-        <span>© 2026 Clinica Su Salud. Uso exclusivo del personal administrativo.</span>
+        <span>© 2026 Clínica Su Salud. Uso exclusivo de Recepción y Administración.</span>
+        <a href="index.html">Portal Pacientes ↑</a>
     </footer>
 </body>
 </html>
