@@ -21,6 +21,17 @@ const refreshBtn = document.getElementById("btn-refresh-data");
 const searchInput = document.getElementById("patient-search");
 const paymentFilterChips = document.querySelectorAll("[data-pay-filter]");
 const statusFilterChips = document.querySelectorAll("[data-status-filter]");
+const revenueDoctorFilter = document.getElementById("revenue-doctor-filter");
+const revenueDonut = document.getElementById("revenue-donut");
+const revenueDonutSegments = document.getElementById("revenue-donut-segments");
+const revenueDonutTotal = document.getElementById("revenue-donut-total");
+const revenueDonutCaption = document.getElementById("revenue-donut-caption");
+const revenueDonutTitle = document.getElementById("revenue-donut-title");
+const revenueDonutSubtitle = document.getElementById("revenue-donut-subtitle");
+const revenueChartLegend = document.getElementById("revenue-chart-legend");
+const revenueBarsTitle = document.getElementById("revenue-bars-title");
+const revenueBarsSubtitle = document.getElementById("revenue-bars-subtitle");
+const revenueBars = document.getElementById("revenue-bars");
 
 // Elementos KPI
 const kpiTotalPatients = document.getElementById("kpi-total-patients");
@@ -224,6 +235,8 @@ function renderDashboard() {
     if (kpiTotalPending) kpiTotalPending.textContent = `$${totalPendingUsd.toLocaleString()} USD`;
     if (kpiTodayAppts) kpiTodayAppts.textContent = todayCount;
 
+    renderRevenueCharts();
+
     // Filtrar citas
     let filtered = [...allAppointments];
 
@@ -266,6 +279,149 @@ function renderDashboard() {
     }
 
     renderTableRows(filtered);
+}
+
+function formatRevenueUsd(amount) {
+    return `$${amount.toLocaleString("en-US", { maximumFractionDigits: 0 })} USD`;
+}
+
+function renderRevenueCharts() {
+    if (!revenueDoctorFilter || !revenueDonutSegments || !revenueBars) return;
+
+    const doctorRevenue = new Map();
+    allAppointments.forEach((appt) => {
+        const payInfo = getAppointmentPayment(appt.id, appt.payment_status || appt.paid);
+        if (appt.status === "Cancelada" && !payInfo.paid) return;
+        const name = appt.doctorName || "Especialista";
+        const totals = doctorRevenue.get(name) || { paid: 0, pending: 0 };
+        totals[payInfo.paid ? "paid" : "pending"] += CONSULTATION_FEE_USD;
+        doctorRevenue.set(name, totals);
+    });
+
+    const selectedDoctor = revenueDoctorFilter.value;
+    const doctorNames = [...doctorRevenue.keys()].sort((a, b) => a.localeCompare(b, "es"));
+    if (revenueDoctorFilter.options.length !== doctorNames.length + 1 ||
+        doctorNames.some((name, index) => revenueDoctorFilter.options[index + 1]?.value !== name)) {
+        revenueDoctorFilter.replaceChildren(new Option("Toda la clínica", "all"));
+        doctorNames.forEach((name) => revenueDoctorFilter.add(new Option(name, name)));
+        revenueDoctorFilter.value = doctorRevenue.has(selectedDoctor) ? selectedDoctor : "all";
+    }
+
+    const isDoctorSelected = revenueDoctorFilter.value !== "all";
+    const selectedTotals = isDoctorSelected
+        ? doctorRevenue.get(revenueDoctorFilter.value) || { paid: 0, pending: 0 }
+        : [...doctorRevenue.values()].reduce((sum, totals) => ({
+            paid: sum.paid + totals.paid,
+            pending: sum.pending + totals.pending
+        }), { paid: 0, pending: 0 });
+    const total = selectedTotals.paid + selectedTotals.pending;
+    const segments = [
+        { label: "Recaudado", value: selectedTotals.paid, color: "#10b981" },
+        { label: "Pendiente de cobro", value: selectedTotals.pending, color: "#f59e0b" }
+    ];
+
+    revenueDonutTitle.textContent = isDoctorSelected
+        ? "Cobranza del especialista"
+        : "Recaudado y pendiente";
+    revenueDonutSubtitle.textContent = isDoctorSelected
+        ? revenueDoctorFilter.value
+        : "Estado de cobranza de toda la clínica";
+    revenueDonutTotal.textContent = `$${total.toLocaleString("en-US")}`;
+    revenueDonutCaption.textContent = "USD registrados";
+    revenueDonut.setAttribute("aria-label", `Total registrado ${formatRevenueUsd(total)}; recaudado ${formatRevenueUsd(selectedTotals.paid)}; pendiente de cobro ${formatRevenueUsd(selectedTotals.pending)}`);
+
+    const circumference = 2 * Math.PI * 78;
+    let offset = 0;
+    revenueDonutSegments.replaceChildren();
+    segments.forEach((segment) => {
+        if (!segment.value || !total) return;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("class", "revenue-donut-segment");
+        circle.setAttribute("cx", "110");
+        circle.setAttribute("cy", "110");
+        circle.setAttribute("r", "78");
+        circle.setAttribute("stroke", segment.color);
+        circle.setAttribute("stroke-dasharray", `${(segment.value / total) * circumference} ${circumference}`);
+        circle.setAttribute("stroke-dashoffset", String(-offset));
+        revenueDonutSegments.append(circle);
+        offset += (segment.value / total) * circumference;
+    });
+
+    revenueChartLegend.replaceChildren();
+    segments.forEach((segment) => {
+        const item = document.createElement("div");
+        item.className = "revenue-legend-item";
+        const label = document.createElement("span");
+        label.className = "revenue-legend-label";
+        const swatch = document.createElement("span");
+        swatch.className = `revenue-legend-swatch ${segment.label === "Recaudado" ? "is-paid" : "is-pending"}`;
+        swatch.setAttribute("aria-hidden", "true");
+        const text = document.createElement("span");
+        text.textContent = segment.label;
+        label.append(swatch, text);
+        const value = document.createElement("strong");
+        value.textContent = formatRevenueUsd(segment.value);
+        item.append(label, value);
+        revenueChartLegend.append(item);
+    });
+
+    const barItems = isDoctorSelected
+        ? [
+            { label: "Recaudado", value: selectedTotals.paid, tone: "is-paid" },
+            { label: "Pendiente de cobro", value: selectedTotals.pending, tone: "is-pending" }
+        ]
+        : doctorNames
+            .map((name) => ({ label: name, value: doctorRevenue.get(name).paid, tone: "is-doctor" }))
+            .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label, "es"))
+            .slice(0, 8);
+
+    if (!isDoctorSelected && doctorNames.length > 8) {
+        const otherRevenue = doctorNames
+            .map((name) => doctorRevenue.get(name).paid)
+            .sort((a, b) => b - a)
+            .slice(8)
+            .reduce((sum, value) => sum + value, 0);
+        barItems.push({ label: "Otros especialistas", value: otherRevenue, tone: "is-other" });
+    }
+
+    revenueBarsTitle.textContent = isDoctorSelected
+        ? "Detalle de cobranza"
+        : "Recaudación por especialista";
+    revenueBarsSubtitle.textContent = isDoctorSelected
+        ? "Importes pagados y pendientes · USD"
+        : "Ingresos confirmados · USD";
+    revenueBars.replaceChildren();
+
+    if (barItems.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "revenue-chart-empty";
+        empty.textContent = "Aún no hay citas registradas para mostrar.";
+        revenueBars.append(empty);
+        return;
+    }
+
+    const maxValue = Math.max(...barItems.map((item) => item.value), 1);
+    barItems.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "revenue-bar-row";
+        const label = document.createElement("span");
+        label.className = "revenue-bar-label";
+        label.textContent = item.label;
+        label.title = item.label;
+        const track = document.createElement("div");
+        track.className = "revenue-bar-track";
+        track.setAttribute("role", "img");
+        track.setAttribute("aria-label", `${item.label}: ${formatRevenueUsd(item.value)}`);
+        const fill = document.createElement("span");
+        fill.className = `revenue-bar-fill ${item.tone}`;
+        fill.style.width = `${item.value ? Math.max((item.value / maxValue) * 100, 2) : 0}%`;
+        track.append(fill);
+        const value = document.createElement("strong");
+        value.className = "revenue-bar-value";
+        value.textContent = formatRevenueUsd(item.value);
+        row.append(label, track, value);
+        revenueBars.append(row);
+    });
 }
 
 function renderTableRows(appointments) {
@@ -484,6 +640,10 @@ if (receiptModal) {
 // FILTROS Y BÚSQUEDA
 // ==========================================================
 function setupFilterListeners() {
+    if (revenueDoctorFilter) {
+        revenueDoctorFilter.addEventListener("change", renderRevenueCharts);
+    }
+
     // Buscador en tiempo real
     if (searchInput) {
         searchInput.addEventListener("input", (e) => {
