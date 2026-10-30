@@ -1002,19 +1002,38 @@ body[data-theme="dark"] .futuristic-table tbody tr:hover {
     gap: 14px;
 }
 
-.patient-avatar-circle {
+.patient-avatar-placeholder {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #177c75, #0ea5e9);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(23, 124, 117, 0.25);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: linear-gradient(145deg, #e5eeeb, #cadbd6);
+    border: 1px solid rgba(82, 117, 112, .14);
+    box-shadow: 0 4px 12px rgba(24, 59, 59, .1);
     flex-shrink: 0;
+}
+
+.patient-avatar-placeholder svg {
+    display: block;
+    width: 29px;
+    height: 29px;
+    fill: #819a94;
+    stroke: #819a94;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+body[data-theme="dark"] .patient-avatar-placeholder {
+    background: linear-gradient(145deg, #253d38, #1a302b);
+    border-color: rgba(144, 186, 174, .14);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .22);
+}
+
+body[data-theme="dark"] .patient-avatar-placeholder svg {
+    fill: #8da7a0;
+    stroke: #8da7a0;
 }
 
 .patient-identity h4 {
