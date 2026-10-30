@@ -1,6 +1,8 @@
 // ==========================================
 // AUTENTICACIÓN Y SESIÓN DEL ESPECIALISTA
 // ==========================================
+const toggleDoctorPin = document.querySelector("#toggle-doctor-pin");
+
 function checkSession() {
     showLoginForm();
 }
@@ -29,6 +31,14 @@ function loginDoctor(doc) {
 function logoutDoctor() {
     showLoginForm();
 }
+
+toggleDoctorPin.addEventListener("click", () => {
+    const showPassword = doctorPin.type === "password";
+    doctorPin.type = showPassword ? "text" : "password";
+    toggleDoctorPin.textContent = showPassword ? "Ocultar" : "Mostrar";
+    toggleDoctorPin.setAttribute("aria-label", showPassword ? "Ocultar clave de acceso" : "Mostrar clave de acceso");
+    toggleDoctorPin.setAttribute("aria-pressed", String(showPassword));
+});
 
 doctorLoginForm.addEventListener("submit", (e) => {
     e.preventDefault();

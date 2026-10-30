@@ -42,34 +42,63 @@
 
     <main class="portal-wrap">
         <!-- VISTA 1: ACCESO RESTRINGIDO PARA EL DOCTOR (LOGIN) -->
-        <section class="doctor-auth-box" id="doctor-auth-box">
-            <div class="auth-icon-wrap" aria-hidden="true">🔒</div>
-            <h2>Acceso para Médicos Especialistas</h2>
-            <p class="auth-desc">Por confidencialidad médica, cada especialista únicamente tiene acceso a la agenda y expediente de sus propios pacientes.</p>
+        <section class="doctor-auth-box" id="doctor-auth-box" aria-labelledby="auth-title">
+            <aside class="auth-showcase">
+                <span class="auth-showcase-label">PORTAL MÉDICO <span aria-hidden="true">·</span> ACCESO SEGURO</span>
+                <div class="auth-medical-mark" aria-hidden="true">
+                    <span class="auth-mark-cross">+</span>
+                    <span class="auth-mark-pulse"></span>
+                </div>
+                <div class="auth-showcase-copy">
+                    <p class="auth-kicker">CLÍNICA SU SALUD</p>
+                    <h2>Tu consulta,<br>siempre en buenas manos.</h2>
+                    <p>Un espacio creado para que puedas organizar tu agenda y dar seguimiento a tus pacientes con tranquilidad.</p>
+                </div>
+                <div class="auth-trust-note">
+                    <span class="auth-trust-icon" aria-hidden="true">✓</span>
+                    <span><strong>Acceso individual</strong><small>La información de tus pacientes, protegida.</small></span>
+                </div>
+                <span class="auth-showcase-orbit auth-showcase-orbit-one" aria-hidden="true"></span>
+                <span class="auth-showcase-orbit auth-showcase-orbit-two" aria-hidden="true"></span>
+            </aside>
 
-            <form id="doctor-login-form" class="auth-form" novalidate>
-                <div class="form-field">
-                    <label for="doctor-select">Selecciona tu usuario de especialista <span class="required">*</span></label>
-                    <select id="doctor-select" class="auth-select" required>
-                        <option value="">-- Elige tu nombre y especialidad --</option>
-                    </select>
+            <div class="auth-panel">
+                <div class="auth-panel-heading">
+                    <div class="auth-icon-wrap" aria-hidden="true">🔒</div>
+                    <p class="auth-kicker">BIENVENIDO/A</p>
+                    <h2 id="auth-title">Inicia sesión</h2>
+                    <p class="auth-desc">Ingresa con tu usuario de especialista para continuar a tu consulta.</p>
                 </div>
 
-                <div class="form-field">
-                    <label for="doctor-pin">Clave de acceso médico <span class="required">*</span></label>
-                    <input type="password" id="doctor-pin" class="auth-input" placeholder="Ingresa tu clave de especialista" required autocomplete="current-password">
-                </div>
+                <form id="doctor-login-form" class="auth-form" novalidate>
+                    <div class="form-field">
+                        <label for="doctor-select">Especialista <span class="required">*</span></label>
+                        <select id="doctor-select" class="auth-select" required>
+                            <option value="">-- Elige tu nombre y especialidad --</option>
+                        </select>
+                    </div>
 
-                <div class="auth-hint-box">
-                    <span>💡 <strong>Acceso institucional:</strong> Puedes ingresar con la clave de prueba <code>medico123</code> (o cualquier contraseña para demostración).</span>
-                </div>
+                    <div class="form-field">
+                        <label for="doctor-pin">Clave de acceso <span class="required">*</span></label>
+                        <div class="auth-password-wrap">
+                            <input type="password" id="doctor-pin" class="auth-input" placeholder="Ingresa tu clave de especialista" required autocomplete="current-password">
+                            <button class="auth-password-toggle" id="toggle-doctor-pin" type="button" aria-label="Mostrar clave de acceso" aria-pressed="false">Mostrar</button>
+                        </div>
+                    </div>
 
-                <div class="form-alert" id="auth-alert" role="alert" hidden></div>
+                    <div class="auth-hint-box">
+                        <span>💡 <strong>Acceso institucional:</strong> Puedes ingresar con la clave de prueba <code>medico123</code> (o cualquier contraseña para demostración).</span>
+                    </div>
 
-                <button type="submit" class="btn-auth-submit">
-                    <span>Ingresar a mi consulta 🩺</span>
-                </button>
-            </form>
+                    <div class="form-alert" id="auth-alert" role="alert" hidden></div>
+
+                    <button type="submit" class="btn-auth-submit">
+                        <span>Ingresar a mi consulta</span>
+                        <span class="auth-submit-arrow" aria-hidden="true">→</span>
+                    </button>
+                    <p class="auth-confidentiality"><span aria-hidden="true">◈</span> Acceso exclusivo para personal médico autorizado</p>
+                </form>
+            </div>
         </section>
 
         <!-- VISTA 2: PANEL DE CONTROL DE CITAS DEL ESPECIALISTA (DASHBOARD) -->
