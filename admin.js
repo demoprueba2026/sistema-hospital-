@@ -443,7 +443,7 @@ function renderTableRows(appointments) {
         const cleanPhone = (appt.patientPhone || "").replace(/[^0-9+]/g, "");
 
         tr.innerHTML = `
-            <td>
+            <td data-label="Paciente / Expediente">
                 <div class="patient-cell-profile">
                     <div class="patient-avatar-placeholder" aria-hidden="true">
                         <svg viewBox="0 0 48 48" focusable="false">
@@ -460,25 +460,25 @@ function renderTableRows(appointments) {
                     </div>
                 </div>
             </td>
-            <td>
+            <td data-label="Contacto Directo">
                 <div class="contact-cell">
                     <a href="tel:${cleanPhone}" title="Llamar al paciente">📞 ${escapeHtml(appt.patientPhone || "No registrado")}</a>
                     <a href="mailto:${escapeHtml(appt.patientEmail || "")}" title="Enviar email"><small>✉️ ${escapeHtml(appt.patientEmail || "Sin email")}</small></a>
                 </div>
             </td>
-            <td>
+            <td data-label="Especialista Asignado">
                 <div class="appt-doctor-cell">
                     <strong>${escapeHtml(appt.doctorName || "Especialista")}</strong>
                     <span>🩺 ${escapeHtml(appt.specialty || "Consulta General")}</span>
                 </div>
             </td>
-            <td>
+            <td data-label="Fecha y Hora">
                 <div class="datetime-cell">
                     <span class="datetime-date">${formattedDate}</span>
                     <span class="datetime-time">⏰ ${escapeHtml(appt.time || "")}</span>
                 </div>
             </td>
-            <td>
+            <td data-label="Estado de Cita">
                 <select class="status-select-badge status-${(appt.status || "pendiente").toLowerCase()}" data-appt-id="${appt.id}" aria-label="Cambiar estado de cita">
                     <option value="Pendiente" ${appt.status === "Pendiente" ? "selected" : ""}>⏳ Pendiente</option>
                     <option value="Confirmada" ${appt.status === "Confirmada" ? "selected" : ""}>✓ Confirmada</option>
@@ -486,7 +486,7 @@ function renderTableRows(appointments) {
                     <option value="Cancelada" ${appt.status === "Cancelada" ? "selected" : ""}>✕ Cancelada</option>
                 </select>
             </td>
-            <td>
+            <td data-label="Cobranza">
                 <div class="payment-cell-box">
                     <div class="payment-badge-status ${payInfo.paid ? "paid" : "unpaid"}">
                         ${payInfo.paid ? "✓ PAGADO · $50 USD" : "⏳ PENDIENTE · $50 USD"}
@@ -500,7 +500,7 @@ function renderTableRows(appointments) {
                     ${payInfo.paid && payInfo.method ? `<span class="method-tag-mini">Método: ${payInfo.method}</span>` : ""}
                 </div>
             </td>
-            <td>
+            <td data-label="Acciones">
                 <div class="action-buttons-cell">
                     <button type="button" class="btn-icon-action" title="Ver / Imprimir Recibo de Caja ($50)" data-receipt-id="${appt.id}">
                         🧾
