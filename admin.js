@@ -532,13 +532,13 @@ function attachTableEvents() {
             const action = e.currentTarget.getAttribute("data-action");
 
             if (action === "pay") {
-                const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Zelle", "Efectivo");
+                const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Cashea", "Efectivo");
                 let finalMethod = "Efectivo";
                 if (method) {
                     if (method === "1") finalMethod = "Efectivo";
                     else if (method === "2") finalMethod = "Tarjeta / Punto";
                     else if (method === "3") finalMethod = "Pago Móvil / Transf.";
-                    else if (method === "4") finalMethod = "Zelle";
+                    else if (method === "4") finalMethod = "Cashea";
                     else finalMethod = method;
                 }
                 await setAppointmentPayment(apptId, true, finalMethod);
