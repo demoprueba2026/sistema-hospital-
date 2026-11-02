@@ -445,6 +445,12 @@ function renderTableRows(appointments) {
         tr.innerHTML = `
             <td>
                 <div class="patient-cell-profile">
+                    <div class="patient-avatar-placeholder" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" focusable="false">
+                            <circle cx="24" cy="17" r="8"></circle>
+                            <path d="M9 42c.9-9 6.8-14 15-14s14.1 5 15 14"></path>
+                        </svg>
+                    </div>
                     <div class="patient-identity">
                         <h4>${escapeHtml(appt.patientName || "Sin Nombre")}</h4>
                         <span class="patient-code-tag">ID: ${escapeHtml(appt.code || "S/C")}</span>

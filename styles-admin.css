@@ -999,6 +999,41 @@ body[data-theme="dark"] .futuristic-table tbody tr:hover {
 .patient-cell-profile {
     display: flex;
     align-items: center;
+    gap: 14px;
+}
+
+.patient-avatar-placeholder {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(82, 117, 112, .14);
+    border-radius: 12px;
+    background: linear-gradient(145deg, #e5eeeb, #cadbd6);
+    box-shadow: 0 4px 12px rgba(24, 59, 59, .1);
+}
+
+.patient-avatar-placeholder svg {
+    display: block;
+    width: 29px;
+    height: 29px;
+    fill: #819a94;
+    stroke: #819a94;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+body[data-theme="dark"] .patient-avatar-placeholder {
+    border-color: rgba(144, 186, 174, .14);
+    background: linear-gradient(145deg, #253d38, #1a302b);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .22);
+}
+
+body[data-theme="dark"] .patient-avatar-placeholder svg {
+    fill: #8da7a0;
+    stroke: #8da7a0;
 }
 
 .patient-identity h4 {
