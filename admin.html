@@ -123,6 +123,57 @@
             </div>
         </section>
 
+        <section class="revenue-dashboard" aria-labelledby="revenue-dashboard-title">
+            <div class="revenue-dashboard-header">
+                <div>
+                    <span class="revenue-eyebrow">RESUMEN FINANCIERO</span>
+                    <h2 id="revenue-dashboard-title">Ingresos de la clínica</h2>
+                    <p>Recaudación bruta según pagos confirmados · Tarifa de consulta: $50 USD</p>
+                </div>
+                <label class="revenue-doctor-filter" for="revenue-doctor-filter">
+                    <span>Ver ingresos de</span>
+                    <select id="revenue-doctor-filter">
+                        <option value="all">Toda la clínica</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="revenue-charts-grid">
+                <article class="revenue-chart-card revenue-donut-card">
+                    <div class="revenue-chart-heading">
+                        <div>
+                            <h3 id="revenue-donut-title">Recaudado y pendiente</h3>
+                            <p id="revenue-donut-subtitle">Estado de cobranza de toda la clínica</p>
+                        </div>
+                        <span class="chart-heading-icon" aria-hidden="true">◉</span>
+                    </div>
+                    <div class="revenue-donut-layout">
+                        <div class="revenue-donut-wrap">
+                            <svg id="revenue-donut" class="revenue-donut" viewBox="0 0 220 220" role="img" aria-label="Gráfica circular de ingresos recaudados y pendientes">
+                                <circle class="revenue-donut-track" cx="110" cy="110" r="78"></circle>
+                                <g id="revenue-donut-segments"></g>
+                                <text class="revenue-donut-total" id="revenue-donut-total" x="110" y="106">$0</text>
+                                <text class="revenue-donut-caption" id="revenue-donut-caption" x="110" y="128">USD registrados</text>
+                            </svg>
+                        </div>
+                        <div class="revenue-chart-legend" id="revenue-chart-legend" aria-live="polite"></div>
+                    </div>
+                </article>
+
+                <article class="revenue-chart-card revenue-bars-card">
+                    <div class="revenue-chart-heading">
+                        <div>
+                            <h3 id="revenue-bars-title">Recaudación por especialista</h3>
+                            <p id="revenue-bars-subtitle">Ingresos confirmados · USD</p>
+                        </div>
+                        <span class="chart-heading-icon chart-heading-icon-bars" aria-hidden="true">▥</span>
+                    </div>
+                    <div class="revenue-bars" id="revenue-bars" aria-live="polite"></div>
+                </article>
+            </div>
+            <p class="revenue-chart-note">Los importes muestran cobranza bruta por consultas registradas; no representan utilidad neta ni descuentan gastos o comisiones.</p>
+        </section>
+
         <!-- Tarifario Oficial de EspeEcialidades & Métodos de Pago -->
         <section class="pricing-overview-panel">
             <div class="panel-header-row">
