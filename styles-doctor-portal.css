@@ -26,10 +26,44 @@
     transform: translateX(-3px);
 }
 
-/* AUTH / LOGIN CARD */
+/* AUTH / LOGIN VIDEO BACKGROUND */
 .doctor-auth-box {
-    max-width: 520px;
-    margin: 40px auto;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    width: 100vw;
+    min-height: calc(100vh - 84px);
+    margin: -36px 0 -70px calc(50% - 50vw);
+    padding: 36px 5%;
+    place-items: center;
+    overflow: hidden;
+}
+
+.doctor-auth-box[hidden] {
+    display: none;
+}
+
+.doctor-auth-box::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(8 33 30 / 72%), rgb(8 33 30 / 35%));
+    content: "";
+}
+
+.doctor-login-video {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.doctor-auth-card {
+    position: relative;
+    z-index: 1;
+    width: min(520px, 100%);
     padding: 36px 34px;
     background: #fff;
     border: 1px solid #dce8e3;
@@ -50,7 +84,7 @@
     font-size: 30px;
 }
 
-.doctor-auth-box h2 {
+.doctor-auth-card h2 {
     margin: 0 0 8px;
     font-size: 26px;
     font-family: "Manrope", sans-serif;
@@ -568,7 +602,7 @@
 /* ========================================================
    PORTAL EN TEMA OSCURO (MÁXIMA VISIBILIDAD)
    ======================================================== */
-body[data-theme="dark"] .doctor-auth-box,
+body[data-theme="dark"] .doctor-auth-card,
 body[data-theme="dark"] .doctor-banner,
 body[data-theme="dark"] .stat-card,
 body[data-theme="dark"] .portal-card,
@@ -594,7 +628,7 @@ body[data-theme="dark"] .portal-empty-icon {
     color: #5eead4;
 }
 
-body[data-theme="dark"] .doctor-auth-box h2,
+body[data-theme="dark"] .doctor-auth-card h2,
 body[data-theme="dark"] .doctor-banner-name,
 body[data-theme="dark"] .stat-val,
 body[data-theme="dark"] .patient-main-info h3,
@@ -762,12 +796,23 @@ body[data-theme="dark"] .btn-seed-test:hover {
         grid-template-columns: 1fr;
     }
 
-    .doctor-auth-box {
+    .doctor-auth-card {
         padding: 24px 20px;
     }
 
     .doctor-banner-info {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .doctor-login-video {
+        display: none;
+    }
+
+    .doctor-auth-box {
+        background: #163632;
     }
 }
