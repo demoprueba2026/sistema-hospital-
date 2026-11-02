@@ -542,10 +542,13 @@ function renderTableRows(appointments) {
 }
 
 function promptCasheaAmount(maxAmount, message) {
-    const value = prompt(message, maxAmount.toFixed(2));
+    const value = prompt(message, "");
     if (value === null) return null;
 
-    const parsedAmount = Number(value.trim().replace(",", "."));
+    const normalizedValue = value.trim().replace(",", ".");
+    if (!normalizedValue) return null;
+
+    const parsedAmount = Number(normalizedValue);
     const amount = Math.round(parsedAmount * 100) / 100;
     if (!Number.isFinite(parsedAmount) || amount <= 0 || parsedAmount > maxAmount || Math.abs(parsedAmount - amount) > 0.000001) {
         alert(`Ingresa un monto válido mayor que $0 y no superior a $${maxAmount.toFixed(2)} USD.`);
@@ -581,15 +584,19 @@ function attachTableEvents() {
                     totalPaid
                 );
             } else if (action === "pay") {
-                const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Cashea", "Efectivo");
+                const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Cashea", "");
                 if (method === null || !method.trim()) return;
 
-                let finalMethod = "Efectivo";
-                if (method === "1") finalMethod = "Efectivo";
-                else if (method === "2") finalMethod = "Tarjeta / Punto";
-                else if (method === "3") finalMethod = "Pago Móvil / Transf.";
-                else if (method === "4" || method.trim().toLowerCase() === "cashea") finalMethod = "Cashea";
-                else finalMethod = method.trim();
+                const selectedMethod = method.trim().toLowerCase();
+                let finalMethod;
+                if (selectedMethod === "1" || selectedMethod === "efectivo") finalMethod = "Efectivo";
+                else if (selectedMethod === "2" || selectedMethod === "tarjeta" || selectedMethod === "tarjeta / punto de venta") finalMethod = "Tarjeta / Punto";
+                else if (selectedMethod === "3" || selectedMethod === "pago móvil" || selectedMethod === "pago movil" || selectedMethod === "transferencia") finalMethod = "Pago Móvil / Transf.";
+                else if (selectedMethod === "4" || selectedMethod === "cashea") finalMethod = "Cashea";
+                else {
+                    alert("Método no reconocido. Selecciona 1, 2, 3 o 4.");
+                    return;
+                }
 
                 if (finalMethod === "Cashea") {
                     const initialPayment = promptCasheaAmount(
