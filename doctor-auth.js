@@ -2,6 +2,8 @@
 // AUTENTICACIÓN Y SESIÓN DEL ESPECIALISTA
 // ==========================================
 const toggleDoctorPin = document.querySelector("#toggle-doctor-pin");
+const doctorEmail = document.querySelector("#doctor-email");
+let currentDoctorSupabaseAuthenticated = false;
 
 function checkSession() {
     showLoginForm();
@@ -14,8 +16,9 @@ function showLoginForm() {
     populateDoctorSelect();
 }
 
-function loginDoctor(doc) {
+function loginDoctor(doc, isSupabaseAuthenticated = false) {
     currentDoctorObj = doc;
+    currentDoctorSupabaseAuthenticated = isSupabaseAuthenticated;
 
     dashAvatar.textContent = initialsFor(doc.name);
     dashDoctorName.textContent = doc.name;
@@ -28,7 +31,18 @@ function loginDoctor(doc) {
     renderDoctorAppointments();
 }
 
-function logoutDoctor() {
+async function logoutDoctor() {
+    if (currentDoctorSupabaseAuthenticated) {
+        try {
+            await apiSignOutDoctor();
+        } catch (error) {
+            window.alert(error.message);
+            return;
+        }
+    }
+    currentDoctorSupabaseAuthenticated = false;
+    doctorEmail.value = "";
+    doctorPin.value = "";
     showLoginForm();
 }
 
@@ -57,10 +71,27 @@ doctorLoginForm.addEventListener("submit", (e) => {
         return;
     }
 
-    authAlert.hidden = true;
     const doc = findDoctorByName(docName);
     if (doc) {
-        loginDoctor(doc);
+        const email = doctorEmail.value.trim();
+        if (!email) {
+            authAlert.hidden = true;
+            loginDoctor(doc);
+            return;
+        }
+
+        authAlert.hidden = true;
+        apiSignInDoctor(email, pin, doc.name)
+            .then(() => {
+                authAlert.hidden = true;
+                loginDoctor(doc, true);
+                doctorEmail.value = "";
+                doctorPin.value = "";
+            })
+            .catch((error) => {
+                authAlert.hidden = false;
+                authAlert.textContent = error.message;
+            });
     }
 });
 

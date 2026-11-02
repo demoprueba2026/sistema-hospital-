@@ -174,6 +174,88 @@ async function apiUpdateDoctorNotes(appointmentId, doctorNotes) {
     }
 }
 
+async function apiSignInDoctor(email, password, doctorName) {
+    const client = await getSupabaseClient();
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
+    if (error) {
+        throw new Error(`No se pudo iniciar sesión con Supabase Auth: ${error.message}`);
+    }
+    if (!data.user) {
+        throw new Error("Supabase Auth no devolvió un usuario para esta sesión.");
+    }
+
+    const { data: account, error: accountError } = await client
+        .from("doctor_accounts")
+        .select("doctor_name")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+    if (accountError) {
+        const { error: signOutError } = await client.auth.signOut();
+        if (signOutError) {
+            throw new Error(`No se pudo verificar el doctor (${accountError.message}) ni cerrar la sesión (${signOutError.message}).`);
+        }
+        throw new Error(`No se pudo verificar la cuenta del especialista: ${accountError.message}`);
+    }
+
+    const normalizeName = (name) => name.trim().toLowerCase();
+    if (!account || normalizeName(account.doctor_name) !== normalizeName(doctorName)) {
+        const { error: signOutError } = await client.auth.signOut();
+        if (signOutError) {
+            throw new Error(`La cuenta no está asignada a este especialista y no se pudo cerrar la sesión: ${signOutError.message}`);
+        }
+        throw new Error("La cuenta de Supabase Auth no está asignada al especialista seleccionado.");
+    }
+}
+
+async function apiSignOutDoctor() {
+    const client = await getSupabaseClient();
+    const { error } = await client.auth.signOut();
+    if (error) {
+        throw new Error(`No se pudo cerrar la sesión de Supabase: ${error.message}`);
+    }
+}
+
+async function getAuthenticatedDoctorClient() {
+    const client = await getSupabaseClient();
+    const { data, error } = await client.auth.getUser();
+    if (error) {
+        throw new Error(`No se pudo verificar la sesión de Supabase: ${error.message}`);
+    }
+    if (!data.user) {
+        throw new Error("No hay una sesión autenticada de Supabase.");
+    }
+    return client;
+}
+
+async function apiGetDentalHistory(appointmentId) {
+    const client = await getAuthenticatedDoctorClient();
+    const { data, error } = await client
+        .from("patient_dental_histories")
+        .select("history_data")
+        .eq("appointment_id", appointmentId)
+        .maybeSingle();
+
+    if (error) {
+        throw new Error(`No se pudo cargar el historial odontológico: ${error.message}`);
+    }
+    return data ? data.history_data : null;
+}
+
+async function apiSaveDentalHistory(appointmentId, historyData) {
+    const client = await getAuthenticatedDoctorClient();
+    const { error } = await client
+        .from("patient_dental_histories")
+        .upsert(
+            { appointment_id: appointmentId, history_data: historyData },
+            { onConflict: "appointment_id" }
+        );
+
+    if (error) {
+        throw new Error(`No se pudo guardar el historial odontológico: ${error.message}`);
+    }
+}
+
 async function apiSubscribeToAppointments(onChangesCallback) {
     const client = await getSupabaseClient();
     return client

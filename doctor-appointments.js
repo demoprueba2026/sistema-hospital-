@@ -119,6 +119,7 @@ function createAppointmentCard(appt) {
             </div>
 
             <div class="doctor-actions-row">
+                <button type="button" class="btn-history-action" title="Abrir el historial odontológico" aria-label="Abrir historial clínico">📋 Historial clínico</button>
                 <span style="font-size:13px; color:#607c77; margin-right:4px;">Cambiar estado:</span>
                 <button type="button" class="btn-status-action confirm" data-action="Confirmada" title="Confirmar esta cita">✓ Confirmar</button>
                 <button type="button" class="btn-status-action attend" data-action="Atendida" title="Marcar como atendida en consulta">🩺 Atendida</button>
@@ -137,6 +138,9 @@ function createAppointmentCard(appt) {
 
     card.querySelector('[data-action="delete"]').addEventListener("click", async () => {
         await deletePatientAppointment(appt.id, appt.patientName);
+    });
+    card.querySelector(".btn-history-action").addEventListener("click", () => {
+        openDentalHistory(appt);
     });
 
     return card;
@@ -229,6 +233,137 @@ async function createTestAppointmentForDoctor() {
 
 if (btnCreateTestAppt) btnCreateTestAppt.addEventListener("click", createTestAppointmentForDoctor);
 if (btnSeedTest) btnSeedTest.addEventListener("click", createTestAppointmentForDoctor);
+
+const dentalHistoryDialog = document.querySelector("#dental-history-dialog");
+const historyPatientSummary = document.querySelector("#history-patient-summary");
+const historySecurityMessage = document.querySelector("#history-security-message");
+const historyFormMessage = document.querySelector("#history-form-message");
+const historyPhases = [...document.querySelectorAll("[data-history-phase]")];
+const historyStepLabels = [...document.querySelectorAll("[data-step-label]")];
+const historyFields = [...document.querySelectorAll("[data-history-field]")];
+const historyPreviousButton = document.querySelector("#history-previous");
+const historyNextButton = document.querySelector("#history-next");
+const historySaveButton = document.querySelector("#history-save");
+const historyPhaseCount = document.querySelector("#history-phase-count");
+let activeHistoryAppointment = null;
+let activeHistoryPhase = 0;
+let historyLoaded = false;
+
+function showHistoryPhase() {
+    historyPhases.forEach((phase, index) => {
+        phase.hidden = index !== activeHistoryPhase;
+    });
+    historyStepLabels.forEach((label, index) => {
+        label.classList.toggle("active", index === activeHistoryPhase);
+        label.classList.toggle("complete", index < activeHistoryPhase);
+    });
+    historyPreviousButton.hidden = activeHistoryPhase === 0;
+    historyNextButton.hidden = activeHistoryPhase === historyPhases.length - 1;
+    historySaveButton.hidden = activeHistoryPhase !== historyPhases.length - 1;
+    historyPhaseCount.textContent = `Fase ${activeHistoryPhase + 1} de ${historyPhases.length}`;
+}
+
+function showHistoryMessage(element, message, isError = false) {
+    element.textContent = message;
+    element.hidden = !message;
+    element.classList.toggle("error", isError);
+}
+
+async function openDentalHistory(appointment) {
+    activeHistoryAppointment = appointment;
+    activeHistoryPhase = 0;
+    historyLoaded = false;
+    historyFields.forEach((field) => {
+        field.value = field.dataset.historyField === "chief_complaint"
+            ? appointment.notes || ""
+            : "";
+    });
+    historyPatientSummary.textContent =
+        `${appointment.patientName} · ${appointment.patientAge || "Edad no registrada"} años · Cita ${appointment.code || "S/C"}`;
+    showHistoryMessage(historySecurityMessage, "Verificando el acceso seguro al historial…");
+    showHistoryMessage(historyFormMessage, "");
+    historySaveButton.disabled = true;
+    showHistoryPhase();
+    dentalHistoryDialog.showModal();
+    await loadDentalHistory();
+}
+
+async function loadDentalHistory() {
+    if (!activeHistoryAppointment) return;
+    historySaveButton.disabled = true;
+    showHistoryMessage(historySecurityMessage, "Verificando el acceso seguro al historial…");
+    showHistoryMessage(historyFormMessage, "");
+
+    try {
+        const history = await apiGetDentalHistory(activeHistoryAppointment.id);
+        if (history) {
+            historyFields.forEach((field) => {
+                const value = history[field.dataset.historyField];
+                if (typeof value === "string") field.value = value;
+            });
+        }
+        historyLoaded = true;
+        historySaveButton.disabled = false;
+        showHistoryMessage(
+            historySecurityMessage,
+            history
+                ? "Historial cargado de forma segura. Puedes editarlo y guardar los cambios."
+                : "Aún no existe un historial para esta cita. Completa las fases y guárdalo."
+        );
+    } catch (error) {
+        historyLoaded = false;
+        showHistoryMessage(
+            historySecurityMessage,
+            `${error.message} El acceso de demostración no autentica al doctor; configura Supabase Auth y asígnale su cuenta para habilitar la lectura y el guardado.`,
+            true
+        );
+    }
+}
+
+historyPreviousButton.addEventListener("click", () => {
+    if (activeHistoryPhase > 0) {
+        activeHistoryPhase -= 1;
+        showHistoryPhase();
+    }
+});
+
+historyNextButton.addEventListener("click", () => {
+    if (activeHistoryPhase < historyPhases.length - 1) {
+        activeHistoryPhase += 1;
+        showHistoryPhase();
+    }
+});
+
+document.querySelector("#history-close").addEventListener("click", () => {
+    dentalHistoryDialog.close();
+});
+
+dentalHistoryDialog.addEventListener("click", (event) => {
+    if (event.target === dentalHistoryDialog) dentalHistoryDialog.close();
+});
+
+document.querySelector("#history-save").addEventListener("click", async () => {
+    if (!activeHistoryAppointment || !historyLoaded || !currentDoctorObj) return;
+
+    historySaveButton.disabled = true;
+    showHistoryMessage(historyFormMessage, "Guardando historial…");
+    const historyData = Object.fromEntries(
+        historyFields.map((field) => [field.dataset.historyField, field.value.trim()])
+    );
+
+    try {
+        await apiSaveDentalHistory(activeHistoryAppointment.id, historyData);
+        showHistoryMessage(historyFormMessage, "Historial guardado correctamente.");
+        showHistoryMessage(
+            historySecurityMessage,
+            "Cambios guardados en Supabase para el paciente de esta cita."
+        );
+    } catch (error) {
+        showHistoryMessage(historyFormMessage, error.message, true);
+    } finally {
+        historySaveButton.disabled = false;
+    }
+});
 
 // Habilitar Realtime para que se actualice solo al haber cambios
 apiSubscribeToAppointments(() => {

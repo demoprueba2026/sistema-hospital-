@@ -79,15 +79,20 @@
                     </div>
 
                     <div class="form-field">
-                        <label for="doctor-pin">Clave de acceso <span class="required">*</span></label>
+                        <label for="doctor-email">Correo de Supabase Auth <span class="optional">(opcional)</span></label>
+                        <input type="email" id="doctor-email" class="auth-input" placeholder="doctor@clinica.com" autocomplete="username">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="doctor-pin">Contraseña <span class="required">*</span></label>
                         <div class="auth-password-wrap">
-                            <input type="password" id="doctor-pin" class="auth-input" placeholder="Ingresa tu clave de especialista" required autocomplete="current-password">
+                            <input type="password" id="doctor-pin" class="auth-input" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
                             <button class="auth-password-toggle" id="toggle-doctor-pin" type="button" aria-label="Mostrar clave de acceso" aria-pressed="false">Mostrar</button>
                         </div>
                     </div>
 
                     <div class="auth-hint-box">
-                        <span>💡 <strong>Acceso institucional:</strong> Puedes ingresar con la clave de prueba <code>medico123</code> (o cualquier contraseña para demostración).</span>
+                        <span>💡 Sin correo se conserva el acceso de demostración. Para guardar historiales, inicia con el correo y la contraseña de tu cuenta de Supabase Auth asignada al especialista.</span>
                     </div>
 
                     <div class="form-alert" id="auth-alert" role="alert" hidden></div>
@@ -171,6 +176,110 @@
             </div>
         </section>
     </main>
+
+    <dialog class="dental-history-dialog" id="dental-history-dialog" aria-labelledby="dental-history-title">
+        <div class="dental-history-shell">
+            <header class="dental-history-header">
+                <div>
+                    <p class="history-kicker">EXPEDIENTE ODONTOLÓGICO</p>
+                    <h2 id="dental-history-title">Historial clínico</h2>
+                    <p class="history-patient" id="history-patient-summary"></p>
+                </div>
+                <button class="history-close" id="history-close" type="button" aria-label="Cerrar historial">×</button>
+            </header>
+
+            <div class="history-security-message" id="history-security-message" role="status" hidden></div>
+            <nav class="history-progress" aria-label="Fases del historial">
+                <span class="history-step active" data-step-label="0">1. Anamnesis</span>
+                <span class="history-step" data-step-label="1">2. Evaluación</span>
+                <span class="history-step" data-step-label="2">3. Diagnóstico</span>
+                <span class="history-step" data-step-label="3">4. Evolución</span>
+            </nav>
+
+            <form class="dental-history-form" id="dental-history-form">
+                <section class="history-phase" data-history-phase="0">
+                    <div class="history-phase-heading">
+                        <span>FASE 01</span>
+                        <h3>Anamnesis y antecedentes</h3>
+                        <p>Registra el motivo de consulta y los antecedentes relevantes para la atención odontológica.</p>
+                    </div>
+                    <label class="history-field">Motivo de consulta
+                        <textarea data-history-field="chief_complaint" rows="3" placeholder="Motivo expresado por el paciente"></textarea>
+                    </label>
+                    <div class="history-fields-grid">
+                        <label class="history-field">Antecedentes médicos
+                            <textarea data-history-field="medical_history" rows="4" placeholder="Enfermedades, cirugías y antecedentes relevantes"></textarea>
+                        </label>
+                        <label class="history-field">Alergias
+                            <textarea data-history-field="allergies" rows="4" placeholder="Alergias conocidas o indique si no refiere"></textarea>
+                        </label>
+                        <label class="history-field">Medicamentos actuales
+                            <textarea data-history-field="medications" rows="4" placeholder="Nombre, dosis y frecuencia"></textarea>
+                        </label>
+                        <label class="history-field">Antecedentes odontológicos
+                            <textarea data-history-field="dental_history" rows="4" placeholder="Tratamientos previos, experiencias y controles"></textarea>
+                        </label>
+                    </div>
+                    <label class="history-field">Hábitos relevantes
+                        <textarea data-history-field="habits" rows="3" placeholder="Higiene oral, tabaco, bruxismo u otros"></textarea>
+                    </label>
+                </section>
+
+                <section class="history-phase" data-history-phase="1" hidden>
+                    <div class="history-phase-heading">
+                        <span>FASE 02</span>
+                        <h3>Evaluación clínica</h3>
+                        <p>Documenta los hallazgos del examen y el odontograma según la evaluación realizada.</p>
+                    </div>
+                    <label class="history-field">Examen extraoral
+                        <textarea data-history-field="extraoral_exam" rows="4" placeholder="Simetría, ATM, ganglios y otros hallazgos"></textarea>
+                    </label>
+                    <label class="history-field">Examen intraoral
+                        <textarea data-history-field="intraoral_exam" rows="5" placeholder="Tejidos blandos, mucosas, periodonto y hallazgos clínicos"></textarea>
+                    </label>
+                    <label class="history-field">Odontograma / evaluación dental
+                        <textarea data-history-field="odontogram" rows="6" placeholder="Registra por pieza dental los hallazgos, tratamientos y observaciones"></textarea>
+                    </label>
+                </section>
+
+                <section class="history-phase" data-history-phase="2" hidden>
+                    <div class="history-phase-heading">
+                        <span>FASE 03</span>
+                        <h3>Diagnóstico y plan</h3>
+                        <p>Resume la impresión diagnóstica y acuerda el plan de tratamiento con el paciente.</p>
+                    </div>
+                    <label class="history-field">Diagnóstico odontológico
+                        <textarea data-history-field="diagnosis" rows="5" placeholder="Diagnóstico y observaciones clínicas"></textarea>
+                    </label>
+                    <label class="history-field">Plan de tratamiento
+                        <textarea data-history-field="treatment_plan" rows="6" placeholder="Procedimientos, prioridades y recomendaciones"></textarea>
+                    </label>
+                </section>
+
+                <section class="history-phase" data-history-phase="3" hidden>
+                    <div class="history-phase-heading">
+                        <span>FASE 04</span>
+                        <h3>Evolución y seguimiento</h3>
+                        <p>Anota la evolución de la consulta y las indicaciones para el próximo control.</p>
+                    </div>
+                    <label class="history-field">Evolución clínica
+                        <textarea data-history-field="clinical_evolution" rows="7" placeholder="Procedimientos realizados, respuesta y evolución"></textarea>
+                    </label>
+                    <label class="history-field">Indicaciones y próximo control
+                        <textarea data-history-field="follow_up" rows="4" placeholder="Cuidados, recomendaciones y fecha sugerida"></textarea>
+                    </label>
+                </section>
+
+                <div class="history-form-message" id="history-form-message" role="alert" hidden></div>
+                <footer class="history-dialog-actions">
+                    <button class="history-secondary-button" id="history-previous" type="button" hidden>← Anterior</button>
+                    <span class="history-phase-count" id="history-phase-count">Fase 1 de 4</span>
+                    <button class="history-secondary-button" id="history-next" type="button">Siguiente →</button>
+                    <button class="history-save-button" id="history-save" type="button" disabled>Guardar historial</button>
+                </footer>
+            </form>
+        </div>
+    </dialog>
 
     <footer class="site-footer">
         <a class="brand footer-brand" href="index.html">

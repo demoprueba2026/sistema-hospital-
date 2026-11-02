@@ -258,6 +258,12 @@
     color: #d45858;
 }
 
+.optional {
+    color: #7a918b;
+    font-size: 11px;
+    font-weight: 500;
+}
+
 .auth-select,
 .auth-input {
     width: 100%;
@@ -802,6 +808,226 @@
     color: #991b1b;
 }
 
+.btn-history-action,
+.history-secondary-button,
+.history-save-button {
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid #177c75;
+    border-radius: 9px;
+    background: #edf7f4;
+    color: #14625b;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color .18s, color .18s, border-color .18s;
+}
+
+.btn-history-action:hover,
+.history-secondary-button:hover {
+    background: #dcefe9;
+}
+
+.dental-history-dialog {
+    width: min(860px, calc(100% - 28px));
+    max-width: 860px;
+    max-height: min(92vh, 900px);
+    padding: 0;
+    overflow: auto;
+    border: 1px solid #d5e6df;
+    border-radius: 20px;
+    background: #f8fbfa;
+    color: #1c3c37;
+    box-shadow: 0 24px 80px rgb(10 38 34 / 30%);
+}
+
+.dental-history-dialog::backdrop {
+    background: rgb(7 28 25 / 62%);
+    backdrop-filter: blur(3px);
+}
+
+.dental-history-shell {
+    padding: 28px;
+}
+
+.dental-history-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #deebe6;
+}
+
+.history-kicker,
+.history-phase-heading > span {
+    margin: 0;
+    color: #188579;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+.dental-history-header h2 {
+    margin: 5px 0;
+    color: #173834;
+    font-family: "Manrope", sans-serif;
+    font-size: 27px;
+}
+
+.history-patient {
+    margin: 0;
+    color: #5b7771;
+    font-size: 14px;
+}
+
+.history-close {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 50%;
+    background: #e9f2ee;
+    color: #315a52;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.history-security-message,
+.history-form-message {
+    margin-top: 16px;
+    padding: 11px 14px;
+    border: 1px solid #cce9dc;
+    border-radius: 10px;
+    background: #eff9f3;
+    color: #276247;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.history-security-message.error,
+.history-form-message.error {
+    border-color: #f1caca;
+    background: #fff3f2;
+    color: #9c3434;
+}
+
+.history-progress {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 20px 0 24px;
+}
+
+.history-step {
+    padding: 9px 7px;
+    border-bottom: 3px solid #dce9e4;
+    color: #758b85;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.history-step.active,
+.history-step.complete {
+    border-color: #188579;
+    color: #14625b;
+}
+
+.history-phase-heading {
+    margin-bottom: 20px;
+}
+
+.history-phase-heading h3 {
+    margin: 6px 0;
+    color: #183c36;
+    font-size: 21px;
+}
+
+.history-phase-heading p {
+    margin: 0;
+    color: #617872;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.history-field {
+    display: block;
+    margin: 0 0 16px;
+    color: #294a44;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.history-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+}
+
+.history-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 90px;
+    margin-top: 7px;
+    padding: 11px 12px;
+    resize: vertical;
+    border: 1px solid #cfdfd9;
+    border-radius: 10px;
+    background: #fff;
+    color: #203d37;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.history-field textarea:focus {
+    border-color: #188579;
+    outline: 3px solid rgb(24 133 121 / 14%);
+}
+
+.history-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid #deebe6;
+}
+
+.history-phase-count {
+    margin-right: auto;
+    color: #617872;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.history-save-button {
+    background: #177c75;
+    color: #fff;
+}
+
+.history-save-button:hover:not(:disabled) {
+    background: #105e58;
+}
+
+.history-save-button:disabled {
+    border-color: #aabdb7;
+    background: #aabdb7;
+    cursor: not-allowed;
+}
+
+.dental-history-dialog[open] {
+    animation: history-dialog-enter .2s ease-out;
+}
+
+@keyframes history-dialog-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .portal-empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -866,6 +1092,58 @@ body[data-theme="dark"] .portal-empty-state {
     box-shadow: 0 10px 28px rgb(0 0 0 / 22%);
 }
 
+body[data-theme="dark"] .dental-history-dialog {
+    border-color: #31524a;
+    background: #122421;
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .dental-history-header h2,
+body[data-theme="dark"] .history-phase-heading h3 {
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .history-patient,
+body[data-theme="dark"] .history-phase-heading p,
+body[data-theme="dark"] .history-phase-count {
+    color: #b8cec7;
+}
+
+body[data-theme="dark"] .history-field {
+    color: #d1e4dd;
+}
+
+body[data-theme="dark"] .history-field textarea {
+    border-color: #31524a;
+    background: #182e29;
+    color: #f2f8f5;
+}
+
+body[data-theme="dark"] .history-step {
+    border-color: #31524a;
+    color: #9bb5ad;
+}
+
+body[data-theme="dark"] .history-step.active,
+body[data-theme="dark"] .history-step.complete {
+    border-color: #5eead4;
+    color: #5eead4;
+}
+
+body[data-theme="dark"] .history-close,
+body[data-theme="dark"] .history-secondary-button,
+body[data-theme="dark"] .btn-history-action {
+    border-color: #3a665a;
+    background: #193832;
+    color: #8de8d7;
+}
+
+body[data-theme="dark"] .history-close:hover,
+body[data-theme="dark"] .history-secondary-button:hover,
+body[data-theme="dark"] .btn-history-action:hover {
+    background: #24463e;
+}
+
 body[data-theme="dark"] .portal-nav-back {
     background: #19352f;
     color: #5eead4;
@@ -906,6 +1184,10 @@ body[data-theme="dark"] .auth-panel .auth-kicker {
 
 body[data-theme="dark"] .auth-form label {
     color: #d1e4dd;
+}
+
+body[data-theme="dark"] .optional {
+    color: #9bb5ad;
 }
 
 body[data-theme="dark"] .doctor-banner-spec {
@@ -1163,5 +1445,34 @@ body[data-theme="dark"] .btn-seed-test:hover {
     .doctor-banner-info {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .dental-history-shell {
+        padding: 20px 16px;
+    }
+
+    .dental-history-header h2 {
+        font-size: 23px;
+    }
+
+    .history-progress {
+        gap: 3px;
+    }
+
+    .history-step {
+        padding: 8px 3px;
+        font-size: 10px;
+    }
+
+    .history-fields-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-dialog-actions {
+        flex-wrap: wrap;
+    }
+
+    .history-phase-count {
+        width: 100%;
     }
 }
