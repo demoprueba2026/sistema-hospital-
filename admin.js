@@ -122,22 +122,39 @@ function savePaymentsMap() {
 
 function getAppointmentPayment(apptId, dbPaidField = null) {
     if (paymentsMap[apptId]) {
-        return paymentsMap[apptId];
+        const payment = paymentsMap[apptId];
+        const amountPaid = Number.isFinite(Number(payment.amountPaid))
+            ? Math.min(CONSULTATION_FEE_USD, Math.max(0, Math.round(Number(payment.amountPaid) * 100) / 100))
+            : payment.paid ? CONSULTATION_FEE_USD : 0;
+        return {
+            ...payment,
+            amountPaid,
+            amountRemaining: Math.max(0, CONSULTATION_FEE_USD - amountPaid),
+            paid: payment.paid || amountPaid >= CONSULTATION_FEE_USD
+        };
     }
     // Si viene de la base de datos con algún campo
     const isPaid = dbPaidField === true || dbPaidField === "Pagado";
     return {
         paid: isPaid,
+        amountPaid: isPaid ? CONSULTATION_FEE_USD : 0,
+        amountRemaining: isPaid ? 0 : CONSULTATION_FEE_USD,
         method: isPaid ? "Efectivo / Caja" : null,
         paidAt: isPaid ? new Date().toISOString() : null
     };
 }
 
-async function setAppointmentPayment(apptId, paid, method = "Efectivo / Caja") {
+async function setAppointmentPayment(apptId, paid, method = "Efectivo / Caja", amountPaid = null) {
+    const previousPayment = getAppointmentPayment(apptId);
+    const newAmountPaid = amountPaid === null
+        ? paid ? CONSULTATION_FEE_USD : 0
+        : Math.min(CONSULTATION_FEE_USD, Math.max(0, Math.round(Number(amountPaid) * 100) / 100));
+    const isPaid = newAmountPaid >= CONSULTATION_FEE_USD;
     paymentsMap[apptId] = {
-        paid,
-        method: paid ? method : null,
-        paidAt: paid ? new Date().toISOString() : null
+        paid: isPaid,
+        amountPaid: newAmountPaid,
+        method: newAmountPaid > 0 ? method : null,
+        paidAt: isPaid ? new Date().toISOString() : previousPayment.paidAt || null
     };
     savePaymentsMap();
 
@@ -147,8 +164,8 @@ async function setAppointmentPayment(apptId, paid, method = "Efectivo / Caja") {
             const client = await getSupabaseClient();
             await client
                 .from("citas")
-                .update({ 
-                    payment_status: paid ? "Pagado" : "Pendiente" 
+                .update({
+                    payment_status: isPaid ? "Pagado" : "Pendiente"
                 })
                 .eq("id", apptId);
         }
@@ -210,29 +227,25 @@ function renderDashboard() {
 
     // Cálculos de KPI
     const totalCount = allAppointments.length;
-    let paidCount = 0;
-    let pendingCount = 0;
+    let totalCollectedUsd = 0;
+    let totalPendingUsd = 0;
     let todayCount = 0;
 
     allAppointments.forEach((appt) => {
         const payInfo = getAppointmentPayment(appt.id, appt.payment_status || appt.paid);
-        if (payInfo.paid) {
-            paidCount++;
-        } else {
-            pendingCount++;
-        }
+        totalCollectedUsd += payInfo.amountPaid;
+        totalPendingUsd += payInfo.amountRemaining;
         if (appt.date === todayStr) {
             todayCount++;
         }
     });
-
-    const totalCollectedUsd = paidCount * CONSULTATION_FEE_USD;
-    const totalPendingUsd = pendingCount * CONSULTATION_FEE_USD;
+    totalCollectedUsd = Math.round(totalCollectedUsd * 100) / 100;
+    totalPendingUsd = Math.round(totalPendingUsd * 100) / 100;
 
     // Actualizar KPI
     if (kpiTotalPatients) kpiTotalPatients.textContent = totalCount;
-    if (kpiTotalPaid) kpiTotalPaid.textContent = `$${totalCollectedUsd.toLocaleString()} USD`;
-    if (kpiTotalPending) kpiTotalPending.textContent = `$${totalPendingUsd.toLocaleString()} USD`;
+    if (kpiTotalPaid) kpiTotalPaid.textContent = `$${totalCollectedUsd.toLocaleString("en-US", { maximumFractionDigits: 2 })} USD`;
+    if (kpiTotalPending) kpiTotalPending.textContent = `$${totalPendingUsd.toLocaleString("en-US", { maximumFractionDigits: 2 })} USD`;
     if (kpiTodayAppts) kpiTodayAppts.textContent = todayCount;
 
     renderRevenueCharts();
@@ -282,7 +295,7 @@ function renderDashboard() {
 }
 
 function formatRevenueUsd(amount) {
-    return `$${amount.toLocaleString("en-US", { maximumFractionDigits: 0 })} USD`;
+    return `$${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} USD`;
 }
 
 function renderRevenueCharts() {
@@ -291,10 +304,13 @@ function renderRevenueCharts() {
     const doctorRevenue = new Map();
     allAppointments.forEach((appt) => {
         const payInfo = getAppointmentPayment(appt.id, appt.payment_status || appt.paid);
-        if (appt.status === "Cancelada" && !payInfo.paid) return;
+        if (appt.status === "Cancelada" && payInfo.amountPaid === 0) return;
         const name = appt.doctorName || "Especialista";
         const totals = doctorRevenue.get(name) || { paid: 0, pending: 0 };
-        totals[payInfo.paid ? "paid" : "pending"] += CONSULTATION_FEE_USD;
+        totals.paid += payInfo.amountPaid;
+        if (appt.status !== "Cancelada") {
+            totals.pending += payInfo.amountRemaining;
+        }
         doctorRevenue.set(name, totals);
     });
 
@@ -314,7 +330,7 @@ function renderRevenueCharts() {
             paid: sum.paid + totals.paid,
             pending: sum.pending + totals.pending
         }), { paid: 0, pending: 0 });
-    const total = selectedTotals.paid + selectedTotals.pending;
+    const total = Math.round((selectedTotals.paid + selectedTotals.pending) * 100) / 100;
     const segments = [
         { label: "Recaudado", value: selectedTotals.paid, color: "#10b981" },
         { label: "Pendiente de cobro", value: selectedTotals.pending, color: "#f59e0b" }
@@ -326,7 +342,7 @@ function renderRevenueCharts() {
     revenueDonutSubtitle.textContent = isDoctorSelected
         ? revenueDoctorFilter.value
         : "Estado de cobranza de toda la clínica";
-    revenueDonutTotal.textContent = `$${total.toLocaleString("en-US")}`;
+    revenueDonutTotal.textContent = `$${total.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
     revenueDonutCaption.textContent = "USD registrados";
     revenueDonut.setAttribute("aria-label", `Total registrado ${formatRevenueUsd(total)}; recaudado ${formatRevenueUsd(selectedTotals.paid)}; pendiente de cobro ${formatRevenueUsd(selectedTotals.pending)}`);
 
@@ -489,15 +505,19 @@ function renderTableRows(appointments) {
             <td data-label="Cobranza">
                 <div class="payment-cell-box">
                     <div class="payment-badge-status ${payInfo.paid ? "paid" : "unpaid"}">
-                        ${payInfo.paid ? "✓ PAGADO · $50 USD" : "⏳ PENDIENTE · $50 USD"}
+                        ${payInfo.paid
+                            ? `✓ PAGADO · $${CONSULTATION_FEE_USD} USD`
+                            : payInfo.amountPaid > 0
+                                ? `💳 ABONADO · $${payInfo.amountPaid.toFixed(2)} / $${CONSULTATION_FEE_USD} USD · RESTA $${payInfo.amountRemaining.toFixed(2)}`
+                                : `⏳ PENDIENTE · $${CONSULTATION_FEE_USD} USD`}
                     </div>
                     <div class="payment-actions-mini">
                         ${payInfo.paid 
                             ? `<button type="button" class="btn-toggle-payment btn-mark-unpaid" data-pay-toggle="${appt.id}" data-action="unpay">Marcar como Pendiente</button>` 
-                            : `<button type="button" class="btn-toggle-payment btn-pay-now" data-pay-toggle="${appt.id}" data-action="pay">Cobrar $50 USD ✓</button>`
+                            : `<button type="button" class="btn-toggle-payment btn-pay-now" data-pay-toggle="${appt.id}" data-action="${payInfo.method === "Cashea" && payInfo.amountPaid > 0 ? "installment" : "pay"}">${payInfo.method === "Cashea" && payInfo.amountPaid > 0 ? `Abonar $${payInfo.amountRemaining.toFixed(2)} USD` : "Cobrar $50 USD ✓"}</button>`
                         }
                     </div>
-                    ${payInfo.paid && payInfo.method ? `<span class="method-tag-mini">Método: ${payInfo.method}</span>` : ""}
+                    ${payInfo.amountPaid > 0 && payInfo.method ? `<span class="method-tag-mini">Método: ${payInfo.method}</span>` : ""}
                 </div>
             </td>
             <td data-label="Acciones">
@@ -521,6 +541,20 @@ function renderTableRows(appointments) {
     attachTableEvents();
 }
 
+function promptCasheaAmount(maxAmount, message) {
+    const value = prompt(message, maxAmount.toFixed(2));
+    if (value === null) return null;
+
+    const parsedAmount = Number(value.trim().replace(",", "."));
+    const amount = Math.round(parsedAmount * 100) / 100;
+    if (!Number.isFinite(parsedAmount) || amount <= 0 || parsedAmount > maxAmount || Math.abs(parsedAmount - amount) > 0.000001) {
+        alert(`Ingresa un monto válido mayor que $0 y no superior a $${maxAmount.toFixed(2)} USD.`);
+        return null;
+    }
+
+    return amount;
+}
+
 // ==========================================================
 // EVENTOS DE TABLA (CAMBIO DE PAGO, ESTADO, RECIBO, ELIMINAR)
 // ==========================================================
@@ -531,7 +565,22 @@ function attachTableEvents() {
             const apptId = e.currentTarget.getAttribute("data-pay-toggle");
             const action = e.currentTarget.getAttribute("data-action");
 
-            if (action === "pay") {
+            if (action === "installment") {
+                const payment = getAppointmentPayment(apptId);
+                const installment = promptCasheaAmount(
+                    payment.amountRemaining,
+                    `Monto del nuevo abono Cashea (saldo pendiente: $${payment.amountRemaining.toFixed(2)} USD):`
+                );
+                if (installment === null) return;
+
+                const totalPaid = Math.round((payment.amountPaid + installment) * 100) / 100;
+                await setAppointmentPayment(
+                    apptId,
+                    totalPaid >= CONSULTATION_FEE_USD,
+                    "Cashea",
+                    totalPaid
+                );
+            } else if (action === "pay") {
                 const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Cashea", "Efectivo");
                 if (method === null || !method.trim()) return;
 
@@ -539,10 +588,24 @@ function attachTableEvents() {
                 if (method === "1") finalMethod = "Efectivo";
                 else if (method === "2") finalMethod = "Tarjeta / Punto";
                 else if (method === "3") finalMethod = "Pago Móvil / Transf.";
-                else if (method === "4") finalMethod = "Cashea";
+                else if (method === "4" || method.trim().toLowerCase() === "cashea") finalMethod = "Cashea";
                 else finalMethod = method.trim();
 
-                await setAppointmentPayment(apptId, true, finalMethod);
+                if (finalMethod === "Cashea") {
+                    const initialPayment = promptCasheaAmount(
+                        CONSULTATION_FEE_USD,
+                        `Monto del abono inicial Cashea (total de la consulta: $${CONSULTATION_FEE_USD} USD):`
+                    );
+                    if (initialPayment === null) return;
+                    await setAppointmentPayment(
+                        apptId,
+                        initialPayment >= CONSULTATION_FEE_USD,
+                        finalMethod,
+                        initialPayment
+                    );
+                } else {
+                    await setAppointmentPayment(apptId, true, finalMethod);
+                }
             } else {
                 if (confirm("¿Deseas marcar esta consulta como PENDIENTE de pago?")) {
                     await setAppointmentPayment(apptId, false);
@@ -618,7 +681,11 @@ function openReceiptModal(appt) {
     document.getElementById("rec-modal-doctor").textContent = appt.doctorName || "Especialista";
     document.getElementById("rec-modal-specialty").textContent = appt.specialty || "Consulta Médica";
     document.getElementById("rec-modal-datetime").textContent = `${formatDateDisplay(appt.date)} a las ${appt.time || ""}`;
-    document.getElementById("rec-modal-status").textContent = payInfo.paid ? `PAGADO (${payInfo.method || "Caja"})` : "PENDIENTE DE PAGO";
+    document.getElementById("rec-modal-status").textContent = payInfo.paid
+        ? `PAGADO (${payInfo.method || "Caja"})`
+        : payInfo.amountPaid > 0
+            ? `ABONADO $${payInfo.amountPaid.toFixed(2)} · RESTA $${payInfo.amountRemaining.toFixed(2)} (${payInfo.method})`
+            : "PENDIENTE DE PAGO";
     document.getElementById("rec-modal-status").style.color = payInfo.paid ? "#10b981" : "#f59e0b";
     document.getElementById("rec-modal-price").textContent = `$${CONSULTATION_FEE_USD}.00 USD`;
 
