@@ -131,7 +131,7 @@ function createAppointmentCard(appt) {
     card.querySelectorAll(".btn-status-action").forEach((btn) => {
         btn.addEventListener("click", async () => {
             const nextStatus = btn.getAttribute("data-action");
-            await updateAppointmentStatusAsync(appt.id, nextStatus);
+            await updateAppointmentStatusAsync(appt.id, nextStatus, appt.patientName);
         });
     });
 
@@ -156,10 +156,11 @@ async function deletePatientAppointment(appointmentId, patientName) {
     }
 }
 
-async function updateAppointmentStatusAsync(apptId, newStatus) {
+async function updateAppointmentStatusAsync(apptId, newStatus, patientName) {
     try {
         await apiUpdateAppointmentStatus(apptId, newStatus);
         await renderDoctorAppointments();
+        window.alert(`El estado de la cita de ${patientName || "el paciente"} se actualizó a: ${newStatus}.`);
     } catch (error) {
         window.alert(error.message);
     }
