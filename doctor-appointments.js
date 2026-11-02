@@ -249,6 +249,28 @@ let activeHistoryAppointment = null;
 let activeHistoryPhase = 0;
 let historyLoaded = false;
 
+function getDemoHistoryStorageKey(appointmentId) {
+    return `demo_dental_history_${appointmentId}`;
+}
+
+function getDemoDentalHistory(appointmentId) {
+    const savedHistory = window.sessionStorage.getItem(getDemoHistoryStorageKey(appointmentId));
+    if (!savedHistory) return null;
+
+    const history = JSON.parse(savedHistory);
+    if (!history || typeof history !== "object" || Array.isArray(history)) {
+        throw new Error("El historial temporal de demostración tiene un formato inválido.");
+    }
+    return history;
+}
+
+function saveDemoDentalHistory(appointmentId, historyData) {
+    window.sessionStorage.setItem(
+        getDemoHistoryStorageKey(appointmentId),
+        JSON.stringify(historyData)
+    );
+}
+
 function showHistoryPhase() {
     historyPhases.forEach((phase, index) => {
         phase.hidden = index !== activeHistoryPhase;
@@ -291,11 +313,19 @@ async function openDentalHistory(appointment) {
 async function loadDentalHistory() {
     if (!activeHistoryAppointment) return;
     historySaveButton.disabled = true;
-    showHistoryMessage(historySecurityMessage, "Verificando el acceso seguro al historial…");
+    const isDemoMode = !currentDoctorSupabaseAuthenticated;
+    showHistoryMessage(
+        historySecurityMessage,
+        isDemoMode
+            ? "Modo de prueba: los cambios se guardan solo en esta pestaña. Usa únicamente datos ficticios."
+            : "Verificando el acceso seguro al historial…"
+    );
     showHistoryMessage(historyFormMessage, "");
 
     try {
-        const history = await apiGetDentalHistory(activeHistoryAppointment.id);
+        const history = isDemoMode
+            ? getDemoDentalHistory(activeHistoryAppointment.id)
+            : await apiGetDentalHistory(activeHistoryAppointment.id);
         if (history) {
             historyFields.forEach((field) => {
                 const value = history[field.dataset.historyField];
@@ -306,15 +336,21 @@ async function loadDentalHistory() {
         historySaveButton.disabled = false;
         showHistoryMessage(
             historySecurityMessage,
-            history
-                ? "Historial cargado de forma segura. Puedes editarlo y guardar los cambios."
-                : "Aún no existe un historial para esta cita. Completa las fases y guárdalo."
+            isDemoMode
+                ? history
+                    ? "Modo de prueba: historial cargado desde esta pestaña. Usa únicamente datos ficticios."
+                    : "Modo de prueba: aún no hay historial para esta cita. Usa únicamente datos ficticios."
+                : history
+                    ? "Historial cargado de forma segura. Puedes editarlo y guardar los cambios."
+                    : "Aún no existe un historial para esta cita. Completa las fases y guárdalo."
         );
     } catch (error) {
         historyLoaded = false;
         showHistoryMessage(
             historySecurityMessage,
-            `${error.message} El acceso de demostración no autentica al doctor; configura Supabase Auth y asígnale su cuenta para habilitar la lectura y el guardado.`,
+            isDemoMode
+                ? `No se pudo cargar el historial temporal de demostración: ${error.message}`
+                : `${error.message} Verifica que la cuenta del doctor esté creada y asignada en Supabase.`,
             true
         );
     }
@@ -352,12 +388,21 @@ document.querySelector("#history-save").addEventListener("click", async () => {
     );
 
     try {
-        await apiSaveDentalHistory(activeHistoryAppointment.id, historyData);
-        showHistoryMessage(historyFormMessage, "Historial guardado correctamente.");
-        showHistoryMessage(
-            historySecurityMessage,
-            "Cambios guardados en Supabase para el paciente de esta cita."
-        );
+        if (currentDoctorSupabaseAuthenticated) {
+            await apiSaveDentalHistory(activeHistoryAppointment.id, historyData);
+            showHistoryMessage(historyFormMessage, "Historial guardado correctamente en Supabase.");
+            showHistoryMessage(
+                historySecurityMessage,
+                "Cambios guardados en Supabase para el paciente de esta cita."
+            );
+        } else {
+            saveDemoDentalHistory(activeHistoryAppointment.id, historyData);
+            showHistoryMessage(historyFormMessage, "Historial guardado en esta pestaña para la demostración.");
+            showHistoryMessage(
+                historySecurityMessage,
+                "Modo de prueba: guardado solo en esta pestaña. No uses datos de pacientes reales."
+            );
+        }
     } catch (error) {
         showHistoryMessage(historyFormMessage, error.message, true);
     } finally {
