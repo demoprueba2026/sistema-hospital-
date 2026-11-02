@@ -439,21 +439,14 @@ function renderTableRows(appointments) {
         const tr = document.createElement("tr");
 
         const payInfo = getAppointmentPayment(appt.id, appt.payment_status || appt.paid);
+        const initials = getInitials(appt.patientName || "Paciente");
         const formattedDate = formatDateDisplay(appt.date);
         const cleanPhone = (appt.patientPhone || "").replace(/[^0-9+]/g, "");
 
         tr.innerHTML = `
             <td>
                 <div class="patient-cell-profile">
-<<<<<<< HEAD
-=======
-                    <div class="patient-avatar-placeholder" aria-hidden="true">
-                        <svg viewBox="0 0 48 48" focusable="false">
-                            <circle cx="24" cy="17" r="8"></circle>
-                            <path d="M9 42c.9-9 6.8-14 15-14s14.1 5 15 14"></path>
-                        </svg>
-                    </div>
->>>>>>> b5003d93666ff69dbedefca99f8d7c1ca362a142
+                    <div class="patient-avatar-circle" aria-hidden="true">${initials}</div>
                     <div class="patient-identity">
                         <h4>${escapeHtml(appt.patientName || "Sin Nombre")}</h4>
                         <span class="patient-code-tag">ID: ${escapeHtml(appt.code || "S/C")}</span>
@@ -535,14 +528,13 @@ function attachTableEvents() {
             const action = e.currentTarget.getAttribute("data-action");
 
             if (action === "pay") {
-                const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Zelle\n5: Cashea", "Efectivo");
+                const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Zelle", "Efectivo");
                 let finalMethod = "Efectivo";
                 if (method) {
                     if (method === "1") finalMethod = "Efectivo";
                     else if (method === "2") finalMethod = "Tarjeta / Punto";
                     else if (method === "3") finalMethod = "Pago Móvil / Transf.";
                     else if (method === "4") finalMethod = "Zelle";
-                    else if (method === "5") finalMethod = "Cashea";
                     else finalMethod = method;
                 }
                 await setAppointmentPayment(apptId, true, finalMethod);
@@ -766,6 +758,17 @@ async function seedDemoAppointments() {
 // ==========================================================
 // UTILIDADES
 // ==========================================================
+function getInitials(name) {
+    return name
+        .replace(/^(Dra?\. )/, "")
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase() || "P";
+}
+
 function formatDateDisplay(dateStr) {
     if (!dateStr) return "-";
     const parts = dateStr.split("-");

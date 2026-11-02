@@ -162,6 +162,32 @@ async function updateAppointmentStatusAsync(apptId, newStatus) {
         await renderDoctorAppointments();
     } catch (error) {
         window.alert(error.message);
+        return;
+    }
+
+    if (newStatus !== "Confirmada") {
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/send-confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ appointmentId: apptId })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "No se pudo enviar el correo de confirmación.");
+        }
+
+        if (result.sent) {
+            window.alert("La cita fue confirmada y se envió un correo al paciente.");
+        } else if (result.alreadySent) {
+            window.alert("Ya se había enviado un correo de confirmación para esta cita.");
+        }
+    } catch (error) {
+        window.alert(`La cita quedó confirmada, pero no se pudo enviar el correo: ${error.message}`);
     }
 }
 
