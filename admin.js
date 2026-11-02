@@ -533,14 +533,15 @@ function attachTableEvents() {
 
             if (action === "pay") {
                 const method = prompt("Selecciona el método de pago:\n1: Efectivo (Divisas / Bs)\n2: Tarjeta / Punto de Venta\n3: Pago Móvil / Transferencia\n4: Cashea", "Efectivo");
+                if (method === null || !method.trim()) return;
+
                 let finalMethod = "Efectivo";
-                if (method) {
-                    if (method === "1") finalMethod = "Efectivo";
-                    else if (method === "2") finalMethod = "Tarjeta / Punto";
-                    else if (method === "3") finalMethod = "Pago Móvil / Transf.";
-                    else if (method === "4") finalMethod = "Cashea";
-                    else finalMethod = method;
-                }
+                if (method === "1") finalMethod = "Efectivo";
+                else if (method === "2") finalMethod = "Tarjeta / Punto";
+                else if (method === "3") finalMethod = "Pago Móvil / Transf.";
+                else if (method === "4") finalMethod = "Cashea";
+                else finalMethod = method.trim();
+
                 await setAppointmentPayment(apptId, true, finalMethod);
             } else {
                 if (confirm("¿Deseas marcar esta consulta como PENDIENTE de pago?")) {
