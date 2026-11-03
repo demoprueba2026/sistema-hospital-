@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="styles-calendar.css">
     <link rel="stylesheet" href="styles-calendar-grid.css">
     <link rel="stylesheet" href="styles-appointment-form.css">
+    <link rel="stylesheet" href="styles-appointment-experience.css">
     <link rel="stylesheet" href="styles-doctor-portal.css">
     <!-- Supabase CDN (debe ir antes de script.js) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,6 +23,7 @@
     <script src="script.js" defer></script>
     <script src="appointments.js" defer></script>
     <script src="appointment-actions.js" defer></script>
+    <script src="appointment-success-actions.js" defer></script>
 </head>
 <body>
     <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
@@ -136,30 +138,18 @@
                 <div class="notify-icon-circle">🔔</div>
                 <div class="notify-header-info">
                     <h3 id="notify-modal-title">Aviso de cupos disponibles</h3>
-                    <p id="notify-modal-sub">Te avisaremos en cuanto se abra la agenda médica.</p>
+                    <p id="notify-modal-sub">El aviso se mostrará en este navegador mientras la página esté abierta.</p>
                 </div>
                 <button type="button" class="modal-close-btn" id="notify-modal-close" aria-label="Cerrar aviso">✕</button>
             </div>
             <form id="notify-form" class="notify-modal-body">
-                <div class="form-field">
-                    <label for="notify-specialty-input">Especialidad solicitada</label>
-                    <div class="field-wrap">
-                        <span class="field-icon" aria-hidden="true">🩺</span>
-                        <input type="text" id="notify-specialty-input" readonly>
-                    </div>
-                </div>
-                <div class="form-field">
-                    <label for="notify-contact">WhatsApp o Correo Electrónico <span class="required">*</span></label>
-                    <div class="field-wrap">
-                        <span class="field-icon" aria-hidden="true">📱</span>
-                        <input type="text" id="notify-contact" placeholder="Ej. 0414-1234567 o paciente@correo.com" required>
-                    </div>
-                </div>
+                <input type="hidden" id="notify-specialty-input">
+                <p>La alerta usa las notificaciones de tu navegador cuando se libera un horario ocupado. No se enviará un correo ni un mensaje de WhatsApp, y debes mantener esta página abierta.</p>
                 <div class="notify-status" id="notify-status" hidden></div>
                 <div class="notify-actions">
                     <button type="button" class="modal-btn-cancel" id="btn-cancel-notify">Cancelar</button>
                     <button type="submit" class="modal-btn-save" id="btn-submit-notify">
-                        <span>Activar Notificación</span>
+                        <span>Activar alerta en este navegador</span>
                     </button>
                 </div>
             </form>
@@ -231,9 +221,7 @@
                                 <h3 id="step-doctor-name" class="step-doc-title">Dr. Especialista</h3>
                                 <p id="step-doctor-spec" class="step-doc-spec">Especialidad</p>
                                 <div class="doctor-badges-list">
-                                    <span class="doc-badge badge-next-slot">⚡ Próximo cupo: Mañana</span>
-                                    <span class="doc-badge badge-telemedicine">💻 Telemedicina disponible</span>
-                                    <span class="doc-badge badge-insurance">🏥 Admite Seguro</span>
+                                    <span class="doc-badge badge-next-slot" id="step-doctor-next-slot">Consultando próximos cupos…</span>
                                 </div>
                             </div>
                         </div>
@@ -256,8 +244,8 @@
                             <div class="detail-row">
                                 <span class="detail-icon">🛡️</span>
                                 <div>
-                                    <span class="detail-label">Modalidad y Convenios:</span>
-                                    <strong>Atención Presencial · Seguros Privados y Particulares</strong>
+                                    <span class="detail-label">Seguro médico:</span>
+                                    <strong>Consulta la cobertura disponible al confirmar con recepción.</strong>
                                 </div>
                             </div>
                         </div>
@@ -364,6 +352,7 @@
 
                     <!-- Autocompletado con Cédula / Documento -->
                     <div class="form-field highlight-field">
+<<<<<<< HEAD
                         <div class="label-with-hint">
                             <label for="patient-id">Cédula o Documento de Identidad <span class="required">*</span></label>
                             <span class="field-hint-tag">⚡ Autocompletado inteligente</span>
@@ -379,6 +368,17 @@
 =======
                         <h4>Datos del paciente</h4>
 >>>>>>> parent of 7d46c8e (usabilidad)
+=======
+                            <div class="label-with-hint">
+                                <label for="patient-id">Cédula o Documento de Identidad</label>
+                                <span class="field-hint-tag">Opcional</span>
+                            </div>
+                            <div class="field-wrap">
+                                <span class="field-icon" aria-hidden="true">🪪</span>
+                                <input type="text" id="patient-id" name="patientId" placeholder="Ej. V-18452890 o 24159873" autocomplete="off" aria-describedby="autocomplete-feedback">
+                            </div>
+                            <div class="autocomplete-feedback" id="autocomplete-feedback" role="status">El documento se mostrará en el comprobante de esta sesión; no se guarda en la base de datos.</div>
+>>>>>>> parent of fc72ef5 (arreglo del diseño)
                     </div>
 
                     <div class="form-field">
@@ -457,6 +457,7 @@
                                 <div class="summary-item"><span>Fecha pautada:</span><strong id="sum-date">Viernes, 30 de octubre de 2026</strong></div>
                                 <div class="summary-item"><span>Hora de cita:</span><strong id="sum-time" class="highlight-time">08:30 a. m.</strong></div>
                                 <div class="summary-item"><span>Tipo de consulta:</span><strong id="sum-category">Control rutinario</strong></div>
+                                <div class="summary-item"><span>Motivo:</span><strong id="sum-notes"></strong></div>
                             </div>
                             <div class="summary-col">
                                 <h5 class="summary-section-title">👤 Datos del Paciente</h5>
@@ -465,6 +466,7 @@
                                 <div class="summary-item"><span>Edad:</span><strong id="sum-age">34 años</strong></div>
                                 <div class="summary-item"><span>Teléfono:</span><strong id="sum-phone">0414-1234567</strong></div>
                                 <div class="summary-item"><span>Seguro:</span><strong id="sum-insurance">Seguros Caracas</strong></div>
+                                <p class="summary-note">La cobertura debe confirmarse con recepción; esta selección no autoriza el uso del seguro.</p>
                             </div>
                         </div>
 
@@ -507,10 +509,14 @@
                 <div class="success-icon-badge">✓</div>
                 <h3>¡Cita agendada con éxito!</h3>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <p class="success-subtitle">La cita ha sido registrada y notificada al especialista asignado.</p>
 =======
                 <p class="success-subtitle">La cita ha sido registrada en el sistema y notificada al especialista.</p>
 >>>>>>> parent of 7d46c8e (usabilidad)
+=======
+                <p class="success-subtitle">Tu solicitud quedó registrada. El especialista debe confirmar la cita.</p>
+>>>>>>> parent of fc72ef5 (arreglo del diseño)
 
                 <div class="appointment-receipt">
                     <div class="receipt-row"><span>Especialista:</span><strong id="rec-doctor"></strong></div>
@@ -547,8 +553,8 @@
                         <button type="button" class="action-matrix-btn btn-pdf" id="btn-download-pdf">
                             <span class="btn-icon">📄</span>
                             <span class="btn-text">
-                                <strong>Descargar Comprobante</strong>
-                                <small>Imprimir voucher en PDF</small>
+                                <strong>Guardar comprobante en PDF</strong>
+                                <small>Imprimir o guardar como PDF</small>
                             </span>
                         </button>
                     </div>
@@ -556,14 +562,15 @@
                         <button type="button" class="action-matrix-btn btn-wa" id="btn-share-whatsapp">
                             <span class="btn-icon">💬</span>
                             <span class="btn-text">
-                                <strong>Confirmación WhatsApp</strong>
-                                <small>Enviar recordatorio al paciente</small>
+                                <strong>Compartir cita</strong>
+                                <small>WhatsApp u otras aplicaciones</small>
                             </span>
                         </button>
                     </div>
                 </div>
 
                 <div class="success-footer-row">
+<<<<<<< HEAD
                     <button type="button" class="btn-reschedule-link" id="btn-reschedule-appointment">
                         <span>🔄 Reprogramar o cambiar cita</span>
 =======
@@ -572,6 +579,8 @@
                         <span>📅 Guardar en mi Google Calendar</span>
 >>>>>>> parent of 7d46c8e (usabilidad)
                     </button>
+=======
+>>>>>>> parent of fc72ef5 (arreglo del diseño)
                     <button type="button" class="btn-close-modal-done" id="btn-close-modal-done">Cerrar</button>
                 </div>
             </div>
