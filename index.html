@@ -89,52 +89,9 @@
                     <div>
                         <h3 id="empty-state-title">Tu bienestar comienza aquí</h3>
                         <p id="empty-state-message">Elige una especialidad para ver los médicos disponibles en esa área.</p>
-                        <div class="empty-state-actions" id="empty-state-actions" hidden>
-                            <button type="button" class="empty-action-btn empty-action-btn--primary" id="btn-next-week-availability">
-                                📅 Ver disponibilidad para la próxima semana
-                            </button>
-                            <button type="button" class="empty-action-btn empty-action-btn--secondary" id="btn-notify-availability">
-                                🔔 Notificarme cuando haya cupo
-                            </button>
-                        </div>
                     </div>
                     <span class="empty-arrow" aria-hidden="true">↗</span>
                 </div>
-
-                <!-- Skeleton de Carga Animado mientras consulta disponibilidad -->
-                <div class="doctor-skeleton-grid" id="doctor-skeleton-grid" hidden aria-hidden="true">
-                    <div class="skeleton-card">
-                        <div class="skeleton-top">
-                            <div class="skeleton-avatar"></div>
-                            <div class="skeleton-col">
-                                <div class="skeleton-line skeleton-title"></div>
-                                <div class="skeleton-line skeleton-sub"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-badges">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-line skeleton-schedule"></div>
-                        <div class="skeleton-btn"></div>
-                    </div>
-                    <div class="skeleton-card">
-                        <div class="skeleton-top">
-                            <div class="skeleton-avatar"></div>
-                            <div class="skeleton-col">
-                                <div class="skeleton-line skeleton-title"></div>
-                                <div class="skeleton-line skeleton-sub"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-badges">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-line skeleton-schedule"></div>
-                        <div class="skeleton-btn"></div>
-                    </div>
-                </div>
-
                 <div class="doctor-results" id="doctor-results" hidden>
                     <div class="results-heading">
                         <div>
@@ -171,6 +128,7 @@
         </div>
     </footer>
 
+<<<<<<< HEAD
     <!-- Modal Notificar Disponibilidad de Cupos -->
     <dialog class="notify-modal" id="notify-modal" aria-labelledby="notify-modal-title" aria-modal="true">
         <div class="notify-modal-box">
@@ -209,6 +167,9 @@
     </dialog>
 
     <!-- Modal para agendar cita médica (Estilo Google Calendar con Wizard de 4 Pasos) -->
+=======
+    <!-- Modal para agendar cita médica (Estilo Google Calendar) -->
+>>>>>>> parent of 7d46c8e (usabilidad)
     <dialog class="calendar-modal" id="appointment-modal" aria-labelledby="modal-doctor-name" aria-modal="true">
         <div class="calendar-modal-box">
             <!-- Modal Header -->
@@ -229,55 +190,40 @@
                 <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Cerrar ventana de cita">✕</button>
             </div>
 
-            <!-- Stepper / Barra de Progreso del Wizard (4 Pasos) -->
-            <nav class="wizard-stepper" aria-label="Pasos para agendar cita">
-                <button type="button" class="wizard-step active" id="step-tab-1" data-step="1">
-                    <span class="step-num">1</span>
-                    <span class="step-text">
-                        <small>Paso 1</small>
-                        <strong>Especialista</strong>
-                    </span>
-                </button>
-                <div class="wizard-divider" aria-hidden="true"></div>
-                <button type="button" class="wizard-step" id="step-tab-2" data-step="2">
-                    <span class="step-num">2</span>
-                    <span class="step-text">
-                        <small>Paso 2</small>
-                        <strong>Fecha y Hora</strong>
-                    </span>
-                </button>
-                <div class="wizard-divider" aria-hidden="true"></div>
-                <button type="button" class="wizard-step" id="step-tab-3" data-step="3">
-                    <span class="step-num">3</span>
-                    <span class="step-text">
-                        <small>Paso 3</small>
-                        <strong>Datos del Paciente</strong>
-                    </span>
-                </button>
-                <div class="wizard-divider" aria-hidden="true"></div>
-                <button type="button" class="wizard-step" id="step-tab-4" data-step="4">
-                    <span class="step-num">4</span>
-                    <span class="step-text">
-                        <small>Paso 4</small>
-                        <strong>Confirmación</strong>
-                    </span>
-                </button>
-            </nav>
-
-            <!-- Modal Body: Formulario por Pasos (Wizard) -->
-            <form id="appointment-form" class="modal-body wizard-body" novalidate>
-                <!-- ==============================================
-                     PASO 1: ESPECIALIDAD Y MÉDICO SELECCIONADO
-                     ============================================== -->
-                <div class="wizard-pane active" id="wizard-pane-1" role="tabpanel" aria-labelledby="step-tab-1">
+            <!-- Modal Body (Two-column layout like Google Calendar event creator) -->
+            <form id="appointment-form" class="modal-body" novalidate>
+                <!-- Columna Izquierda: Calendario interactivo y selección de hora -->
+                <div class="modal-calendar-pane">
                     <div class="pane-heading">
                         <span class="pane-number">1</span>
-                        <div>
-                            <h4>Especialista Seleccionado</h4>
-                            <p class="pane-subtitle">Revisa los datos del profesional antes de continuar al calendario.</p>
+                        <h4>Fecha y hora de consulta</h4>
+                    </div>
+
+                    <!-- Mini Calendario Google Calendar -->
+                    <div class="gcal-widget">
+                        <div class="gcal-nav">
+                            <button type="button" class="gcal-nav-btn" id="cal-prev-btn" aria-label="Mes anterior">‹</button>
+                            <span class="gcal-month-title" id="cal-month-title">Noviembre 2026</span>
+                            <button type="button" class="gcal-nav-btn" id="cal-next-btn" aria-label="Mes siguiente">›</button>
+                        </div>
+                        <div class="gcal-weekdays">
+                            <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span><span>Do</span>
+                        </div>
+                        <div class="gcal-days-grid" id="cal-days-grid">
+                            <!-- Inyectado por JavaScript -->
                         </div>
                     </div>
 
+                    <!-- Fecha seleccionada resumen -->
+                    <div class="gcal-selection-badge" id="gcal-selection-badge">
+                        <span class="badge-icon">📅</span>
+                        <div>
+                            <span class="badge-caption">Día seleccionado:</span>
+                            <strong id="selected-date-label">Selecciona un día disponible</strong>
+                        </div>
+                    </div>
+
+<<<<<<< HEAD
                     <div class="step-doctor-card">
                         <div class="step-doctor-header">
                             <div class="step-doctor-avatar" id="step-doctor-avatar">DR</div>
@@ -323,15 +269,27 @@
                             <span>Continuar a Fecha y Hora</span>
                             <span aria-hidden="true">→</span>
                         </button>
+=======
+                    <!-- Selector de Hora -->
+                    <div class="gcal-time-picker">
+                        <label class="time-picker-title">
+                            <span>⏰ Horarios disponibles para este doctor:</span>
+                        </label>
+                        <div class="time-slots-grid" id="time-slots-grid">
+                            <!-- Inyectado por JavaScript -->
+                        </div>
+                        <p class="time-slots-message" id="time-slots-message" role="status" aria-live="polite"></p>
+                        <input type="hidden" id="selected-date-input" name="selectedDate" required>
+                        <input type="hidden" id="selected-time-input" name="selectedTime" required>
+>>>>>>> parent of 7d46c8e (usabilidad)
                     </div>
                 </div>
 
-                <!-- ==============================================
-                     PASO 2: FECHA Y HORA (GOOGLE CALENDAR INTERACTIVO)
-                     ============================================== -->
-                <div class="wizard-pane" id="wizard-pane-2" role="tabpanel" aria-labelledby="step-tab-2" hidden>
+                <!-- Columna Derecha: Datos del Paciente -->
+                <div class="modal-patient-pane">
                     <div class="pane-heading">
                         <span class="pane-number">2</span>
+<<<<<<< HEAD
                         <div>
                             <h4>Fecha y Hora de Consulta</h4>
                             <p class="pane-subtitle">Selecciona en el calendario un día habilitado y el bloque horario que prefieras.</p>
@@ -418,6 +376,9 @@
                             </button>
                         </div>
                         <div class="autocomplete-feedback" id="autocomplete-feedback" role="status" hidden></div>
+=======
+                        <h4>Datos del paciente</h4>
+>>>>>>> parent of 7d46c8e (usabilidad)
                     </div>
 
                     <div class="form-field">
@@ -438,7 +399,7 @@
                         </div>
 
                         <div class="form-field">
-                            <label for="patient-phone">Número de teléfono (WhatsApp) <span class="required">*</span></label>
+                            <label for="patient-phone">Número de teléfono <span class="required">*</span></label>
                             <div class="field-wrap">
                                 <span class="field-icon" aria-hidden="true">📞</span>
                                 <input type="tel" id="patient-phone" name="patientPhone" placeholder="0414-1234567" required autocomplete="tel">
@@ -446,49 +407,18 @@
                         </div>
                     </div>
 
-                    <div class="form-grid-2">
-                        <div class="form-field">
-                            <label for="patient-age">Edad del paciente <span class="required">*</span></label>
-                            <div class="field-wrap">
-                                <span class="field-icon" aria-hidden="true">🎂</span>
-                                <input type="number" id="patient-age" name="patientAge" min="0" max="120" placeholder="Ej. 34 años" required>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <label for="patient-insurance">Seguro médico / Cobertura</label>
-                            <div class="field-wrap select-field-wrap">
-                                <span class="field-icon" aria-hidden="true">🛡️</span>
-                                <select id="patient-insurance" name="patientInsurance">
-                                    <option value="Particular / Sin Seguro">Particular / Sin Seguro</option>
-                                    <option value="Seguros Caracas">Seguros Caracas</option>
-                                    <option value="Mercantil Seguros">Mercantil Seguros</option>
-                                    <option value="Banesco Seguros">Banesco Seguros</option>
-                                    <option value="Sanitas / Mapfre">Sanitas / Mapfre</option>
-                                    <option value="Seguros Pirámide / Otro">Seguros Pirámide / Otro</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Categorización del Motivo de Consulta -->
                     <div class="form-field">
-                        <label for="appointment-category">Tipo / Categoría de Consulta <span class="required">*</span></label>
-                        <div class="field-wrap select-field-wrap">
-                            <span class="field-icon" aria-hidden="true">📋</span>
-                            <select id="appointment-category" name="appointmentCategory" required>
-                                <option value="Control rutinario">Control rutinario</option>
-                                <option value="Primera vez">Primera vez</option>
-                                <option value="Lectura de exámenes">Lectura de exámenes</option>
-                                <option value="Chequeo de síntomas">Chequeo de síntomas</option>
-                                <option value="Segunda opinión médica">Segunda opinión médica</option>
-                            </select>
+                        <label for="patient-age">Edad del paciente <span class="required">*</span></label>
+                        <div class="field-wrap">
+                            <span class="field-icon" aria-hidden="true">🎂</span>
+                            <input type="number" id="patient-age" name="patientAge" min="0" max="120" placeholder="Ej. 34 años" required>
                         </div>
                     </div>
 
                     <div class="form-field">
-                        <label for="appointment-notes">Detalle del motivo o síntomas <span class="required">*</span></label>
+                        <label for="appointment-notes">Motivo de la consulta / Nota médica <span class="required">*</span></label>
                         <div class="field-wrap textarea-wrap">
+<<<<<<< HEAD
                             <textarea id="appointment-notes" name="appointmentNotes" rows="3" placeholder="Detalla brevemente tus síntomas, antecedentes clínicos o motivo de visita..." required></textarea>
                         </div>
                     </div>
@@ -554,40 +484,43 @@
                                 <li>📋 <strong>Traer exámenes médicos previos</strong>, informes y recetas anteriores si aplica.</li>
                                 <li>💳 <strong>Atención en orden de llegada</strong> dentro del bloque horario reservado.</li>
                             </ul>
+=======
+                            <textarea id="appointment-notes" name="appointmentNotes" rows="3" placeholder="Describe brevemente tus síntomas, motivo de visita o antecedentes..." required></textarea>
+>>>>>>> parent of 7d46c8e (usabilidad)
                         </div>
                     </div>
 
                     <div class="form-alert" id="form-alert" role="alert" hidden></div>
 
-                    <div class="wizard-nav-actions">
-                        <button type="button" class="wizard-btn-prev" id="btn-back-to-step-3">
-                            <span aria-hidden="true">←</span> Editar Datos
-                        </button>
-                        <button type="submit" class="modal-btn-save pulse-action" id="modal-btn-save">
-                            <span>Confirmar y Agendar Cita</span>
+                    <div class="modal-footer-actions">
+                        <button type="button" class="modal-btn-cancel" id="modal-btn-cancel">Cancelar</button>
+                        <button type="submit" class="modal-btn-save" id="modal-btn-save">
+                            <span>Confirmar Cita</span>
                             <span aria-hidden="true">✓</span>
                         </button>
                     </div>
                 </div>
             </form>
 
-            <!-- Pantalla de Éxito al Agendar Cita (Cierre de Flujo & Notificaciones) -->
+            <!-- Pantalla de Éxito al Agendar Cita -->
             <div class="modal-success-view" id="modal-success-view" hidden>
                 <div class="success-icon-badge">✓</div>
                 <h3>¡Cita agendada con éxito!</h3>
+<<<<<<< HEAD
                 <p class="success-subtitle">La cita ha sido registrada y notificada al especialista asignado.</p>
+=======
+                <p class="success-subtitle">La cita ha sido registrada en el sistema y notificada al especialista.</p>
+>>>>>>> parent of 7d46c8e (usabilidad)
 
-                <div class="appointment-receipt" id="appointment-receipt-box">
+                <div class="appointment-receipt">
                     <div class="receipt-row"><span>Especialista:</span><strong id="rec-doctor"></strong></div>
                     <div class="receipt-row"><span>Especialidad:</span><strong id="rec-specialty"></strong></div>
                     <div class="receipt-row"><span>Fecha:</span><strong id="rec-date"></strong></div>
                     <div class="receipt-row"><span>Hora:</span><strong id="rec-time"></strong></div>
-                    <div class="receipt-row"><span>Tipo de Consulta:</span><strong id="rec-category"></strong></div>
                     <div class="receipt-row"><span>Paciente:</span><strong id="rec-patient"></strong></div>
-                    <div class="receipt-row"><span>Documento:</span><strong id="rec-cedula"></strong></div>
                     <div class="receipt-row"><span>Teléfono:</span><strong id="rec-phone"></strong></div>
                     <div class="receipt-row"><span>Código único:</span><code id="rec-code" class="receipt-code"></code></div>
-                    <div class="receipt-row"><span>Base de datos:</span><em id="rec-storage-note" style="font-size:13px; color:#177c75;">✓ Guardado en Supabase</em></div>
+                    <div class="receipt-row"><span>Base de datos:</span><em id="rec-storage-note" style="font-size:13px; color:#177c75;"></em></div>
                 </div>
 
                 <div class="doctor-access-hint">
@@ -598,6 +531,7 @@
                     </div>
                 </div>
 
+<<<<<<< HEAD
                 <!-- Botones de Acción Inmediata: Calendar, PDF, WhatsApp -->
                 <div class="success-actions-matrix">
                     <div class="success-action-card">
@@ -632,6 +566,11 @@
                 <div class="success-footer-row">
                     <button type="button" class="btn-reschedule-link" id="btn-reschedule-appointment">
                         <span>🔄 Reprogramar o cambiar cita</span>
+=======
+                <div class="success-btn-row">
+                    <button type="button" class="btn-export-ics" id="btn-export-ics">
+                        <span>📅 Guardar en mi Google Calendar</span>
+>>>>>>> parent of 7d46c8e (usabilidad)
                     </button>
                     <button type="button" class="btn-close-modal-done" id="btn-close-modal-done">Cerrar</button>
                 </div>
