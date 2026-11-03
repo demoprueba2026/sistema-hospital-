@@ -7,7 +7,9 @@ if (appointmentForm) {
         const email = document.querySelector("#patient-email").value.trim();
         const phone = document.querySelector("#patient-phone").value.trim();
         const age = document.querySelector("#patient-age").value.trim();
-        const notes = document.querySelector("#appointment-notes").value.trim();
+        const category = document.querySelector("#appointment-category").value;
+        const notesDetail = document.querySelector("#appointment-notes").value.trim();
+        const notes = `Tipo de consulta: ${category}\n\nDetalle: ${notesDetail}`;
         const date = selectedDateInput.value;
         const time = selectedTimeInput.value;
 
@@ -46,6 +48,9 @@ if (appointmentForm) {
             patientEmail: email,
             patientPhone: phone,
             patientAge: parseInt(age, 10),
+            category,
+            patientId: document.querySelector("#patient-id").value.trim(),
+            insurance: document.querySelector("#patient-insurance").value,
             notes,
             status: "Pendiente",
             doctorNotes: "",
@@ -63,7 +68,9 @@ if (appointmentForm) {
             document.querySelector("#rec-specialty").textContent = appointment.specialty;
             document.querySelector("#rec-date").textContent = selectedDateLabel.textContent;
             document.querySelector("#rec-time").textContent = appointment.time;
+            document.querySelector("#rec-category").textContent = appointment.category;
             document.querySelector("#rec-patient").textContent = `${appointment.patientName} (${appointment.patientAge} años)`;
+            document.querySelector("#rec-cedula").textContent = appointment.patientId || "No indicado";
             document.querySelector("#rec-phone").textContent = appointment.patientPhone;
             document.querySelector("#rec-code").textContent = appointment.code;
 
@@ -84,47 +91,5 @@ if (appointmentForm) {
                 saveBtn.innerHTML = originalHTML;
             }
         }
-    });
-}
-
-// Descargar .ics para Google Calendar
-if (btnExportIcs) {
-    btnExportIcs.addEventListener("click", () => {
-        if (!lastCreatedAppointment) return;
-
-        const appt = lastCreatedAppointment;
-        const dateParts = appt.date.split("-");
-        const y = dateParts[0];
-        const m = String(dateParts[1]).padStart(2, "0");
-        const d = String(dateParts[2]).padStart(2, "0");
-
-        const icsContent = [
-            "BEGIN:VCALENDAR",
-            "VERSION:2.0",
-            "PRODID:-//Clinica Su Salud//Citas Medicas//ES",
-            "CALSCALE:GREGORIAN",
-            "METHOD:PUBLISH",
-            "BEGIN:VEVENT",
-            `UID:${appt.id}@clinicasusalud.com`,
-            `DTSTAMP:${y}${m}${d}T120000Z`,
-            `DTSTART:${y}${m}${d}T090000`,
-            `DTEND:${y}${m}${d}T100000`,
-            `SUMMARY:Cita Médica: ${appt.specialty} - ${appt.doctorName}`,
-            `DESCRIPTION:Cita médica para ${appt.patientName}. Motivo: ${appt.notes}. Código: ${appt.code}`,
-            `LOCATION:Clinica Su Salud, Caracas`,
-            "STATUS:CONFIRMED",
-            "END:VEVENT",
-            "END:VCALENDAR"
-        ].join("\r\n");
-
-        const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Cita_${appt.doctorName.replace(/[^a-zA-Z0-9]/g, "_")}_${appt.date}.ics`;
-        document.body.append(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
     });
 }

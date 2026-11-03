@@ -1,8 +1,7 @@
 /* ========================================================
    INTERACCIÓN DE TARJETAS DE DOCTORES (CLICK PARA AGENDAR)
    ======================================================== */
-.doctor-card--clickable {
-    cursor: pointer;
+.doctor-card {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -10,49 +9,122 @@
     transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
 }
 
-.doctor-card--clickable:hover {
+.doctor-card:hover {
     transform: translateY(-5px);
     border-color: #38a594;
     box-shadow: 0 14px 28px rgb(24 59 59 / 12%);
 }
 
-.doctor-card--clickable:focus-visible {
-    outline: 3px solid var(--teal);
-    outline-offset: 2px;
-}
-
 .doctor-card-cta {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
+    gap: 12px;
     margin-top: 14px;
     padding-top: 12px;
     border-top: 1px dashed #dbe8e3;
 }
 
-.book-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+.doctor-next-slot {
     color: var(--teal);
-    font-size: 13.5px;
-    font-weight: 700;
-}
-
-.book-pill {
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: #e8f5f1;
-    color: #177c75;
     font-size: 13px;
-    font-weight: 700;
-    transition: background .2s ease, color .2s ease, transform .2s ease;
+    line-height: 1.4;
 }
 
-.doctor-card--clickable:hover .book-pill {
+.doctor-book-button {
+    min-height: 44px;
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 999px;
     background: var(--teal);
     color: #fff;
-    transform: translateX(3px);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.doctor-book-button:hover {
+    background: #116a64;
+    transform: translateY(-1px);
+}
+
+.doctor-book-button:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 3px;
+}
+
+body[data-theme="dark"] .doctor-next-slot {
+    color: #82e2d0;
+}
+
+@media (max-width: 500px) {
+    .doctor-card-cta {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .doctor-skeleton-grid *,
+    .doctor-skeleton-grid *::before,
+    .doctor-skeleton-grid *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+@media print {
+    body.printing-receipt * {
+        visibility: hidden !important;
+    }
+
+    body.printing-receipt #appointment-modal,
+    body.printing-receipt #appointment-modal .calendar-modal-box,
+    body.printing-receipt #appointment-modal .modal-success-view,
+    body.printing-receipt #appointment-modal .modal-success-view > h3,
+    body.printing-receipt #appointment-modal #appointment-receipt-box,
+    body.printing-receipt #appointment-modal #appointment-receipt-box * {
+        visibility: visible !important;
+    }
+
+    body.printing-receipt #appointment-modal {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+    }
+
+    body.printing-receipt #appointment-modal .calendar-modal-box,
+    body.printing-receipt #appointment-modal .modal-success-view {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        animation: none !important;
+    }
+
+    body.printing-receipt #appointment-modal .modal-success-view > :not(h3):not(#appointment-receipt-box),
+    body.printing-receipt #appointment-modal .modal-success-view > h3 {
+        display: none !important;
+    }
+
+    body.printing-receipt #appointment-modal #appointment-receipt-box {
+        max-width: none !important;
+        margin: 0 !important;
+        color: #111 !important;
+        background: #fff !important;
+    }
+
+    body.printing-receipt #appointment-modal #appointment-receipt-box strong,
+    body.printing-receipt #appointment-modal #appointment-receipt-box span {
+        color: #111 !important;
+    }
 }
 
 .header-doctor-cta {
@@ -86,4 +158,3 @@
     color: #177c75;
     font-weight: 600;
 }
-
