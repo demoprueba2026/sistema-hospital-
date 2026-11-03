@@ -156,27 +156,6 @@ async function apiGetBookedAppointmentTimes(doctorName, date) {
     return data.map((appointment) => appointment.time);
 }
 
-async function apiGetBookedDoctorSlots(doctorNames, startDate, endDate) {
-    if (!Array.isArray(doctorNames) || doctorNames.length === 0) {
-        return [];
-    }
-
-    const client = await getSupabaseClient();
-    const { data, error } = await client
-        .from("citas")
-        .select("doctor_name,date,time")
-        .in("doctor_name", doctorNames)
-        .gte("date", startDate)
-        .lte("date", endDate)
-        .neq("status", "Cancelada");
-
-    if (error) {
-        throw new Error(`No se pudo consultar la disponibilidad de los especialistas: ${error.message}`);
-    }
-
-    return data;
-}
-
 async function apiUpdateAppointmentStatus(appointmentId, newStatus) {
     const client = await getSupabaseClient();
     const { error } = await client

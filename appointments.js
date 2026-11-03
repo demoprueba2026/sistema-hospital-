@@ -6,6 +6,7 @@ const modalBtnCancel = document.querySelector("#modal-btn-cancel");
 const appointmentForm = document.querySelector("#appointment-form");
 const modalSuccessView = document.querySelector("#modal-success-view");
 const btnCloseModalDone = document.querySelector("#btn-close-modal-done");
+const btnExportIcs = document.querySelector("#btn-export-ics");
 
 const modalDocAvatar = document.querySelector("#modal-doc-avatar");
 const modalDoctorName = document.querySelector("#modal-doctor-name");
@@ -31,7 +32,6 @@ let currentSelectedDate = null;
 let currentSelectedTime = null;
 let lastCreatedAppointment = null;
 let timeSlotsRequestId = 0;
-let currentWizardStep = 1;
 
 const MONTH_NAMES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -81,102 +81,14 @@ function generateDoctorTimeSlots(availabilityText) {
     return ["08:30 a. m.", "09:15 a. m.", "10:00 a. m.", "10:45 a. m.", "11:30 a. m.", "02:00 p. m.", "03:00 p. m.", "04:00 p. m."];
 }
 
-function setWizardStep(step) {
-    if (!Number.isInteger(step) || step < 1 || step > 4) return;
-
-    currentWizardStep = step;
-    document.querySelectorAll(".wizard-pane").forEach((pane, index) => {
-        const isActive = index + 1 === step;
-        pane.hidden = !isActive;
-        pane.classList.toggle("active", isActive);
-    });
-    document.querySelectorAll(".wizard-step").forEach((tab) => {
-        const isActive = Number(tab.dataset.step) === step;
-        tab.classList.toggle("active", isActive);
-        if (isActive) {
-            tab.setAttribute("aria-current", "step");
-        } else {
-            tab.removeAttribute("aria-current");
-        }
-    });
-    if (step === 4) updateAppointmentSummary();
-}
-
-function showStepAlert(step, message) {
-    const alert = document.querySelector(`#step-${step}-alert`);
-    if (!alert) return;
-    alert.hidden = false;
-    alert.textContent = message;
-}
-
-function clearStepAlert(step) {
-    const alert = document.querySelector(`#step-${step}-alert`);
-    if (!alert) return;
-    alert.hidden = true;
-    alert.textContent = "";
-}
-
-function validatePatientDetails() {
-    const requiredFields = [
-        document.querySelector("#patient-name"),
-        document.querySelector("#patient-email"),
-        document.querySelector("#patient-phone"),
-        document.querySelector("#patient-age"),
-        document.querySelector("#appointment-category"),
-        document.querySelector("#appointment-notes")
-    ];
-    const invalidField = requiredFields.find((field) => !field.value.trim() || !field.checkValidity());
-    if (invalidField) {
-        invalidField.focus();
-        showStepAlert(3, invalidField.validationMessage || "Completa los datos requeridos para continuar.");
-        return false;
-    }
-
-    clearStepAlert(3);
-    return true;
-}
-
-function updateAppointmentSummary() {
-    const values = {
-        "sum-doctor": activeDoctor ? activeDoctor.name : "",
-        "sum-specialty": activeSpecialty || "",
-        "sum-date": selectedDateLabel.textContent,
-        "sum-time": selectedTimeInput.value,
-        "sum-category": document.querySelector("#appointment-category").value,
-        "sum-notes": document.querySelector("#appointment-notes").value.trim(),
-        "sum-patient": document.querySelector("#patient-name").value.trim(),
-        "sum-cedula": document.querySelector("#patient-id").value.trim() || "No indicado",
-        "sum-age": `${document.querySelector("#patient-age").value} años`,
-        "sum-phone": document.querySelector("#patient-phone").value.trim(),
-        "sum-insurance": `${document.querySelector("#patient-insurance").value} (por confirmar)`
-    };
-
-    Object.entries(values).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value;
-    });
-}
-
 function openAppointmentModal(doctor, specialty) {
     activeDoctor = doctor;
     activeSpecialty = specialty;
-    appointmentForm.reset();
-    setWizardStep(1);
 
     modalDocAvatar.textContent = initialsFor(doctor.name);
     modalDoctorName.textContent = doctor.name;
     modalDocSpecialty.textContent = specialty;
     modalDocAvailability.textContent = `Atención: ${doctor.availability}`;
-    document.querySelector("#step-doctor-avatar").textContent = initialsFor(doctor.name);
-    document.querySelector("#step-doctor-name").textContent = doctor.name;
-    document.querySelector("#step-doctor-spec").textContent = specialty;
-    document.querySelector("#step-doctor-schedule").textContent = doctor.availability;
-    const opening = currentDoctorOpenings && currentDoctorOpenings.find((item) => item.doctor.name === doctor.name);
-    document.querySelector("#step-doctor-next-slot").textContent = opening
-        ? `Próximo cupo: ${opening.label}`
-        : currentAvailabilityError
-            ? "No se pudo consultar la disponibilidad; verifica los horarios antes de confirmar"
-            : "La disponibilidad se comprobará al seleccionar una fecha";
 
     appointmentForm.hidden = false;
     modalSuccessView.hidden = true;
@@ -184,10 +96,6 @@ function openAppointmentModal(doctor, specialty) {
     formAlert.textContent = "";
 
     const today = new Date();
-    const workingDays = parseDoctorWorkingDays(doctor.availability);
-    while (!workingDays.includes(today.getDay())) {
-        today.setDate(today.getDate() + 1);
-    }
     calCurrentYear = today.getFullYear();
     calCurrentMonth = today.getMonth();
 
@@ -217,7 +125,6 @@ function closeAppointmentModal() {
     if (appointmentForm) {
         appointmentForm.reset();
     }
-    setWizardStep(1);
 }
 
 function renderCalendar() {
@@ -259,8 +166,7 @@ function renderCalendar() {
         btn.className = "gcal-day";
         btn.textContent = day;
 
-        const isWorkingDay = doctorWorkingDays.includes(dayOfWeek);
-        if (dateObj < today || !isWorkingDay) {
+        if (dateObj < today) {
             btn.disabled = true;
         }
 
@@ -268,7 +174,7 @@ function renderCalendar() {
             btn.classList.add("today");
         }
 
-        if (isWorkingDay) {
+        if (doctorWorkingDays.includes(dayOfWeek)) {
             btn.classList.add("doctor-day");
             btn.title = `Día de consulta de ${activeDoctor ? activeDoctor.name : "especialista"}`;
         }
@@ -321,13 +227,20 @@ async function renderTimeSlots() {
         timeSlotsGrid.append(btn);
     });
 
-    let bookedTimes;
+    let bookedTimes = [];
     try {
         bookedTimes = await apiGetBookedAppointmentTimes(activeDoctor.name, currentSelectedDate);
     } catch (error) {
         if (requestId !== timeSlotsRequestId) return;
-        timeSlotsMessage.textContent = `${error.message}. No es posible confirmar una cita hasta verificar la disponibilidad.`;
-        return;
+        console.warn("No se pudo consultar Supabase para horarios:", error);
+        try {
+            const localCitas = JSON.parse(localStorage.getItem("citas_locales_backup") || "[]");
+            bookedTimes = localCitas
+                .filter(c => c.doctorName === activeDoctor.name && c.date === currentSelectedDate && c.status !== "Cancelada")
+                .map(c => c.time);
+        } catch {
+            bookedTimes = [];
+        }
     }
 
     if (requestId !== timeSlotsRequestId) return;
@@ -336,16 +249,11 @@ async function renderTimeSlots() {
     const availableSlots = [];
     timeSlotsGrid.querySelectorAll(".time-slot-btn").forEach((btn) => {
         const isBooked = bookedSlots.has(btn.textContent.trim().toLocaleLowerCase("es"));
-        const isPast = !isDoctorSlotInFuture(currentSelectedDate, btn.textContent);
-        btn.disabled = isBooked || isPast;
+        btn.disabled = isBooked;
         if (isBooked) {
             btn.classList.add("is-booked");
             btn.title = "Este horario ya está reservado";
             btn.setAttribute("aria-label", `${btn.textContent}, ocupado`);
-        } else if (isPast) {
-            btn.classList.add("is-past");
-            btn.title = "Esta hora ya pasó";
-            btn.setAttribute("aria-label", `${btn.textContent}, hora pasada`);
         } else {
             availableSlots.push(btn.textContent);
             btn.addEventListener("click", () => {
@@ -393,28 +301,6 @@ if (calPrevBtn && calNextBtn) {
         renderCalendar();
     });
 }
-
-document.querySelector("#btn-goto-step-2").addEventListener("click", () => setWizardStep(2));
-document.querySelector("#btn-back-to-step-1").addEventListener("click", () => setWizardStep(1));
-document.querySelector("#btn-goto-step-3").addEventListener("click", () => {
-    if (!currentSelectedDate || !selectedTimeInput.value) {
-        showStepAlert(2, "Selecciona un día disponible y un horario antes de continuar.");
-        return;
-    }
-    clearStepAlert(2);
-    setWizardStep(3);
-});
-document.querySelector("#btn-back-to-step-2").addEventListener("click", () => setWizardStep(2));
-document.querySelector("#btn-goto-step-4").addEventListener("click", () => {
-    if (validatePatientDetails()) setWizardStep(4);
-});
-document.querySelector("#btn-back-to-step-3").addEventListener("click", () => setWizardStep(3));
-document.querySelectorAll(".wizard-step").forEach((tab) => {
-    tab.addEventListener("click", () => {
-        const requestedStep = Number(tab.dataset.step);
-        if (requestedStep < currentWizardStep) setWizardStep(requestedStep);
-    });
-});
 
 // Cierre del modal
 if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeAppointmentModal);
