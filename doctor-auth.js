@@ -16,9 +16,9 @@ function showLoginForm() {
     populateDoctorSelect();
 }
 
-function loginDoctor(doc, isSupabaseAuthenticated = false) {
+function loginDoctor(doc) {
     currentDoctorObj = doc;
-    currentDoctorSupabaseAuthenticated = isSupabaseAuthenticated;
+    currentDoctorSupabaseAuthenticated = true;
 
     dashAvatar.textContent = initialsFor(doc.name);
     dashDoctorName.textContent = doc.name;
@@ -67,24 +67,24 @@ doctorLoginForm.addEventListener("submit", (e) => {
 
     if (!pin) {
         authAlert.hidden = false;
-        authAlert.textContent = "Por favor ingresa tu clave de acceso médico.";
+        authAlert.textContent = "Por favor ingresa la contraseña de tu cuenta de Supabase Auth.";
+        return;
+    }
+
+    const email = doctorEmail.value.trim();
+    if (!email) {
+        authAlert.hidden = false;
+        authAlert.textContent = "Por favor ingresa el correo de tu cuenta de Supabase Auth.";
         return;
     }
 
     const doc = findDoctorByName(docName);
     if (doc) {
-        const email = doctorEmail.value.trim();
-        if (!email) {
-            authAlert.hidden = true;
-            loginDoctor(doc);
-            return;
-        }
-
         authAlert.hidden = true;
         apiSignInDoctor(email, pin, doc.name)
             .then(() => {
                 authAlert.hidden = true;
-                loginDoctor(doc, true);
+                loginDoctor(doc);
                 doctorEmail.value = "";
                 doctorPin.value = "";
             })
