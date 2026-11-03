@@ -31,6 +31,7 @@
     <script src="admin.js?v=cashea-abonos-20261102" defer></script>
 </head>
 <body class="admin-body">
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <div class="admin-bg-mesh" aria-hidden="true"></div>
 
     <!-- Header Oficial con Identidad de la Clínica -->
@@ -58,7 +59,7 @@
         </div>
     </header>
 
-    <main class="admin-wrap">
+    <main class="admin-wrap" id="main-content" tabindex="-1">
         <!-- Banner Principal Futurista -->
         <section class="admin-hero-banner">
             <div class="banner-left">
@@ -289,8 +290,9 @@
             <!-- Estado Vacío cuando no hay registros -->
             <div class="empty-table-state" id="empty-state-container" hidden>
                 <div class="empty-icon-art">🩺</div>
-                <h3>No se encontraron pacientes registrados</h3>
-                <p>Las citas agendadas por los pacientes desde la web aparecerán aquí en tiempo real conectadas a Supabase.</p>
+                <h3 id="table-empty-title">No se encontraron pacientes registrados</h3>
+                <p id="table-empty-message">Las citas agendadas por los pacientes desde la web aparecerán aquí en tiempo real conectadas a Supabase.</p>
+                <button type="button" class="btn-futuristic" id="btn-clear-filters" hidden>Limpiar búsqueda y filtros</button>
                 <button type="button" class="btn-futuristic btn-primary-action" id="btn-seed-demo">
                     <span>+ Crear citas de prueba en Supabase</span>
                 </button>

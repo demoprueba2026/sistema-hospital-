@@ -24,6 +24,7 @@
     <script src="appointment-actions.js" defer></script>
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <header class="site-header">
         <a class="brand" href="#" aria-label="Clinica Su Salud, inicio">
             <span class="brand-mark" aria-hidden="true">+</span>
@@ -43,7 +44,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content" tabindex="-1">
         <section class="hero" id="inicio">
             <video class="hero-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=2000&q=85" aria-hidden="true">
                 <source src="videos-de-fondo.mp4" type="video/mp4">
@@ -70,22 +71,30 @@
             </div>
 
             <div class="finder-panel">
-                <label for="specialty-select">ESPECIALIDAD MÉDICA</label>
-                <div class="select-wrap">
-                    <select id="specialty-select" aria-describedby="select-hint">
-                        <option value="">Selecciona una especialidad</option>
-                    </select>
-                    <span class="select-chevron" aria-hidden="true">⌄</span>
+                <div class="finder-field">
+                    <label for="specialty-select">ESPECIALIDAD MÉDICA</label>
+                    <div class="select-wrap">
+                        <select id="specialty-select" aria-describedby="select-hint">
+                            <option value="">Todas las especialidades</option>
+                        </select>
+                        <span class="select-chevron" aria-hidden="true">⌄</span>
+                    </div>
                 </div>
-                <span id="select-hint" class="select-hint">Directorio y horarios de ejemplo; confirma la disponibilidad con el hospital.</span>
+                <div class="finder-field">
+                    <label for="doctor-search">BUSCAR PROFESIONAL</label>
+                    <div class="select-wrap">
+                        <input type="search" id="doctor-search" class="doctor-search-input" placeholder="Nombre o especialidad" autocomplete="off" aria-describedby="select-hint">
+                    </div>
+                </div>
+                <span id="select-hint" class="select-hint">Filtra por especialidad o escribe el nombre de un profesional. Los horarios son referenciales; confirma la disponibilidad con el hospital.</span>
             </div>
 
             <div class="doctors-area" aria-live="polite" aria-atomic="true">
                 <div class="empty-state" id="empty-state">
                     <span class="empty-icon" aria-hidden="true">✚</span>
                     <div>
-                        <h3>Tu bienestar comienza aquí</h3>
-                        <p>Elige una especialidad para ver los médicos disponibles en esa área.</p>
+                        <h3 id="empty-state-title">Tu bienestar comienza aquí</h3>
+                        <p id="empty-state-message">Elige una especialidad o busca un profesional para ver sus horarios.</p>
                     </div>
                     <span class="empty-arrow" aria-hidden="true">↗</span>
                 </div>

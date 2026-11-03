@@ -44,6 +44,7 @@ const tableCountBadge = document.getElementById("table-count-badge");
 const patientsTableBody = document.getElementById("patients-table-body");
 const emptyStateContainer = document.getElementById("empty-state-container");
 const btnSeedDemo = document.getElementById("btn-seed-demo");
+const btnClearFilters = document.getElementById("btn-clear-filters");
 
 // Modal de Recibo
 const receiptModal = document.getElementById("receipt-modal");
@@ -445,11 +446,24 @@ function renderTableRows(appointments) {
     patientsTableBody.innerHTML = "";
 
     if (appointments.length === 0) {
-        if (emptyStateContainer) emptyStateContainer.hidden = false;
+        if (emptyStateContainer) {
+            emptyStateContainer.hidden = false;
+            const hasAppointments = allAppointments.length > 0;
+            document.getElementById("table-empty-title").textContent = hasAppointments
+                ? "No hay pacientes que coincidan"
+                : "No se encontraron pacientes registrados";
+            document.getElementById("table-empty-message").textContent = hasAppointments
+                ? "Prueba con otro término de búsqueda o limpia los filtros para ver todas las citas."
+                : "Las citas agendadas por los pacientes desde la web aparecerán aquí en tiempo real conectadas a Supabase.";
+            btnSeedDemo.hidden = hasAppointments;
+            btnClearFilters.hidden = !hasAppointments;
+        }
         return;
     }
 
     if (emptyStateContainer) emptyStateContainer.hidden = true;
+    btnSeedDemo.hidden = false;
+    btnClearFilters.hidden = true;
 
     appointments.forEach((appt) => {
         const tr = document.createElement("tr");
@@ -727,6 +741,22 @@ function setupFilterListeners() {
     if (searchInput) {
         searchInput.addEventListener("input", (e) => {
             activeSearchQuery = e.target.value.trim();
+            renderDashboard();
+        });
+    }
+
+    if (btnClearFilters) {
+        btnClearFilters.addEventListener("click", () => {
+            activeSearchQuery = "";
+            activePaymentFilter = "all";
+            activeStatusFilter = "all";
+            if (searchInput) searchInput.value = "";
+            paymentFilterChips.forEach((chip) => {
+                chip.classList.toggle("active", chip.getAttribute("data-pay-filter") === "all");
+            });
+            statusFilterChips.forEach((chip) => {
+                chip.classList.toggle("active", chip.getAttribute("data-status-filter") === "all");
+            });
             renderDashboard();
         });
     }

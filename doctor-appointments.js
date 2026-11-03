@@ -55,6 +55,15 @@ async function renderDoctorAppointments() {
 
     if (filtered.length === 0) {
         portalEmptyState.hidden = false;
+        const hasAppointments = doctorAppointments.length > 0;
+        portalEmptyState.querySelector("#portal-empty-title").textContent = hasAppointments
+            ? "No hay citas que coincidan"
+            : "No tienes citas registradas";
+        portalEmptyState.querySelector("#portal-empty-message").textContent = hasAppointments
+            ? "Prueba con otro término de búsqueda o selecciona un estado distinto."
+            : "Cuando los pacientes soliciten una cita contigo a través de la página web del hospital, aparecerán listadas aquí automáticamente.";
+        document.querySelector("#btn-seed-empty").hidden = hasAppointments;
+        document.querySelector("#btn-clear-doctor-filters").hidden = !hasAppointments;
         return;
     }
 
@@ -182,6 +191,16 @@ filterPills.forEach((pill) => {
 
 filterSearch.addEventListener("input", (e) => {
     activeSearchQuery = e.target.value.trim();
+    renderDoctorAppointments();
+});
+
+document.querySelector("#btn-clear-doctor-filters").addEventListener("click", () => {
+    filterSearch.value = "";
+    activeSearchQuery = "";
+    activeStatusFilter = "all";
+    filterPills.forEach((pill) => {
+        pill.classList.toggle("active", pill.getAttribute("data-filter") === "all");
+    });
     renderDoctorAppointments();
 });
 

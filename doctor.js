@@ -95,6 +95,7 @@ let activeSearchQuery = "";
 // ==========================================
 function updateTheme(isDark) {
     document.body.dataset.theme = isDark ? "dark" : "light";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
     themeToggle.setAttribute("aria-pressed", String(isDark));
     themeToggle.setAttribute("aria-label", isDark ? "Activar tema claro" : "Activar tema oscuro");
     themeToggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
@@ -102,8 +103,9 @@ function updateTheme(isDark) {
     document.querySelector('meta[name="theme-color"]').content = isDark ? "#102321" : "#f7fbfa";
 }
 
+const savedTheme = localStorage.getItem("theme");
 const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-updateTheme(prefersDark);
+updateTheme(savedTheme ? savedTheme === "dark" : prefersDark);
 
 themeToggle.addEventListener("click", () => {
     const isDark = document.body.dataset.theme !== "dark";

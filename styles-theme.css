@@ -142,8 +142,9 @@
 }
 
 .finder-panel {
-    grid-template-columns: 190px minmax(220px, 1fr) 1fr;
-    min-height: 112px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+    gap: 18px 24px;
     border-color: #e2eeea;
     border-radius: 16px;
     box-shadow: 0 12px 35px rgb(28 67 60 / 7%);
@@ -156,6 +157,13 @@
     background: #f9fcfb;
     font-size: 17.5px;
     transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.finder-field > label {
+    color: #244b46;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .1em;
 }
 
 .select-wrap select:hover,
@@ -622,4 +630,3 @@ body[data-theme="dark"] .site-footer > a:last-child:hover,
 body[data-theme="dark"] .main-nav a:hover {
     color: #99f6e4;
 }
-

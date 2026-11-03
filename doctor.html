@@ -24,6 +24,7 @@
     <script src="doctor-appointments.js" defer></script>
 </head>
 <body class="doctor-portal-body">
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
     <!-- Header del Portal Médico -->
     <header class="site-header">
         <a class="brand" href="index.html" aria-label="Clinica Su Salud, volver al inicio">
@@ -40,7 +41,7 @@
         </div>
     </header>
 
-    <main class="portal-wrap">
+    <main class="portal-wrap" id="main-content" tabindex="-1">
         <!-- VISTA 1: ACCESO RESTRINGIDO PARA EL DOCTOR (LOGIN) -->
         <section class="doctor-auth-box" id="doctor-auth-box" aria-labelledby="auth-title">
             <aside class="auth-showcase">
@@ -165,12 +166,13 @@
             </div>
 
             <!-- Estado Vacío cuando no hay citas -->
-            <div class="portal-empty-state" id="portal-empty-state" hidden>
+            <div class="portal-empty-state" id="portal-empty-state" role="status" aria-live="polite" hidden>
                 <div class="portal-empty-icon" aria-hidden="true">🩺</div>
-                <h3>No tienes citas registradas</h3>
-                <p>Cuando los pacientes soliciten una cita contigo a través de la página web del hospital, aparecerán listadas aquí automáticamente.</p>
+                <h3 id="portal-empty-title">No tienes citas registradas</h3>
+                <p id="portal-empty-message">Cuando los pacientes soliciten una cita contigo a través de la página web del hospital, aparecerán listadas aquí automáticamente.</p>
                 <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
                     <button type="button" class="btn-seed-test" id="btn-seed-empty">+ Crear cita de prueba para mi consulta</button>
+                    <button type="button" class="btn-seed-test" id="btn-clear-doctor-filters" hidden>Limpiar búsqueda y filtros</button>
                     <a href="index.html#especialidades" class="portal-nav-back" style="margin-bottom:0;">Ir al portal de pacientes →</a>
                 </div>
             </div>

@@ -56,6 +56,7 @@ const resultsTitle = document.querySelector("#results-title");
 const doctorCount = document.querySelector("#doctor-count");
 const doctorGrid = document.querySelector("#doctor-grid");
 const themeToggle = document.querySelector("#theme-toggle");
+const doctorSearch = document.querySelector("#doctor-search");
 const allDoctors = Object.values(doctorsBySpecialty).flat();
 const doctorPhotos = [
     "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=160&h=160&q=80",
@@ -68,6 +69,7 @@ const doctorPhotos = [
 
 function updateTheme(isDark) {
     document.body.dataset.theme = isDark ? "dark" : "light";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
     themeToggle.setAttribute("aria-pressed", String(isDark));
     themeToggle.setAttribute("aria-label", isDark ? "Activar tema claro" : "Activar tema oscuro");
     themeToggle.querySelector(".theme-icon").textContent = isDark ? "☀" : "☾";
@@ -75,8 +77,9 @@ function updateTheme(isDark) {
     document.querySelector('meta[name="theme-color"]').content = isDark ? "#102321" : "#f7fbfa";
 }
 
+const savedTheme = localStorage.getItem("theme");
 const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-updateTheme(prefersDark);
+updateTheme(savedTheme ? savedTheme === "dark" : prefersDark);
 
 themeToggle.addEventListener("click", () => {
     const isDark = document.body.dataset.theme !== "dark";
@@ -172,23 +175,59 @@ function createDoctorCard(doctor, specialty) {
     return card;
 }
 
-specialtySelect.addEventListener("change", () => {
-    const specialty = specialtySelect.value;
+function normalizeSearchText(value) {
+    return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
-    if (!specialty) {
+function renderDoctorResults() {
+    const specialty = specialtySelect.value;
+    const query = normalizeSearchText(doctorSearch.value.trim());
+    const emptyTitle = document.querySelector("#empty-state-title");
+    const emptyMessage = document.querySelector("#empty-state-message");
+    const emptyArrow = emptyState.querySelector(".empty-arrow");
+
+    if (!specialty && !query) {
         doctorGrid.replaceChildren();
         doctorResults.hidden = true;
         emptyState.hidden = false;
+        emptyTitle.textContent = "Tu bienestar comienza aquí";
+        emptyMessage.textContent = "Elige una especialidad o busca un profesional para ver sus horarios.";
+        emptyArrow.hidden = false;
         return;
     }
 
-    const doctors = doctorsBySpecialty[specialty];
-    resultsTitle.textContent = specialty;
-    doctorCount.textContent = `${doctors.length} profesionales`;
-    doctorGrid.replaceChildren(...doctors.map((doctor) => createDoctorCard(doctor, specialty)));
+    const matches = Object.entries(doctorsBySpecialty).flatMap(([doctorSpecialty, doctors]) => (
+        doctors
+            .filter((doctor) => !specialty || doctorSpecialty === specialty)
+            .filter((doctor) => {
+                if (!query) return true;
+                const searchableText = normalizeSearchText(`${doctor.name} ${doctorSpecialty} ${doctor.availability}`);
+                return searchableText.includes(query);
+            })
+            .map((doctor) => ({ doctor, specialty: doctorSpecialty }))
+    ));
+
+    if (matches.length === 0) {
+        doctorGrid.replaceChildren();
+        doctorResults.hidden = true;
+        emptyState.hidden = false;
+        emptyTitle.textContent = "No encontramos profesionales";
+        emptyMessage.textContent = "Prueba con otro nombre o especialidad, o cambia el filtro seleccionado.";
+        emptyArrow.hidden = true;
+        return;
+    }
+
+    resultsTitle.textContent = specialty || (query ? "Resultados de búsqueda" : "Todos los especialistas");
+    doctorCount.textContent = `${matches.length} ${matches.length === 1 ? "profesional" : "profesionales"}`;
+    doctorGrid.replaceChildren(...matches.map(({ doctor, specialty: doctorSpecialty }) => (
+        createDoctorCard(doctor, doctorSpecialty)
+    )));
     emptyState.hidden = true;
     doctorResults.hidden = false;
-});
+}
+
+specialtySelect.addEventListener("change", renderDoctorResults);
+doctorSearch.addEventListener("input", renderDoctorResults);
 
 // ==========================================
 // ALMAsCENAMIENTO REMOTO DE CITAS MÉDICAS EN SUPABASE
