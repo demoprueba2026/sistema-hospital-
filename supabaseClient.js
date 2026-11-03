@@ -128,10 +128,32 @@ async function apiSaveAppointment(appointment) {
         .insert([mapAppointmentToDb(appointment)]);
 
     if (error) {
+        const duplicateSlotIndex = "idx_citas_unique_active_doctor_slot";
+        const duplicateSlotError = [error.message, error.details]
+            .some((value) => typeof value === "string" && value.includes(duplicateSlotIndex));
+        if (error.code === "23505" && duplicateSlotError) {
+            throw new Error("Ese horario acaba de ser reservado por otra persona. Elige otra hora o fecha.");
+        }
         throw new Error(`No se pudo guardar la cita en Supabase: ${error.message}`);
     }
 
     return { success: true, savedInSupabase: true, appointment };
+}
+
+async function apiGetBookedAppointmentTimes(doctorName, date) {
+    const client = await getSupabaseClient();
+    const { data, error } = await client
+        .from("citas")
+        .select("time")
+        .ilike("doctor_name", doctorName.trim())
+        .eq("date", date)
+        .neq("status", "Cancelada");
+
+    if (error) {
+        throw new Error(`No se pudieron consultar los horarios ocupados: ${error.message}`);
+    }
+
+    return data.map((appointment) => appointment.time);
 }
 
 async function apiUpdateAppointmentStatus(appointmentId, newStatus) {

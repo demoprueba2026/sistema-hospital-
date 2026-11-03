@@ -75,6 +75,9 @@ if (appointmentForm) {
         } catch (error) {
             formAlert.hidden = false;
             formAlert.textContent = `No se pudo guardar la cita en Supabase. ${error.message}`;
+            if (error.message.includes("Ese horario acaba de ser reservado")) {
+                await renderTimeSlots();
+            }
         } finally {
             if (saveBtn) {
                 saveBtn.disabled = false;

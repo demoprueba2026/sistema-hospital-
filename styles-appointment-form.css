@@ -334,6 +334,17 @@ body[data-theme="dark"] .gcal-widget {
     border-color: #28443e;
 }
 
+body[data-theme="dark"] .time-slot-btn:disabled,
+body[data-theme="dark"] .time-slot-btn.is-booked {
+    border-color: #344840;
+    background: #1b2a26;
+    color: #9aaca6;
+}
+
+body[data-theme="dark"] .time-slots-message {
+    color: #b2c8c1;
+}
+
 body[data-theme="dark"] .gcal-month-title {
     color: #f2f8f5;
 }
@@ -598,4 +609,3 @@ body[data-theme="dark"] .footer-doctor-link {
         font-size: 18px;
     }
 }
-

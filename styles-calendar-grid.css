@@ -183,3 +183,20 @@
     box-shadow: 0 3px 8px rgb(23 124 117 / 28%);
 }
 
+.time-slot-btn:disabled,
+.time-slot-btn.is-booked {
+    border-color: #e2e8e5;
+    background: #f0f3f2;
+    color: #879691;
+    cursor: not-allowed;
+    opacity: .8;
+    text-decoration: line-through;
+}
+
+.time-slots-message {
+    min-height: 18px;
+    margin: 8px 0 0;
+    color: #607974;
+    font-size: 12.5px;
+    line-height: 1.5;
+}

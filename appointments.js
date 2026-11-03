@@ -22,6 +22,7 @@ const selectedDateInput = document.querySelector("#selected-date-input");
 const timeSlotsGrid = document.querySelector("#time-slots-grid");
 const selectedTimeInput = document.querySelector("#selected-time-input");
 const formAlert = document.querySelector("#form-alert");
+const timeSlotsMessage = document.querySelector("#time-slots-message");
 
 let activeDoctor = null;
 let activeSpecialty = null;
@@ -30,6 +31,7 @@ let calCurrentMonth = new Date().getMonth();
 let currentSelectedDate = null;
 let currentSelectedTime = null;
 let lastCreatedAppointment = null;
+let timeSlotsRequestId = 0;
 
 const MONTH_NAMES = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -207,33 +209,69 @@ function selectDate(dateStr) {
     renderTimeSlots();
 }
 
-function renderTimeSlots() {
-    timeSlotsGrid.innerHTML = "";
+async function renderTimeSlots() {
+    const requestId = ++timeSlotsRequestId;
+    timeSlotsGrid.replaceChildren();
     const slots = generateDoctorTimeSlots(activeDoctor ? activeDoctor.availability : "");
-
-    if (!currentSelectedTime || !slots.includes(currentSelectedTime)) {
-        currentSelectedTime = slots[0];
-    }
-    selectedTimeInput.value = currentSelectedTime;
+    const previouslySelectedTime = currentSelectedTime;
+    currentSelectedTime = null;
+    selectedTimeInput.value = "";
+    timeSlotsMessage.textContent = "Consultando horarios disponibles...";
 
     slots.forEach((slot) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "time-slot-btn";
-        if (slot === currentSelectedTime) {
-            btn.classList.add("selected");
-        }
+        btn.disabled = true;
         btn.textContent = slot;
-
-        btn.addEventListener("click", () => {
-            currentSelectedTime = slot;
-            selectedTimeInput.value = slot;
-            timeSlotsGrid.querySelectorAll(".time-slot-btn").forEach((b) => b.classList.remove("selected"));
-            btn.classList.add("selected");
-        });
-
         timeSlotsGrid.append(btn);
     });
+
+    let bookedTimes;
+    try {
+        bookedTimes = await apiGetBookedAppointmentTimes(activeDoctor.name, currentSelectedDate);
+    } catch (error) {
+        if (requestId !== timeSlotsRequestId) return;
+        timeSlotsMessage.textContent = `${error.message}. No es posible confirmar una cita hasta verificar la disponibilidad.`;
+        return;
+    }
+
+    if (requestId !== timeSlotsRequestId) return;
+
+    const bookedSlots = new Set(bookedTimes.map((time) => time.trim().toLocaleLowerCase("es")));
+    const availableSlots = [];
+    timeSlotsGrid.querySelectorAll(".time-slot-btn").forEach((btn) => {
+        const isBooked = bookedSlots.has(btn.textContent.trim().toLocaleLowerCase("es"));
+        btn.disabled = isBooked;
+        if (isBooked) {
+            btn.classList.add("is-booked");
+            btn.title = "Este horario ya está reservado";
+            btn.setAttribute("aria-label", `${btn.textContent}, ocupado`);
+        } else {
+            availableSlots.push(btn.textContent);
+            btn.addEventListener("click", () => {
+                currentSelectedTime = btn.textContent;
+                selectedTimeInput.value = currentSelectedTime;
+                timeSlotsGrid.querySelectorAll(".time-slot-btn").forEach((slotButton) => {
+                    slotButton.classList.toggle("selected", slotButton === btn);
+                });
+            });
+        }
+    });
+
+    const selectedSlot = availableSlots.includes(previouslySelectedTime)
+        ? previouslySelectedTime
+        : availableSlots[0];
+    if (selectedSlot) {
+        currentSelectedTime = selectedSlot;
+        selectedTimeInput.value = selectedSlot;
+        timeSlotsGrid.querySelectorAll(".time-slot-btn").forEach((btn) => {
+            btn.classList.toggle("selected", btn.textContent === selectedSlot);
+        });
+        timeSlotsMessage.textContent = "Los horarios ocupados aparecen deshabilitados.";
+    } else {
+        timeSlotsMessage.textContent = "No hay horarios disponibles para esta fecha. Selecciona otro día.";
+    }
 }
 
 // Navegación del Mini Calendario
@@ -276,4 +314,3 @@ if (appointmentModal) {
         }
     });
 }
-

@@ -94,6 +94,12 @@ CREATE INDEX IF NOT EXISTS idx_citas_date ON public.citas (date);
 CREATE INDEX IF NOT EXISTS idx_citas_status ON public.citas (status);
 CREATE INDEX IF NOT EXISTS idx_citas_created_at ON public.citas (created_at DESC);
 
+-- Evitar que se reserve el mismo horario con el mismo especialista.
+-- Las citas canceladas no bloquean el horario y pueden ser reemplazadas.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_citas_unique_active_doctor_slot
+    ON public.citas (lower(btrim(doctor_name)), date, lower(btrim(time)))
+    WHERE status <> 'Cancelada';
+
 -- 7. Datos de prueba iniciales (opcional, para verificar de inmediato en el portal)
 INSERT INTO public.citas (
     id, code, doctor_name, specialty, date, time, patient_name, patient_email, patient_phone, patient_age, notes, status, doctor_notes
