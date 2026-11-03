@@ -75,18 +75,12 @@
                     <label for="specialty-select">ESPECIALIDAD MÉDICA</label>
                     <div class="select-wrap">
                         <select id="specialty-select" aria-describedby="select-hint">
-                            <option value="">Todas las especialidades</option>
+                            <option value="">Selecciona una especialidad</option>
                         </select>
                         <span class="select-chevron" aria-hidden="true">⌄</span>
                     </div>
                 </div>
-                <div class="finder-field">
-                    <label for="doctor-search">BUSCAR PROFESIONAL</label>
-                    <div class="select-wrap">
-                        <input type="search" id="doctor-search" class="doctor-search-input" placeholder="Nombre o especialidad" autocomplete="off" aria-describedby="select-hint">
-                    </div>
-                </div>
-                <span id="select-hint" class="select-hint">Filtra por especialidad o escribe el nombre de un profesional. Los horarios son referenciales; confirma la disponibilidad con el hospital.</span>
+                <span id="select-hint" class="select-hint">Selecciona una especialidad para ver los profesionales y sus horarios referenciales.</span>
             </div>
 
             <div class="doctors-area" aria-live="polite" aria-atomic="true">
@@ -94,7 +88,7 @@
                     <span class="empty-icon" aria-hidden="true">✚</span>
                     <div>
                         <h3 id="empty-state-title">Tu bienestar comienza aquí</h3>
-                        <p id="empty-state-message">Elige una especialidad o busca un profesional para ver sus horarios.</p>
+                        <p id="empty-state-message">Elige una especialidad para ver los médicos disponibles en esa área.</p>
                     </div>
                     <span class="empty-arrow" aria-hidden="true">↗</span>
                 </div>

@@ -56,7 +56,6 @@ const resultsTitle = document.querySelector("#results-title");
 const doctorCount = document.querySelector("#doctor-count");
 const doctorGrid = document.querySelector("#doctor-grid");
 const themeToggle = document.querySelector("#theme-toggle");
-const doctorSearch = document.querySelector("#doctor-search");
 const allDoctors = Object.values(doctorsBySpecialty).flat();
 const doctorPhotos = [
     "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=160&h=160&q=80",
@@ -175,59 +174,42 @@ function createDoctorCard(doctor, specialty) {
     return card;
 }
 
-function normalizeSearchText(value) {
-    return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
 function renderDoctorResults() {
     const specialty = specialtySelect.value;
-    const query = normalizeSearchText(doctorSearch.value.trim());
     const emptyTitle = document.querySelector("#empty-state-title");
     const emptyMessage = document.querySelector("#empty-state-message");
     const emptyArrow = emptyState.querySelector(".empty-arrow");
 
-    if (!specialty && !query) {
+    if (!specialty) {
         doctorGrid.replaceChildren();
         doctorResults.hidden = true;
         emptyState.hidden = false;
         emptyTitle.textContent = "Tu bienestar comienza aquí";
-        emptyMessage.textContent = "Elige una especialidad o busca un profesional para ver sus horarios.";
+        emptyMessage.textContent = "Elige una especialidad para ver los médicos disponibles en esa área.";
         emptyArrow.hidden = false;
         return;
     }
 
-    const matches = Object.entries(doctorsBySpecialty).flatMap(([doctorSpecialty, doctors]) => (
-        doctors
-            .filter((doctor) => !specialty || doctorSpecialty === specialty)
-            .filter((doctor) => {
-                if (!query) return true;
-                const searchableText = normalizeSearchText(`${doctor.name} ${doctorSpecialty} ${doctor.availability}`);
-                return searchableText.includes(query);
-            })
-            .map((doctor) => ({ doctor, specialty: doctorSpecialty }))
-    ));
+    const doctors = doctorsBySpecialty[specialty] || [];
 
-    if (matches.length === 0) {
+    if (doctors.length === 0) {
         doctorGrid.replaceChildren();
         doctorResults.hidden = true;
         emptyState.hidden = false;
-        emptyTitle.textContent = "No encontramos profesionales";
-        emptyMessage.textContent = "Prueba con otro nombre o especialidad, o cambia el filtro seleccionado.";
+        emptyTitle.textContent = "No hay profesionales disponibles";
+        emptyMessage.textContent = "Selecciona otra especialidad para consultar los médicos disponibles.";
         emptyArrow.hidden = true;
         return;
     }
 
-    resultsTitle.textContent = specialty || (query ? "Resultados de búsqueda" : "Todos los especialistas");
-    doctorCount.textContent = `${matches.length} ${matches.length === 1 ? "profesional" : "profesionales"}`;
-    doctorGrid.replaceChildren(...matches.map(({ doctor, specialty: doctorSpecialty }) => (
-        createDoctorCard(doctor, doctorSpecialty)
-    )));
+    resultsTitle.textContent = specialty;
+    doctorCount.textContent = `${doctors.length} ${doctors.length === 1 ? "profesional" : "profesionales"}`;
+    doctorGrid.replaceChildren(...doctors.map((doctor) => createDoctorCard(doctor, specialty)));
     emptyState.hidden = true;
     doctorResults.hidden = false;
 }
 
 specialtySelect.addEventListener("change", renderDoctorResults);
-doctorSearch.addEventListener("input", renderDoctorResults);
 
 // ==========================================
 // ALMAsCENAMIENTO REMOTO DE CITAS MÉDICAS EN SUPABASE
